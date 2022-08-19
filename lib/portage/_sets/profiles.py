@@ -9,6 +9,8 @@ from portage.util import grabfile_package, stack_lists
 from portage._sets.base import PackageSet
 from portage._sets import get_boolean
 from portage.util import writemsg_level
+from portage.repository.config import _profile_node
+from typing import Tuple
 
 __all__ = ["PackagesSystemSet"]
 
@@ -16,7 +18,22 @@ __all__ = ["PackagesSystemSet"]
 class PackagesSystemSet(PackageSet):
     _operations = ["merge"]
 
-    def __init__(self, profiles, debug=False):
+    def __init__(
+        self,
+        profiles: Tuple[
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+        ],
+        debug: bool = False,
+    ) -> None:
         super(PackagesSystemSet, self).__init__(
             allow_repo=any(allow_profile_repo_deps(x) for x in profiles)
         )
@@ -31,7 +48,7 @@ class PackagesSystemSet(PackageSet):
             description = None
         self.description = "System packages for profile %s" % description
 
-    def load(self):
+    def load(self) -> None:
         debug = self._debug
         if debug:
             writemsg_level(

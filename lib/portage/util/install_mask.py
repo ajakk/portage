@@ -17,6 +17,7 @@ from portage.exception import (
     ReadOnlyFileSystem,
 )
 from portage.util import normalize_path
+from mypy_extensions import NoReturn
 
 
 def _defaultdict_tree():
@@ -139,7 +140,7 @@ _exc_map = {
 }
 
 
-def _raise_exc(e):
+def _raise_exc(e: PermissionError) -> NoReturn:
     """
     Wrap OSError with portage.exception wrapper exceptions, with
     __cause__ chaining when python supports it.

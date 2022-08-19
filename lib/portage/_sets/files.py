@@ -249,7 +249,7 @@ class ConfigFileSet(PackageSet):
 class WorldSelectedSet(EditablePackageSet):
     description = "Set of packages and subsets that were directly installed by the user"
 
-    def __init__(self, eroot):
+    def __init__(self, eroot: str) -> None:
         super(WorldSelectedSet, self).__init__(allow_repo=True)
         self._pkgset = WorldSelectedPackagesSet(eroot)
         self._setset = WorldSelectedSetsSet(eroot)
@@ -260,7 +260,7 @@ class WorldSelectedSet(EditablePackageSet):
         self._setset._nonatoms = self._nonatoms.copy()
         self._setset.write()
 
-    def load(self):
+    def load(self) -> None:
         # Iterating over these sets does not force them to load if they
         # have been loaded previously.
         self._pkgset.load()
@@ -287,20 +287,20 @@ class WorldSelectedSet(EditablePackageSet):
 class WorldSelectedPackagesSet(EditablePackageSet):
     description = "Set of packages that were directly installed by the user"
 
-    def __init__(self, eroot):
+    def __init__(self, eroot: str) -> None:
         super(WorldSelectedPackagesSet, self).__init__(allow_repo=True)
         self._lock = None
         self._filename = os.path.join(eroot, WORLD_FILE)
         self.loader = ItemFileLoader(self._filename, self._validate)
         self._mtime = None
 
-    def _validate(self, atom):
+    def _validate(self, atom: str) -> bool:
         return ValidAtomValidator(atom, allow_repo=True)
 
     def write(self):
         write_atomic(self._filename, "".join(sorted("%s\n" % x for x in self._atoms)))
 
-    def load(self):
+    def load(self) -> None:
         atoms = []
         atoms_changed = False
         try:
@@ -383,7 +383,7 @@ class WorldSelectedPackagesSet(EditablePackageSet):
 class WorldSelectedSetsSet(EditablePackageSet):
     description = "Set of sets that were directly installed by the user"
 
-    def __init__(self, eroot):
+    def __init__(self, eroot: str) -> None:
         super(WorldSelectedSetsSet, self).__init__(allow_repo=True)
         self._lock = None
         self._filename = os.path.join(eroot, WORLD_SETS_FILE)
@@ -398,7 +398,7 @@ class WorldSelectedSetsSet(EditablePackageSet):
             self._filename, "".join(sorted("%s\n" % x for x in self._nonatoms))
         )
 
-    def load(self):
+    def load(self) -> None:
         atoms_changed = False
         try:
             mtime = os.stat(self._filename).st_mtime

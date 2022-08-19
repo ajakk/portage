@@ -7,6 +7,10 @@ from portage.data import secpass
 import portage
 from portage import os
 import pickle
+from typing import Tuple
+from _emerge.PackageVirtualDbapi import PackageVirtualDbapi
+from _emerge.BlockerCache import BlockerCache
+from portage.versions import _pkg_str
 
 
 class BlockerCache(portage.cache.mappings.MutableMapping):
@@ -25,11 +29,11 @@ class BlockerCache(portage.cache.mappings.MutableMapping):
 
         __slots__ = ("__weakref__", "atoms", "counter")
 
-        def __init__(self, counter, atoms):
+        def __init__(self, counter: int, atoms: Tuple[str, ...]) -> None:
             self.counter = counter
             self.atoms = atoms
 
-    def __init__(self, myroot, vardb):
+    def __init__(self, myroot: str, vardb: PackageVirtualDbapi) -> None:
         """myroot is ignored in favour of EROOT"""
         self._vardb = vardb
         self._cache_filename = os.path.join(
@@ -40,7 +44,7 @@ class BlockerCache(portage.cache.mappings.MutableMapping):
         self._modified = set()
         self._load()
 
-    def _load(self):
+    def _load(self) -> None:
         try:
             f = open(self._cache_filename, mode="rb")
             mypickle = pickle.Unpickler(f)
@@ -122,7 +126,7 @@ class BlockerCache(portage.cache.mappings.MutableMapping):
             self._cache_data["blockers"] = {}
         self._modified.clear()
 
-    def flush(self):
+    def flush(self) -> None:
         """If the current user has permission and the internal blocker cache has
         been updated, save it to disk and mark it unmodified.  This is called
         by emerge after it has processed blockers for all installed packages.
@@ -149,7 +153,9 @@ class BlockerCache(portage.cache.mappings.MutableMapping):
                 pass
             self._modified.clear()
 
-    def __setitem__(self, cpv, blocker_data):
+    def __setitem__(
+        self, cpv: _pkg_str, blocker_data: BlockerCache.BlockerData
+    ) -> None:
         """
         Update the cache and mark it as modified for a future call to
         self.flush().
@@ -165,7 +171,7 @@ class BlockerCache(portage.cache.mappings.MutableMapping):
         )
         self._modified.add(cpv)
 
-    def __iter__(self):
+    def __iter__(self) -> dict_keyiterator:
         if self._cache_data is None:
             # triggered by python-trace
             return iter([])
@@ -179,7 +185,7 @@ class BlockerCache(portage.cache.mappings.MutableMapping):
     def __delitem__(self, cpv):
         del self._cache_data["blockers"][cpv]
 
-    def __getitem__(self, cpv):
+    def __getitem__(self, cpv: _pkg_str) -> BlockerCache.BlockerData:
         """
         @rtype: BlockerData
         @return: An object with counter and atoms attributes.

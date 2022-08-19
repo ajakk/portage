@@ -46,7 +46,7 @@ class MtimeDB(dict):
 
     _json_write_opts = {"ensure_ascii": False, "indent": "\t", "sort_keys": True}
 
-    def __init__(self, filename):
+    def __init__(self, filename: str) -> None:
         dict.__init__(self)
         self.filename = filename
         self._load(filename)
@@ -58,10 +58,10 @@ class MtimeDB(dict):
         else:
             return False
 
-    def make_readonly(self):
+    def make_readonly(self) -> None:
         self.filename = None
 
-    def _load(self, filename):
+    def _load(self, filename: str) -> None:
         f = None
         content = None
         try:

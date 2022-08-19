@@ -31,7 +31,7 @@ class stdout_spinner:
 
     twirl_sequence = "/-\\|/-\\|/-\\|/-\\|\\-/|\\-/|\\-/|\\-/|"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.spinpos = 0
         self.update = self.update_twirl
         self.scroll_sequence = self.scroll_msgs[
@@ -40,7 +40,7 @@ class stdout_spinner:
         self.last_update = 0
         self.min_display_latency = 0.05
 
-    def _return_early(self):
+    def _return_early(self) -> bool:
         """
         Flushing ouput to the tty too frequently wastes cpu time. Therefore,
         each update* method should return without doing any output when this
@@ -84,7 +84,7 @@ class stdout_spinner:
         self.spinpos = (self.spinpos + 1) % (2 * len(self.scroll_sequence))
         return True
 
-    def update_twirl(self):
+    def update_twirl(self) -> bool:
         self.spinpos = (self.spinpos + 1) % len(self.twirl_sequence)
         if self._return_early():
             return True

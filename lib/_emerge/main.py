@@ -7,6 +7,12 @@ import platform
 import sys
 
 import portage
+from typing import List
+from typing import Any
+from typing import Dict
+from typing import Tuple
+from portage import _trees_dict
+from typing import Optional
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -101,7 +107,7 @@ def multiple_actions(action1, action2):
     sys.exit(1)
 
 
-def insert_optional_args(args):
+def insert_optional_args(args: List[str]) -> List[str]:
     """
     Parse optional arguments and insert a value if one has
     not been provided. This is done before feeding the args
@@ -310,7 +316,9 @@ def _find_bad_atoms(atoms, less_strict=False):
     return bad_atoms
 
 
-def parse_opts(tmpcmdline, silent=False):
+def parse_opts(
+    tmpcmdline: List[str], silent: bool = False
+) -> Tuple[None, Dict[str, Any], List[str]]:
     myaction = None
     myopts = {}
 
@@ -1130,7 +1138,7 @@ def parse_opts(tmpcmdline, silent=False):
     return myaction, myopts, myoptions.positional_args
 
 
-def profile_check(trees, myaction):
+def profile_check(trees: _trees_dict, myaction: Optional[Any]) -> int:
     if myaction in ("help", "info", "search", "sync", "version"):
         return os.EX_OK
     for root_trees in trees.values():

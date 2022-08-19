@@ -9,6 +9,7 @@ from portage.const import SUPPORTED_FEATURES
 from portage.localization import _
 from portage.output import colorize
 from portage.util import writemsg_level
+from portage.package.ebuild.config import config
 
 
 class features_set:
@@ -24,17 +25,17 @@ class features_set:
     to config.reset().
     """
 
-    def __init__(self, settings):
+    def __init__(self, settings: config) -> None:
         self._settings = settings
         self._features = set()
 
-    def __contains__(self, k):
+    def __contains__(self, k: str) -> bool:
         return k in self._features
 
-    def __iter__(self):
+    def __iter__(self) -> set_iterator:
         return iter(self._features)
 
-    def _sync_env_var(self):
+    def _sync_env_var(self) -> None:
         self._settings["FEATURES"] = " ".join(sorted(self._features))
 
     def add(self, k):
@@ -81,7 +82,7 @@ class features_set:
             self._features.remove(k)
             self._sync_env_var()
 
-    def _validate(self):
+    def _validate(self) -> None:
         """
         Implements unknown-features-warn and unknown-features-filter.
         """

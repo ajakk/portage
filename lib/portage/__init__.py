@@ -218,7 +218,7 @@ _encodings = {
 }
 
 
-def _decode_argv(argv):
+def _decode_argv(argv: List[str]) -> List[str]:
     # With Python 3, the surrogateescape encoding error handler makes it
     # possible to access the original argv bytes, which can be useful
     # if their actual encoding does no match the filesystem encoding.
@@ -226,13 +226,19 @@ def _decode_argv(argv):
     return [_unicode_decode(x.encode(fs_encoding, "surrogateescape")) for x in argv]
 
 
-def _unicode_encode(s, encoding=_encodings["content"], errors="backslashreplace"):
+def _unicode_encode(
+    s: Union[bytes, int, str],
+    encoding: str = _encodings["content"],
+    errors: str = "backslashreplace",
+) -> Union[bytes, int]:
     if isinstance(s, str):
         s = s.encode(encoding, errors)
     return s
 
 
-def _unicode_decode(s, encoding=_encodings["content"], errors="replace"):
+def _unicode_decode(
+    s: Any, encoding: str = _encodings["content"], errors: str = "replace"
+) -> Any:
     if isinstance(s, bytes):
         s = str(s, encoding=encoding, errors=errors)
     return s
@@ -255,11 +261,17 @@ class _unicode_func_wrapper:
 
     __slots__ = ("_func", "_encoding")
 
-    def __init__(self, func, encoding=_encodings["fs"]):
+    def __init__(
+        self,
+        func: Union[Callable, builtin_function_or_method],
+        encoding: str = _encodings["fs"],
+    ) -> None:
         self._func = func
         self._encoding = encoding
 
-    def _process_args(self, args, kwargs):
+    def _process_args(
+        self, args: Union[Tuple[int], Tuple[str, ...], Tuple[str, int]], kwargs: Dict
+    ) -> Tuple[Union[List[Union[bytes, int]], List[bytes], List[int]], Dict]:
         encoding = self._encoding
         wrapped_args = [
             _unicode_encode(x, encoding=encoding, errors="strict") for x in args
@@ -274,7 +286,7 @@ class _unicode_func_wrapper:
 
         return (wrapped_args, wrapped_kwargs)
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
         encoding = self._encoding
         wrapped_args, wrapped_kwargs = self._process_args(args, kwargs)
 
@@ -357,7 +369,7 @@ class _eintr_func_wrapper:
     def __init__(self, func):
         self._func = func
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args: int, **kwargs: Any) -> Tuple[int, int]:
         while True:
             try:
                 rval = self._func(*args, **kwargs)
@@ -370,6 +382,16 @@ class _eintr_func_wrapper:
 
 
 import os as _os
+from typing import Callable
+from typing import Union
+from typing import Dict
+from typing import List
+from typing import Tuple
+from typing import Any
+from _io import TextIOWrapper
+from os import _Environ
+from portage import _trees_dict
+from typing import Optional
 
 _os_overrides = {
     id(_os.fdopen): _os.fdopen,
@@ -444,7 +466,7 @@ _ForkWatcher.hook(_ForkWatcher)
 multiprocessing.util.register_after_fork(_ForkWatcher, _ForkWatcher.hook)
 
 
-def getpid():
+def getpid() -> int:
     """
     Cached version of os.getpid(). ForkProcess updates the cache.
     """
@@ -453,7 +475,7 @@ def getpid():
     return _ForkWatcher.current_pid
 
 
-def _get_stdin():
+def _get_stdin() -> TextIOWrapper:
     """
     Buggy code in python's multiprocessing/process.py closes sys.stdin
     and reassigns it to open(os.devnull), but fails to update the
@@ -468,7 +490,7 @@ def _get_stdin():
 _shell_quote_re = re.compile(r"[\s><=*\\\"'$`;&|(){}\[\]#!~?]")
 
 
-def _shell_quote(s):
+def _shell_quote(s: str) -> str:
     """
     Quote a string in double-quotes and use backslashes to
     escape any backslashes, double-quotes, dollar signs, or
@@ -491,7 +513,7 @@ if platform.system() in ("FreeBSD",):
         lchflags = os.lchflags
 
 
-def load_mod(name):
+def load_mod(name: str) -> type:
     components = name.split(".")
     modname = ".".join(components[:-1])
     mod = __import__(modname)
@@ -559,11 +581,11 @@ _supported_eapis = frozenset(
 )
 
 
-def _eapi_is_deprecated(eapi):
+def _eapi_is_deprecated(eapi: str) -> bool:
     return eapi in _deprecated_eapis
 
 
-def eapi_is_supported(eapi):
+def eapi_is_supported(eapi: str) -> bool:
     eapi = str(eapi).strip()
     return eapi in _supported_eapis
 
@@ -629,15 +651,20 @@ class _trees_dict(dict):
         "_target_eroot",
     )
 
-    def __init__(self, *pargs, **kargs):
+    def __init__(self, *pargs: Any, **kargs: Any) -> None:
         dict.__init__(self, *pargs, **kargs)
         self._running_eroot = None
         self._target_eroot = None
 
 
 def create_trees(
-    config_root=None, target_root=None, trees=None, env=None, sysroot=None, eprefix=None
-):
+    config_root: Optional[Any] = None,
+    target_root: Optional[Any] = None,
+    trees: Optional[Any] = None,
+    env: _Environ = None,
+    sysroot: Optional[Any] = None,
+    eprefix: Optional[Any] = None,
+) -> _trees_dict:
 
     if trees is None:
         trees = _trees_dict()

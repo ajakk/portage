@@ -7,6 +7,20 @@ import bisect
 from collections import deque
 
 from portage.util import writemsg
+from _emerge.BlockerDepPriority import BlockerDepPriority
+from _emerge.DepPriority import DepPriority
+from typing import Any
+from typing import Union
+from _emerge.Package import Package
+from _emerge.Blocker import Blocker
+from portage.util.digraph import digraph
+from _emerge.SetArg import SetArg
+from typing import List
+from typing import Set
+from portage.dep import Atom
+from typing import Optional
+from typing import Tuple
+from typing import Callable
 
 
 class digraph:
@@ -14,14 +28,19 @@ class digraph:
     A directed graph object.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Create an empty digraph"""
 
         # { node : ( { child : priority } , { parent : priority } ) }
         self.nodes = {}
         self.order = []
 
-    def add(self, node, parent, priority=0):
+    def add(
+        self,
+        node: Any,
+        parent: Any,
+        priority: Union[BlockerDepPriority, DepPriority, int] = 0,
+    ) -> None:
         """Adds the specified node with the specified parent.
 
         If the dep is a soft-dep and the node already has a hard
@@ -47,7 +66,7 @@ class digraph:
         if not priorities or priorities[-1] is not priority:
             bisect.insort(priorities, priority)
 
-    def discard(self, node):
+    def discard(self, node: Package) -> None:
         """
         Like remove(), except it doesn't raises KeyError if the
         node doesn't exist.
@@ -57,7 +76,7 @@ class digraph:
         except KeyError:
             pass
 
-    def remove(self, node):
+    def remove(self, node: Union[Blocker, Package]) -> None:
         """Removes the specified node from the digraph, also removing
         and ties to other nodes in the digraph. Raises KeyError if the
         node doesn't exist."""
@@ -73,7 +92,7 @@ class digraph:
         del self.nodes[node]
         self.order.remove(node)
 
-    def update(self, other):
+    def update(self, other: digraph) -> None:
         """
         Add all nodes and edges from another digraph instance.
         """
@@ -86,14 +105,16 @@ class digraph:
             else:
                 self.add(node, None)
 
-    def clear(self):
+    def clear(self) -> None:
         """
         Remove all nodes and edges.
         """
         self.nodes.clear()
         del self.order[:]
 
-    def difference_update(self, t):
+    def difference_update(
+        self, t: Union[List[Package], Set[Package], Set[SetArg]]
+    ) -> None:
         """
         Remove all given nodes from node_set. This is more efficient
         than multiple calls to the remove() method.
@@ -112,7 +133,7 @@ class digraph:
             del self.nodes[node]
         self.order = order
 
-    def has_edge(self, child, parent):
+    def has_edge(self, child: Package, parent: Package) -> bool:
         """
         Return True if the given edge exists.
         """
@@ -143,14 +164,14 @@ class digraph:
         del self.nodes[child][1][parent]
         del self.nodes[parent][0][child]
 
-    def __iter__(self):
+    def __iter__(self) -> list_iterator:
         return iter(self.order)
 
-    def contains(self, node):
+    def contains(self, node: Package) -> bool:
         """Checks if the digraph contains mynode"""
         return node in self.nodes
 
-    def get(self, key, default=None):
+    def get(self, key: SetArg, default: SetArg = None) -> SetArg:
         node_data = self.nodes.get(key, self)
         if node_data is self:
             return default
@@ -160,7 +181,11 @@ class digraph:
         """Return a list of all nodes in the graph"""
         return self.order[:]
 
-    def child_nodes(self, node, ignore_priority=None):
+    def child_nodes(
+        self,
+        node: Union[Tuple[Atom, int], Package, Atom],
+        ignore_priority: Optional[Any] = None,
+    ) -> Union[List[Tuple[Atom, int]], List[Package]]:
         """Return all children of the specified node"""
         if ignore_priority is None:
             return list(self.nodes[node][0])
@@ -177,7 +202,9 @@ class digraph:
                     children.append(child)
         return children
 
-    def parent_nodes(self, node, ignore_priority=None):
+    def parent_nodes(
+        self, node: Union[Blocker, Package, str], ignore_priority: Optional[Any] = None
+    ) -> Union[List[Package], List[Atom], List[str]]:
         """Return all parents of the specified node"""
         if ignore_priority is None:
             return list(self.nodes[node][1])
@@ -194,7 +221,9 @@ class digraph:
                     parents.append(parent)
         return parents
 
-    def leaf_nodes(self, ignore_priority=None):
+    def leaf_nodes(
+        self, ignore_priority: Optional[Callable] = None
+    ) -> Union[List[Blocker], List[Package]]:
         """Return all nodes that have no children
 
         If ignore_soft_deps is True, soft deps are not counted as
@@ -228,7 +257,7 @@ class digraph:
                     leaf_nodes.append(node)
         return leaf_nodes
 
-    def root_nodes(self, ignore_priority=None):
+    def root_nodes(self, ignore_priority: Optional[Any] = None) -> List[Package]:
         """Return all nodes that have no parents.
 
         If ignore_soft_deps is True, soft deps are not counted as
@@ -262,14 +291,14 @@ class digraph:
                     root_nodes.append(node)
         return root_nodes
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return bool(self.nodes)
 
     def is_empty(self):
         """Checks if the digraph is empty"""
         return len(self.nodes) == 0
 
-    def clone(self):
+    def clone(self) -> digraph:
         clone = digraph()
         clone.nodes = {}
         memo = {}

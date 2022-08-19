@@ -32,7 +32,7 @@ class DepPrioritySatisfiedRange:
         return bool(priority.optional)
 
     @classmethod
-    def _ignore_satisfied_runtime_post(cls, priority):
+    def _ignore_satisfied_runtime_post(cls, priority: DepPriority) -> bool:
         if priority.__class__ is not DepPriority:
             return False
         if priority.optional:
@@ -44,7 +44,7 @@ class DepPrioritySatisfiedRange:
         return bool(priority.runtime_post)
 
     @classmethod
-    def _ignore_runtime_post(cls, priority):
+    def _ignore_runtime_post(cls, priority: DepPriority) -> bool:
         if priority.__class__ is not DepPriority:
             return False
         if priority.optional:

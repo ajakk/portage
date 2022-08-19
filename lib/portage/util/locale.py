@@ -17,6 +17,8 @@ import traceback
 import portage
 from portage.util import _unicode_decode, writemsg_level
 from portage.util._ctypes import find_library, LoadLibrary
+from typing import Any
+from typing import Optional
 
 
 locale_categories = (
@@ -97,7 +99,7 @@ def _check_locale(silent):
     return True
 
 
-def check_locale(silent=False, env=None):
+def check_locale(silent: bool = False, env: Optional[Any] = None) -> bool:
     """
     Check whether the locale is sane. Returns True if it is, prints
     warning and returns False if it is not. Returns None if the check

@@ -10,6 +10,8 @@ from portage import _unicode_decode
 from portage import _unicode_encode
 from portage.data import secpass
 from portage.output import xtermTitle
+from typing import Any
+from typing import Optional
 
 # We disable emergelog by default, since it's called from
 # dblink.merge() and we don't want that to trigger log writes
@@ -18,7 +20,7 @@ _disable = True
 _emerge_log_dir = "/var/log"
 
 
-def emergelog(xterm_titles, mystr, short_msg=None):
+def emergelog(xterm_titles: bool, mystr: str, short_msg: Optional[Any] = None) -> None:
 
     if _disable:
         return

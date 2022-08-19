@@ -5,6 +5,13 @@ import bisect
 import collections
 
 import portage
+from _emerge.Package import Package
+from portage.dep import Atom
+from typing import Iterator
+from _emerge.resolver.package_tracker import PackageTracker
+from typing import List
+from typing import Any
+from typing import Optional
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -23,13 +30,13 @@ class PackageConflict(_PackageConflict):
     Class to track the reason for a conflict and the conflicting packages.
     """
 
-    def __iter__(self):
+    def __iter__(self) -> tuple_iterator:
         return iter(self.pkgs)
 
     def __contains__(self, pkg):
         return pkg in self.pkgs
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.pkgs)
 
 
@@ -104,7 +111,7 @@ class PackageTracker:
     :ivar _replaced_by: ``self.replaced_by[cp_key] == [ replaced_pkg_1, replaced_pkg_2 ]``
     """
 
-    def __init__(self, soname_deps=False):
+    def __init__(self, soname_deps: bool = False) -> None:
         """
         :param soname_deps bool: Determines whether support for soname deps should be enabled or not.
         """
@@ -125,7 +132,7 @@ class PackageTracker:
         else:
             self._provides_index = None
 
-    def add_pkg(self, pkg):
+    def add_pkg(self, pkg: Package) -> None:
         """
         Add a new package to the tracker. Records conflicts as necessary.
         """
@@ -151,7 +158,7 @@ class PackageTracker:
 
         self._match_cache.pop(cp_key, None)
 
-    def _add_provides(self, pkg):
+    def _add_provides(self, pkg: Package) -> None:
         if self._provides_index is not None and pkg.provides is not None:
             index = self._provides_index
             root = pkg.root
@@ -159,7 +166,7 @@ class PackageTracker:
                 # Use bisect.insort for ordered match results.
                 bisect.insort(index[(root, atom)], pkg)
 
-    def add_installed_pkg(self, installed):
+    def add_installed_pkg(self, installed: Package) -> None:
         """
         Add an installed package during vdb load. These packages
         are not returned by matched_pull as long as add_pkg hasn't
@@ -178,7 +185,7 @@ class PackageTracker:
 
         self._match_cache.pop(cp_key, None)
 
-    def remove_pkg(self, pkg):
+    def remove_pkg(self, pkg: Package) -> None:
         """
         Removes the package from the tracker.
         Raises KeyError if it isn't present.
@@ -222,7 +229,7 @@ class PackageTracker:
 
         self._match_cache.pop(cp_key, None)
 
-    def discard_pkg(self, pkg):
+    def discard_pkg(self, pkg: Package) -> None:
         """
         Removes the package from the tracker.
         Does not raise KeyError if it is not present.
@@ -232,7 +239,7 @@ class PackageTracker:
         except KeyError:
             pass
 
-    def match(self, root, atom, installed=True):
+    def match(self, root: str, atom: Atom, installed: bool = True) -> list_iterator:
         """
         Iterates over the packages matching 'atom'.
         If 'installed' is True, installed non-replaced
@@ -261,7 +268,7 @@ class PackageTracker:
 
         return iter(ret)
 
-    def conflicts(self):
+    def conflicts(self) -> list_iterator:
         """
         Iterates over the currently existing conflicts.
         """
@@ -311,7 +318,7 @@ class PackageTracker:
 
         return iter(self._conflicts_cache)
 
-    def slot_conflicts(self):
+    def slot_conflicts(self) -> Iterator:
         """
         Iterates over present slot conflicts.
         This is only intended for consumers that haven't been
@@ -341,7 +348,7 @@ class PackageTracker:
                     if installed not in self._replaced_by:
                         yield installed
 
-    def contains(self, pkg, installed=True):
+    def contains(self, pkg: Package, installed: bool = True) -> bool:
         """
         Checks if the package is in the tracker.
         If 'installed' is True, returns True for
@@ -359,7 +366,7 @@ class PackageTracker:
 
         return False
 
-    def __contains__(self, pkg):
+    def __contains__(self, pkg: Package) -> bool:
         """
         Checks if the package is in the tracker.
         Returns True for non-replaced installed packages.
@@ -374,14 +381,14 @@ class PackageTrackerDbapiWrapper:
     died.
     """
 
-    def __init__(self, root, package_tracker):
+    def __init__(self, root: str, package_tracker: PackageTracker) -> None:
         self._root = root
         self._package_tracker = package_tracker
 
     def cpv_inject(self, pkg):
         self._package_tracker.add_pkg(pkg)
 
-    def match_pkgs(self, atom):
+    def match_pkgs(self, atom: Atom) -> List[Package]:
         ret = sorted(
             self._package_tracker.match(self._root, atom),
             key=cmp_sort_key(lambda x, y: vercmp(x.version, y.version)),
@@ -391,7 +398,7 @@ class PackageTrackerDbapiWrapper:
     def __iter__(self):
         return self._package_tracker.all_pkgs(self._root)
 
-    def match(self, atom, use_cache=None):
+    def match(self, atom: Atom, use_cache: Optional[Any] = None) -> List[Package]:
         return self.match_pkgs(atom)
 
     def cp_list(self, cp):

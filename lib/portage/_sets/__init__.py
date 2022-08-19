@@ -30,11 +30,20 @@ from portage.util.configparser import (
     ParsingError,
     read_configs,
 )
+from portage.package.ebuild.config import config
+from portage.util import LazyItemsDict
+from typing import Iterator
+from typing import Any
+from typing import Dict
+from portage.dep import Atom
+from typing import Optional
+from typing import Set
+from portage._sets import SetConfig
 
 SETPREFIX = "@"
 
 
-def get_boolean(options, name, default):
+def get_boolean(options: Dict[str, str], name: str, default: bool) -> bool:
     if not name in options:
         return default
     if options[name].lower() in ("1", "yes", "on", "true"):
@@ -52,7 +61,7 @@ class SetConfigError(Exception):
 
 
 class SetConfig:
-    def __init__(self, paths, settings, trees):
+    def __init__(self, paths: Iterator, settings: config, trees: LazyItemsDict) -> None:
         self._parser = SafeConfigParser(
             defaults={
                 "EPREFIX": settings["EPREFIX"],
@@ -203,7 +212,7 @@ class SetConfig:
                 parser.set(section, k, v)
         self._parse(update=True)
 
-    def _parse(self, update=False):
+    def _parse(self, update: bool = False) -> None:
         if self._parsed and not update:
             return
         parser = self._parser
@@ -310,11 +319,13 @@ class SetConfig:
                     continue
         self._parsed = True
 
-    def getSets(self):
+    def getSets(self) -> Dict[str, Any]:
         self._parse()
         return self.psets.copy()
 
-    def getSetAtoms(self, setname, ignorelist=None):
+    def getSetAtoms(
+        self, setname: str, ignorelist: Optional[Set[str]] = None
+    ) -> Set[Atom]:
         """
         This raises PackageSetNotFound if the give setname does not exist.
         """
@@ -341,7 +352,7 @@ class SetConfig:
         return myatoms
 
 
-def load_default_config(settings, trees):
+def load_default_config(settings: config, trees: LazyItemsDict) -> SetConfig:
 
     if not _ENABLE_SET_CONFIG:
         return SetConfig(None, settings, trees)
@@ -353,7 +364,7 @@ def load_default_config(settings, trees):
         )
     vcs_dirs = [_unicode_encode(x, encoding=_encodings["fs"]) for x in VCS_DIRS]
 
-    def _getfiles():
+    def _getfiles() -> Iterator[str]:
         for path, dirs, files in os.walk(os.path.join(global_config_path, "sets")):
             for d in dirs:
                 if d in vcs_dirs or d.startswith(b".") or d.endswith(b"~"):

@@ -9,6 +9,12 @@ from asyncio.events import AbstractEventLoop as _AbstractEventLoop
 from asyncio.unix_events import AbstractChildWatcher as _AbstractChildWatcher
 
 import portage
+from portage.util._eventloop.asyncio_event_loop import _ChildWatcherThreadSafetyWrapper
+from portage.util._eventloop.asyncio_event_loop import AsyncioEventLoop
+from asyncio.unix_events import _UnixSelectorEventLoop
+from _asyncio import Future
+from typing import List
+from asyncio.unix_events import ThreadedChildWatcher
 
 
 class AsyncioEventLoop(_AbstractEventLoop):
@@ -17,7 +23,7 @@ class AsyncioEventLoop(_AbstractEventLoop):
     event loop and is minimally compatible with _PortageEventLoop.
     """
 
-    def __init__(self, loop=None):
+    def __init__(self, loop: _UnixSelectorEventLoop = None) -> None:
         loop = loop or _real_asyncio.get_event_loop()
         self._loop = loop
         self.run_until_complete = (
@@ -81,7 +87,7 @@ class AsyncioEventLoop(_AbstractEventLoop):
         return _real_asyncio.Future(loop=self._loop)
 
     @property
-    def _asyncio_child_watcher(self):
+    def _asyncio_child_watcher(self) -> _ChildWatcherThreadSafetyWrapper:
         """
         Portage internals use this as a layer of indirection for
         asyncio.get_child_watcher(), in order to support versions of
@@ -97,7 +103,7 @@ class AsyncioEventLoop(_AbstractEventLoop):
         return self._child_watcher
 
     @property
-    def _asyncio_wrapper(self):
+    def _asyncio_wrapper(self) -> AsyncioEventLoop:
         """
         Portage internals use this as a layer of indirection in cases
         where a wrapper around an asyncio.AbstractEventLoop implementation
@@ -108,7 +114,7 @@ class AsyncioEventLoop(_AbstractEventLoop):
         """
         return self
 
-    def _run_until_complete(self, future):
+    def _run_until_complete(self, future: Future) -> List[str]:
         """
         An implementation of AbstractEventLoop.run_until_complete that supresses
         spurious error messages like the following reported in bug 655656:
@@ -136,7 +142,9 @@ class AsyncioEventLoop(_AbstractEventLoop):
 
 
 class _ChildWatcherThreadSafetyWrapper(_AbstractChildWatcher):
-    def __init__(self, loop, real_watcher):
+    def __init__(
+        self, loop: AsyncioEventLoop, real_watcher: ThreadedChildWatcher
+    ) -> None:
         self._loop = loop
         self._real_watcher = real_watcher
 

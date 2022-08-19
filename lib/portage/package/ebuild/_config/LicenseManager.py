@@ -11,10 +11,20 @@ from portage.util import grabdict, grabdict_package, writemsg
 from portage.versions import cpv_getkey, _pkg_str
 
 from portage.package.ebuild._config.helper import ordered_by_atom_specificity
+from typing import Tuple
+from typing import List
+from typing import Optional
+from typing import Set
+from typing import Union
 
 
 class LicenseManager:
-    def __init__(self, license_group_locations, abs_user_config, user_config=True):
+    def __init__(
+        self,
+        license_group_locations: Tuple[str, str, str, str, str, str],
+        abs_user_config: str,
+        user_config: bool = True,
+    ) -> None:
 
         self._accept_license_str = None
         self._accept_license = None
@@ -30,7 +40,7 @@ class LicenseManager:
         if user_config:
             self._read_user_config(abs_user_config)
 
-    def _read_user_config(self, abs_user_config):
+    def _read_user_config(self, abs_user_config: str) -> None:
         licdict = grabdict_package(
             os.path.join(abs_user_config, "package.license"),
             recursive=1,
@@ -41,7 +51,7 @@ class LicenseManager:
         for k, v in licdict.items():
             self._plicensedict.setdefault(k.cp, {})[k] = self.expandLicenseTokens(v)
 
-    def _read_license_groups(self, locations):
+    def _read_license_groups(self, locations: List[str]) -> None:
         for loc in locations:
             for k, v in grabdict(os.path.join(loc, "license_groups")).items():
                 self._license_groups.setdefault(k, []).extend(v)
@@ -49,7 +59,7 @@ class LicenseManager:
         for k, v in self._license_groups.items():
             self._license_groups[k] = frozenset(v)
 
-    def extract_global_changes(self, old=""):
+    def extract_global_changes(self, old: str = "") -> str:
         ret = old
         atom_license_map = self._plicensedict.get("*/*")
         if atom_license_map is not None:
@@ -63,7 +73,7 @@ class LicenseManager:
                     del self._plicensedict["*/*"]
         return ret
 
-    def expandLicenseTokens(self, tokens):
+    def expandLicenseTokens(self, tokens: List[str]) -> List[str]:
         """Take a token from ACCEPT_LICENSE or package.license and expand it
         if it's a group token (indicated by @) or just return it if it's not a
         group.  If a group is negated then negate all group elements."""
@@ -72,7 +82,9 @@ class LicenseManager:
             expanded_tokens.extend(self._expandLicenseToken(x, None))
         return expanded_tokens
 
-    def _expandLicenseToken(self, token, traversed_groups):
+    def _expandLicenseToken(
+        self, token: str, traversed_groups: Optional[Set[str]]
+    ) -> List[str]:
         negate = False
         rValue = []
         if token.startswith("-"):
@@ -116,7 +128,9 @@ class LicenseManager:
             rValue = ["-" + token for token in rValue]
         return rValue
 
-    def _getPkgAcceptLicense(self, cpv, slot, repo):
+    def _getPkgAcceptLicense(
+        self, cpv: _pkg_str, slot: str, repo: str
+    ) -> Tuple[str, str, str, str, str, str, str, str, str, str]:
         """
         Get an ACCEPT_LICENSE list, accounting for package.license.
         """
@@ -163,7 +177,9 @@ class LicenseManager:
             licenses = acceptable_licenses
         return " ".join(sorted(licenses))
 
-    def getMissingLicenses(self, cpv, use, lic, slot, repo):
+    def getMissingLicenses(
+        self, cpv: _pkg_str, use: str, lic: str, slot: str, repo: str
+    ) -> List:
         """
         Take a LICENSE string and return a list of any licenses that the user
         may need to accept for the given package.  The returned list will not
@@ -205,7 +221,11 @@ class LicenseManager:
         license_struct = use_reduce(license_str, uselist=use, opconvert=True)
         return self._getMaskedLicenses(license_struct, acceptable_licenses)
 
-    def _getMaskedLicenses(self, license_struct, acceptable_licenses):
+    def _getMaskedLicenses(
+        self,
+        license_struct: Union[List[List[str]], List[Union[List[str], str]], List[str]],
+        acceptable_licenses: Set[str],
+    ) -> List:
         if not license_struct:
             return []
         if license_struct[0] == "||":
@@ -235,7 +255,7 @@ class LicenseManager:
                     ret.append(element)
         return ret
 
-    def set_accept_license_str(self, accept_license_str):
+    def set_accept_license_str(self, accept_license_str: str) -> None:
         if accept_license_str != self._accept_license_str:
             self._accept_license_str = accept_license_str
             self._accept_license = tuple(

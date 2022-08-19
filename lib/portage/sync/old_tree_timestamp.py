@@ -10,6 +10,7 @@ from portage.exception import PortageException
 from portage.localization import _
 from portage.output import EOutput
 from portage.util import grabfile, writemsg_level
+from portage.package.ebuild.config import config
 
 
 def have_english_locale():
@@ -55,7 +56,7 @@ def whenago(seconds):
     return "".join(out).strip()
 
 
-def old_tree_timestamp_warn(portdir, settings):
+def old_tree_timestamp_warn(portdir: str, settings: config) -> bool:
     unixtime = time.time()
     default_warnsync = 30
 

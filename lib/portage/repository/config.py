@@ -35,6 +35,18 @@ from portage import _unicode_encode
 from portage import _encodings
 from portage import manifest
 import portage.sync
+from typing import Tuple
+from portage.repository.config import RepoConfig
+from typing import Dict
+from typing import List
+from portage.cache.flat_hash import md5_database
+from typing import Iterator
+from typing import Union
+from portage.manifest import Manifest
+from typing import Any
+from portage.package.ebuild.config import config
+from typing import Optional
+from portage.repository.config import RepoConfigLoader
 
 _profile_node = collections.namedtuple(
     "_profile_node",
@@ -72,7 +84,7 @@ _portage1_profiles_allow_directories = frozenset(
 _repo_name_sub_re = re.compile(r"[^\w-]")
 
 
-def _gen_valid_repo(name):
+def _gen_valid_repo(name: str) -> Optional[str]:
     """
     Substitute hyphen in place of characters that don't conform to PMS 3.1.5,
     and strip hyphen from left side if necessary. This returns None if the
@@ -165,7 +177,9 @@ class RepoConfig:
         "_masters_orig",
     )
 
-    def __init__(self, name, repo_opts, local_config=True):
+    def __init__(
+        self, name: str, repo_opts: Dict[str, str], local_config: bool = True
+    ) -> None:
         """Build a RepoConfig with options in repo_opts
         Try to read repo_name in repository location, but if
         it is not found use variable name as repository name"""
@@ -420,7 +434,7 @@ class RepoConfig:
             self._eapis_banned = frozenset(layout_data["eapis-banned"])
             self._eapis_deprecated = frozenset(layout_data["eapis-deprecated"])
 
-    def set_module_specific_opt(self, opt, val):
+    def set_module_specific_opt(self, opt: str, val: str) -> None:
         self.module_specific_options[opt] = val
 
     def eapi_is_banned(self, eapi):
@@ -429,7 +443,9 @@ class RepoConfig:
     def eapi_is_deprecated(self, eapi):
         return eapi in self._eapis_deprecated
 
-    def iter_pregenerated_caches(self, auxdbkeys, readonly=True, force=False):
+    def iter_pregenerated_caches(
+        self, auxdbkeys: frozenset, readonly: bool = True, force: bool = False
+    ) -> Iterator[Union[Iterator, Iterator[md5_database]]]:
         """
         Reads layout.conf cache-formats from left to right and yields cache
         instances for each supported type that's found. If no cache-formats
@@ -460,7 +476,9 @@ class RepoConfig:
             if name is not None:
                 yield database(self.location, name, auxdbkeys, readonly=readonly)
 
-    def get_pregenerated_cache(self, auxdbkeys, readonly=True, force=False):
+    def get_pregenerated_cache(
+        self, auxdbkeys: frozenset, readonly: bool = True, force: bool = False
+    ) -> md5_database:
         """
         Returns the first cache instance yielded from
         iter_pregenerated_caches(), or None if no cache is available or none
@@ -471,7 +489,7 @@ class RepoConfig:
             None,
         )
 
-    def load_manifest(self, *args, **kwds):
+    def load_manifest(self, *args: str, **kwds: Any) -> Manifest:
         kwds["thin"] = self.thin_manifest
         kwds["allow_missing"] = self.allow_missing_manifest
         kwds["allow_create"] = self.create_manifest
@@ -508,7 +526,7 @@ class RepoConfig:
         return os.access(first_existing(self.location), os.W_OK)
 
     @staticmethod
-    def _read_valid_repo_name(repo_path):
+    def _read_valid_repo_name(repo_path: str) -> Tuple[str, bool]:
         name, missing = RepoConfig._read_repo_name(repo_path)
         # We must ensure that the name conforms to PMS 3.1.5
         # in order to avoid InvalidAtom exceptions when we
@@ -523,7 +541,7 @@ class RepoConfig:
         return name, missing
 
     @staticmethod
-    def _read_repo_name(repo_path):
+    def _read_repo_name(repo_path: str) -> Tuple[str, bool]:
         """
         Read repo_name from repo_path.
         Returns repo_name, missing.
@@ -606,8 +624,13 @@ class RepoConfigLoader:
 
     @staticmethod
     def _add_repositories(
-        portdir, portdir_overlay, prepos, ignored_map, local_config, default_portdir
-    ):
+        portdir: str,
+        portdir_overlay: str,
+        prepos: Dict[str, RepoConfig],
+        ignored_map: Dict,
+        local_config: bool,
+        default_portdir: str,
+    ) -> str:
         """Add overlays in PORTDIR_OVERLAY as repositories"""
         overlays = []
         portdir_orig = None
@@ -731,7 +754,9 @@ class RepoConfigLoader:
         return portdir
 
     @staticmethod
-    def _parse(paths, prepos, local_config, default_opts):
+    def _parse(
+        paths: List[str], prepos: Dict, local_config: bool, default_opts: Dict[str, str]
+    ) -> None:
         """Parse files in paths to load config"""
         parser = SafeConfigParser(defaults=default_opts)
 
@@ -766,7 +791,7 @@ class RepoConfigLoader:
             # until after PORTDIR and PORTDIR_OVERLAY have been processed.
             prepos[sname] = repo
 
-    def __init__(self, paths, settings):
+    def __init__(self, paths: List[str], settings: config) -> None:
         """Load config from files in paths"""
 
         prepos = {}
@@ -1115,7 +1140,7 @@ class RepoConfigLoader:
 
         self._check_locations()
 
-    def repoLocationList(self):
+    def repoLocationList(self) -> Tuple[str, str, str, str, str, str]:
         """Get a list of repositories location. Replaces PORTDIR_OVERLAY"""
         if self._prepos_changed:
             _repo_location_list = []
@@ -1127,21 +1152,21 @@ class RepoConfigLoader:
             self._prepos_changed = False
         return self._repo_location_list
 
-    def mainRepoLocation(self):
+    def mainRepoLocation(self) -> str:
         """Returns the location of main repo"""
         main_repo = self.prepos["DEFAULT"].main_repo
         if main_repo is not None and main_repo in self.prepos:
             return self.prepos[main_repo].location
         return ""
 
-    def mainRepo(self):
+    def mainRepo(self) -> RepoConfig:
         """Returns the main repo"""
         main_repo = self.prepos["DEFAULT"].main_repo
         if main_repo is None:
             return None
         return self.prepos[main_repo]
 
-    def _check_locations(self):
+    def _check_locations(self) -> None:
         """Check if repositories location are correct and show a warning message if not"""
         for (name, r) in self.prepos.items():
             if name != "DEFAULT":
@@ -1159,13 +1184,13 @@ class RepoConfigLoader:
                             noiselevel=-1,
                         )
 
-    def repos_with_profiles(self):
+    def repos_with_profiles(self) -> Iterator[RepoConfig]:
         for repo_name in self.prepos_order:
             repo = self.prepos[repo_name]
             if repo.format != "unavailable":
                 yield repo
 
-    def get_name_for_location(self, location):
+    def get_name_for_location(self, location: str) -> str:
         return self.location_map[location]
 
     def get_location_for_name(self, repo_name):
@@ -1176,14 +1201,14 @@ class RepoConfigLoader:
             return None
         return self.treemap[repo_name]
 
-    def get_repo_for_location(self, location):
+    def get_repo_for_location(self, location: str) -> RepoConfig:
         return self.prepos[self.get_name_for_location(location)]
 
     def __setitem__(self, repo_name, repo):
         # self.prepos[repo_name] = repo
         raise NotImplementedError
 
-    def __getitem__(self, repo_name):
+    def __getitem__(self, repo_name: str) -> RepoConfig:
         return self.prepos[repo_name]
 
     def __delitem__(self, repo_name):
@@ -1202,14 +1227,14 @@ class RepoConfigLoader:
             x for x in self._repo_location_list if x != location
         )
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[RepoConfig]:
         for repo_name in self.prepos_order:
             yield self.prepos[repo_name]
 
     def __contains__(self, repo_name):
         return repo_name in self.prepos
 
-    def config_string(self):
+    def config_string(self) -> str:
         bool_keys = (
             "strict_misc_digests",
             "sync_allow_hardlinks",
@@ -1294,7 +1319,9 @@ def allow_profile_repo_deps(
     return False
 
 
-def load_repository_config(settings, extra_files=None):
+def load_repository_config(
+    settings: config, extra_files: Optional[Any] = None
+) -> RepoConfigLoader:
     repoconfigpaths = []
     if "PORTAGE_REPOSITORIES" in settings:
         repoconfigpaths.append(io.StringIO(settings["PORTAGE_REPOSITORIES"]))
@@ -1322,7 +1349,11 @@ def _get_repo_name(repo_location, cached=None):
     return name
 
 
-def parse_layout_conf(repo_location, repo_name=None):
+def parse_layout_conf(
+    repo_location: str, repo_name: str = None
+) -> Tuple[
+    Union[Dict[str, Optional[Tuple[str, ...]]], Dict[str, Tuple[str, ...]]], Dict
+]:
     eapi = read_corresponding_eapi_file(os.path.join(repo_location, REPO_NAME_LOC))
 
     layout_filename = os.path.join(repo_location, "metadata", "layout.conf")

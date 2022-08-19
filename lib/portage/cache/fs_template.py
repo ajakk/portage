@@ -7,6 +7,7 @@ from portage.cache import template
 from portage import os
 
 from portage.proxy.lazyimport import lazyimport
+from typing import Any
 
 lazyimport(
     globals(),
@@ -20,7 +21,7 @@ class FsBased(template.database):
     """template wrapping fs needed options, and providing _ensure_access as a way to
     attempt to ensure files have the specified owners/perms"""
 
-    def __init__(self, *args, **config):
+    def __init__(self, *args: Any, **config: Any) -> None:
 
         for x, y in (("gid", -1), ("perms", 0o644)):
             if x in config:

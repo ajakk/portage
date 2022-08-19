@@ -21,6 +21,17 @@ from portage.eapi import _get_eapi_attrs
 from portage.exception import InvalidData, InvalidDependString
 from portage.localization import _
 from _emerge.Task import Task
+from _emerge.Package import Package
+from typing import List
+from typing import Callable
+from typing import Optional
+from typing import Tuple
+from portage.dep import Atom
+from typing import Dict
+from typing import Union
+from typing import Any
+from _emerge.RootConfig import RootConfig
+from portage.package.ebuild.config import config
 
 
 class Package(Task):
@@ -97,7 +108,7 @@ class Package(Task):
     _use_conditional_misc_keys = ("LICENSE", "PROPERTIES", "RESTRICT")
     UNKNOWN_REPO = _unknown_repo
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         metadata = _PackageMetadataWrapperBase(kwargs.pop("metadata"))
         Task.__init__(self, **kwargs)
         # the SlotObject constructor assigns self.root_config from keyword args
@@ -168,7 +179,7 @@ class Package(Task):
         self._hash_value = hash(self._hash_key)
 
     @property
-    def eapi(self):
+    def eapi(self) -> str:
         return self._metadata["EAPI"]
 
     @property
@@ -176,7 +187,7 @@ class Package(Task):
         return self.cpv.build_id
 
     @property
-    def build_time(self):
+    def build_time(self) -> int:
         if not self.built:
             raise AttributeError("build_time")
         return self.cpv.build_time
@@ -186,15 +197,15 @@ class Package(Task):
         return self._metadata.defined_phases
 
     @property
-    def properties(self):
+    def properties(self) -> List:
         return self._metadata.properties
 
     @property
-    def provided_cps(self):
+    def provided_cps(self) -> Tuple[str]:
         return (self.cp,)
 
     @property
-    def restrict(self):
+    def restrict(self) -> List[str]:
         return self._metadata.restrict
 
     @property
@@ -209,7 +220,7 @@ class Package(Task):
     # These are calculated on-demand, so that they are calculated
     # after FakeVartree applies its metadata tweaks.
     @property
-    def invalid(self):
+    def invalid(self) -> bool:
         if self._invalid is None:
             self._validate_deps()
             if self._invalid is None:
@@ -217,13 +228,13 @@ class Package(Task):
         return self._invalid
 
     @property
-    def masks(self):
+    def masks(self) -> Union[Dict[str, List[str]], Dict[str, Atom], bool]:
         if self._masks is None:
             self._masks = self._eval_masks()
         return self._masks
 
     @property
-    def visible(self):
+    def visible(self) -> bool:
         if self._visible is None:
             self._visible = self._eval_visiblity(self.masks)
         return self._visible
@@ -240,31 +251,31 @@ class Package(Task):
         return self._validated_atoms
 
     @property
-    def stable(self):
+    def stable(self) -> bool:
         return self.cpv.stable
 
     @property
-    def provides(self):
+    def provides(self) -> frozenset:
         self.invalid
         return self._provides
 
     @property
-    def requires(self):
+    def requires(self) -> Optional[Any]:
         self.invalid
         return self._requires
 
     @classmethod
     def _gen_hash_key(
         cls,
-        cpv=None,
-        installed=None,
-        onlydeps=None,
-        operation=None,
-        repo_name=None,
-        root_config=None,
-        type_name=None,
-        **kwargs
-    ):
+        cpv: _pkg_str = None,
+        installed: bool = None,
+        onlydeps: Optional[bool] = None,
+        operation: Optional[str] = None,
+        repo_name: Optional[str] = None,
+        root_config: RootConfig = None,
+        type_name: str = None,
+        **kwargs: Any
+    ) -> Tuple[str, str, str, str, str]:
 
         if operation is None:
             if installed or onlydeps:
@@ -306,7 +317,7 @@ class Package(Task):
 
         return tuple(elements)
 
-    def _validate_deps(self):
+    def _validate_deps(self) -> None:
         """
         Validate deps. This does not trigger USE calculation since that
         is expensive for ebuilds and therefore we want to avoid doing
@@ -425,7 +436,7 @@ class Package(Task):
             type_name=self.type_name,
         )
 
-    def _eval_masks(self):
+    def _eval_masks(self) -> Union[Dict[str, List[str]], Dict[str, Atom], bool]:
         masks = {}
         settings = self.root_config.settings
 
@@ -480,7 +491,7 @@ class Package(Task):
 
         return masks
 
-    def _eval_visiblity(self, masks):
+    def _eval_visiblity(self, masks: Union[Dict[str, List[str]], Dict[str, Atom], bool]) -> bool:
 
         if masks is not False:
 
@@ -504,7 +515,7 @@ class Package(Task):
 
         return True
 
-    def get_keyword_mask(self):
+    def get_keyword_mask(self) -> Optional[Any]:
         """returns None, 'missing', or 'unstable'."""
 
         missing = self.root_config.settings._getRawMissingKeywords(
@@ -527,7 +538,7 @@ class Package(Task):
 
         return "missing"
 
-    def isHardMasked(self):
+    def isHardMasked(self) -> bool:
         """returns a bool if the cpv is in the list of
         expanded pmaskdict[cp] available ebuilds"""
         pmask = self.root_config.settings._getRawMaskAtom(self.cpv, self._metadata)
@@ -568,7 +579,7 @@ class Package(Task):
             self._invalid[msg_type] = msgs
         msgs.append(msg)
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.operation == "merge":
             if self.type_name == "binary":
                 cpv_color = "PKG_BINARY_MERGE"
@@ -618,7 +629,7 @@ class Package(Task):
         # Share identical frozenset instances when available.
         _frozensets = {}
 
-        def __init__(self, pkg, enabled_flags):
+        def __init__(self, pkg: Package, enabled_flags: List[str]) -> None:
             self._pkg = pkg
             self._expand = None
             self._expand_hidden = None
@@ -634,7 +645,7 @@ class Package(Task):
                 if missing_iuse:
                     self.enabled = self.enabled.difference(missing_iuse)
 
-        def _init_force_mask(self):
+        def _init_force_mask(self) -> None:
             pkgsettings = self._pkg._get_pkgsettings()
             frozensets = self._frozensets
             s = frozenset(pkgsettings.get("USE_EXPAND", "").lower().split())
@@ -647,52 +658,52 @@ class Package(Task):
             self._mask = frozensets.setdefault(s, s)
 
         @property
-        def expand(self):
+        def expand(self) -> frozenset:
             if self._expand is None:
                 self._init_force_mask()
             return self._expand
 
         @property
-        def expand_hidden(self):
+        def expand_hidden(self) -> frozenset:
             if self._expand_hidden is None:
                 self._init_force_mask()
             return self._expand_hidden
 
         @property
-        def force(self):
+        def force(self) -> frozenset:
             if self._force is None:
                 self._init_force_mask()
             return self._force
 
         @property
-        def mask(self):
+        def mask(self) -> frozenset:
             if self._mask is None:
                 self._init_force_mask()
             return self._mask
 
     @property
-    def repo(self):
+    def repo(self) -> str:
         return self._metadata["repository"]
 
     @property
-    def repo_priority(self):
+    def repo_priority(self) -> int:
         repo_info = self.root_config.settings.repositories.prepos.get(self.repo)
         if repo_info is None:
             return None
         return repo_info.priority
 
     @property
-    def use(self):
+    def use(self) -> Package._use_class:
         if self._use is None:
             self._init_use()
         return self._use
 
-    def _get_pkgsettings(self):
+    def _get_pkgsettings(self) -> config:
         pkgsettings = self.root_config.trees["porttree"].dbapi.doebuild_settings
         pkgsettings.setcpv(self)
         return pkgsettings
 
-    def _init_use(self):
+    def _init_use(self) -> str:
         if self.built:
             # Use IUSE to validate USE settings for built packages,
             # in case the package manager that built this package
@@ -737,7 +748,7 @@ class Package(Task):
             "tokens",
         )
 
-        def __init__(self, pkg, tokens, iuse_implicit_match, eapi):
+        def __init__(self, pkg: Optional[Package], tokens: List[str], iuse_implicit_match: Callable, eapi: str) -> None:
             self._pkg = pkg
             self.tokens = tuple(tokens)
             self._iuse_implicit_match = iuse_implicit_match
@@ -756,7 +767,7 @@ class Package(Task):
             self.disabled = frozenset(disabled)
             self.all = frozenset(chain(enabled, disabled, other))
 
-        def is_valid_flag(self, flags):
+        def is_valid_flag(self, flags: str) -> bool:
             """
             @return: True if all flags are valid USE values which may
                     be specified in USE dependencies, False otherwise.
@@ -769,7 +780,7 @@ class Package(Task):
                     return False
             return True
 
-        def get_missing_iuse(self, flags):
+        def get_missing_iuse(self, flags: frozenset) -> List:
             """
             @return: A list of flags missing from IUSE.
             """
@@ -781,7 +792,7 @@ class Package(Task):
                     missing_iuse.append(flag)
             return missing_iuse
 
-        def get_flag(self, flag):
+        def get_flag(self, flag: str) -> str:
             """
             Returns the flag's name within the scope of this package
             or None if the flag is unknown.
@@ -794,7 +805,7 @@ class Package(Task):
 
             return None
 
-    def __len__(self):
+    def __len__(self) -> int:
         return 4
 
     def __iter__(self):
@@ -804,7 +815,7 @@ class Package(Task):
         """
         return iter(self._hash_key[:4])
 
-    def __lt__(self, other):
+    def __lt__(self, other: Package) -> bool:
         if other.cp != self.cp:
             return self.cp < other.cp
         result = portage.vercmp(self.version, other.version)
@@ -824,7 +835,7 @@ class Package(Task):
             return self.build_time <= other.build_time
         return False
 
-    def __gt__(self, other):
+    def __gt__(self, other: Package) -> bool:
         if other.cp != self.cp:
             return self.cp > other.cp
         result = portage.vercmp(self.version, other.version)
@@ -834,7 +845,7 @@ class Package(Task):
             return self.build_time > other.build_time
         return False
 
-    def __ge__(self, other):
+    def __ge__(self, other: Package) -> bool:
         if other.cp != self.cp:
             return self.cp >= other.cp
         result = portage.vercmp(self.version, other.version)
@@ -844,7 +855,7 @@ class Package(Task):
             return self.build_time >= other.build_time
         return False
 
-    def with_use(self, use):
+    def with_use(self, use: frozenset) -> Package:
         """
         Return an Package instance with the specified USE flags. The
         current instance may be returned if it has identical USE flags.
@@ -883,7 +894,7 @@ class _PackageMetadataWrapper(_PackageMetadataWrapperBase):
         ]
     )
 
-    def __init__(self, pkg, metadata):
+    def __init__(self, pkg: Package, metadata) -> None:
         _PackageMetadataWrapperBase.__init__(self)
         self._pkg = pkg
         if not pkg.built:
@@ -892,7 +903,7 @@ class _PackageMetadataWrapper(_PackageMetadataWrapperBase):
 
         self.update(metadata)
 
-    def __getitem__(self, k):
+    def __getitem__(self, k: str) -> str:
         v = _PackageMetadataWrapperBase.__getitem__(self, k)
         if k in self._use_conditional_keys:
             if self._pkg.root_config.settings.local_config and "?" in v:
@@ -918,17 +929,17 @@ class _PackageMetadataWrapper(_PackageMetadataWrapperBase):
 
         return v
 
-    def __setitem__(self, k, v):
+    def __setitem__(self, k: str, v: str) -> None:
         _PackageMetadataWrapperBase.__setitem__(self, k, v)
         if k in self._wrapped_keys:
             getattr(self, "_set_" + k.lower())(k, v)
 
-    def _set_inherited(self, k, v):
+    def _set_inherited(self, k: str, v: str) -> None:
         if isinstance(v, str):
             v = frozenset(v.split())
         self._pkg.inherited = v
 
-    def _set_counter(self, k, v):
+    def _set_counter(self, k: str, v: str) -> None:
         if isinstance(v, str):
             try:
                 v = int(v.strip())
@@ -936,7 +947,7 @@ class _PackageMetadataWrapper(_PackageMetadataWrapperBase):
                 v = 0
         self._pkg.counter = v
 
-    def _set_use(self, k, v):
+    def _set_use(self, k: str, v: str) -> None:
         # Force regeneration of _use attribute
         self._pkg._use = None
         # Use raw metadata to restore USE conditional values
@@ -948,7 +959,7 @@ class _PackageMetadataWrapper(_PackageMetadataWrapperBase):
             except KeyError:
                 pass
 
-    def _set__mtime_(self, k, v):
+    def _set__mtime_(self, k: str, v: float) -> None:
         if isinstance(v, str):
             try:
                 v = int(v.strip())
@@ -957,11 +968,11 @@ class _PackageMetadataWrapper(_PackageMetadataWrapperBase):
         self._pkg.mtime = v
 
     @property
-    def properties(self):
+    def properties(self) -> List:
         return self["PROPERTIES"].split()
 
     @property
-    def restrict(self):
+    def restrict(self) -> List[str]:
         return self["RESTRICT"].split()
 
     @property

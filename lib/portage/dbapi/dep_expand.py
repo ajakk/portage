@@ -9,9 +9,18 @@ from portage.dbapi.cpv_expand import cpv_expand
 from portage.dep import Atom, isvalidatom
 from portage.exception import InvalidAtom
 from portage.versions import catsplit
+from _emerge.PackageVirtualDbapi import PackageVirtualDbapi
+from portage.dbapi.porttree import portdbapi
+from portage.package.ebuild.config import config
+from typing import Union
 
 
-def dep_expand(mydep, mydb=None, use_cache=1, settings=None):
+def dep_expand(
+    mydep: Atom,
+    mydb: Union[PackageVirtualDbapi, portdbapi] = None,
+    use_cache: int = 1,
+    settings: config = None,
+) -> Atom:
     """
     @rtype: Atom
     """

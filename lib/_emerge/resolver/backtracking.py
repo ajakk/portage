@@ -2,6 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import copy
+from _emerge.resolver.backtracking import BacktrackParameter
+from typing import Dict
+from _emerge.resolver.backtracking import _BacktrackNode
 
 
 class BacktrackParameter:
@@ -20,7 +23,7 @@ class BacktrackParameter:
         "slot_operator_replace_installed",
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.circular_dependency = {}
         self.needed_unstable_keywords = set()
         self.needed_p_mask_changes = set()
@@ -33,7 +36,7 @@ class BacktrackParameter:
         self.slot_operator_mask_built = set()
         self.prune_rebuilds = False
 
-    def __deepcopy__(self, memo=None):
+    def __deepcopy__(self, memo: Dict = None) -> BacktrackParameter:
         if memo is None:
             memo = {}
         result = BacktrackParameter()
@@ -88,8 +91,12 @@ class _BacktrackNode:
     )
 
     def __init__(
-        self, parameter=BacktrackParameter(), depth=0, mask_steps=0, terminal=True
-    ):
+        self,
+        parameter: BacktrackParameter = BacktrackParameter(),
+        depth: int = 0,
+        mask_steps: int = 0,
+        terminal: bool = True,
+    ) -> None:
         self.parameter = parameter
         self.depth = depth
         self.mask_steps = mask_steps
@@ -109,7 +116,7 @@ class Backtracker:
         "_root",
     )
 
-    def __init__(self, max_depth):
+    def __init__(self, max_depth: int) -> None:
         self._max_depth = max_depth
         self._unexplored_nodes = []
         self._current_node = None
@@ -118,7 +125,7 @@ class Backtracker:
         self._root = _BacktrackNode()
         self._add(self._root)
 
-    def _add(self, node, explore=True):
+    def _add(self, node: _BacktrackNode, explore: bool = True) -> None:
         """
         Adds a newly computed backtrack parameter. Makes sure that it doesn't already exist and
         that we don't backtrack deeper than we are allowed by --backtrack.
@@ -131,7 +138,7 @@ class Backtracker:
                 self._unexplored_nodes.append(node)
             self._nodes.append(node)
 
-    def get(self):
+    def get(self) -> BacktrackParameter:
         """
         Returns a backtrack parameter. The backtrack graph is explored with depth first.
         """
@@ -141,10 +148,10 @@ class Backtracker:
             return copy.deepcopy(node.parameter)
         return None
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._unexplored_nodes)
 
-    def _check_runtime_pkg_mask(self, runtime_pkg_mask):
+    def _check_runtime_pkg_mask(self, runtime_pkg_mask: Dict) -> bool:
         """
         If a package gets masked that caused other packages to be masked
         before, we revert the mask for other packages (bug 375573).

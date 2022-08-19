@@ -21,6 +21,15 @@ from functools import lru_cache
 
 
 import portage
+from typing import Any
+from typing import Optional
+from portage.dbapi.vartree import vardbapi
+from portage.versions import _pkg_str
+from typing import Tuple
+from typing import Union
+from portage.eapi import _eapi_attrs
+from re import Pattern
+from typing import List
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -76,7 +85,7 @@ endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
 _slot_re_cache = {}
 
 
-def _get_slot_re(eapi_attrs):
+def _get_slot_re(eapi_attrs: _eapi_attrs) -> Pattern:
     cache_key = eapi_attrs.slot_operator
     slot_re = _slot_re_cache.get(cache_key)
     if slot_re is not None:
@@ -96,7 +105,7 @@ def _get_slot_re(eapi_attrs):
 _pv_re = None
 
 
-def _get_pv_re(eapi_attrs):
+def _get_pv_re(eapi_attrs: _eapi_attrs) -> Pattern:
     global _pv_re
     if _pv_re is not None:
         return _pv_re
@@ -115,7 +124,7 @@ def ververify(myver, silent=1):
 
 
 @lru_cache(1024)
-def vercmp(ver1, ver2, silent=1):
+def vercmp(ver1: str, ver2: str, silent: int = 1) -> int:
     """
     Compare two versions
     Example usage:
@@ -289,7 +298,7 @@ def pkgcmp(pkg1, pkg2):
     return vercmp("-".join(pkg1[1:]), "-".join(pkg2[1:]))
 
 
-def _pkgsplit(mypkg, eapi=None):
+def _pkgsplit(mypkg: str, eapi: Optional[Any] = None) -> Optional[Tuple[str, str, str]]:
     """
     @param mypkg: pv
     @return:
@@ -317,7 +326,9 @@ _missing_cat = "null"
 
 
 @lru_cache(10240)
-def catpkgsplit(mydata, silent=1, eapi=None):
+def catpkgsplit(
+    mydata: Union[_pkg_str, str], silent: int = 1, eapi: Optional[str] = None
+) -> Optional[Tuple[str, str, str, str]]:
     """
     Takes a Category/Package-Version-Rev and returns a list of each.
 
@@ -384,18 +395,18 @@ class _pkg_str(str):
 
     def __init__(
         self,
-        cpv,
-        metadata=None,
-        settings=None,
-        eapi=None,
-        repo=None,
-        slot=None,
-        build_time=None,
-        build_id=None,
-        file_size=None,
-        mtime=None,
-        db=None,
-    ):
+        cpv: str,
+        metadata: Optional[Any] = None,
+        settings: Optional[Any] = None,
+        eapi: Optional[Any] = None,
+        repo: Optional[Any] = None,
+        slot: Optional[Any] = None,
+        build_time: Optional[Any] = None,
+        build_id: Optional[Any] = None,
+        file_size: Optional[Any] = None,
+        mtime: Optional[Any] = None,
+        db: Optional[vardbapi] = None,
+    ) -> None:
         if not isinstance(cpv, str):
             # Avoid TypeError from str.__init__ with PyPy.
             cpv = _unicode_decode(cpv)
@@ -462,7 +473,7 @@ class _pkg_str(str):
         )
 
     @staticmethod
-    def _long(var, default):
+    def _long(var: Optional[Any], default: Optional[int]) -> Optional[Any]:
         if var is not None:
             try:
                 var = int(var)
@@ -474,7 +485,7 @@ class _pkg_str(str):
         return var
 
     @property
-    def stable(self):
+    def stable(self) -> bool:
         try:
             return self._stable
         except AttributeError:
@@ -525,7 +536,7 @@ def pkgsplit(mypkg, silent=1, eapi=None):
     return (cat + "/" + pn, ver, rev)
 
 
-def cpv_getkey(mycpv, eapi=None):
+def cpv_getkey(mycpv: _pkg_str, eapi: Optional[Any] = None) -> str:
     """Calls catpkgsplit on a cpv and returns only the cp."""
     try:
         return mycpv.cp
@@ -551,7 +562,7 @@ def cpv_getkey(mycpv, eapi=None):
     return mysplit[0]
 
 
-def cpv_getversion(mycpv, eapi=None):
+def cpv_getversion(mycpv: _pkg_str, eapi: Optional[Any] = None) -> str:
     """Returns the v (including revision) from an cpv."""
     try:
         return mycpv.version
@@ -612,11 +623,11 @@ def cpv_sort_key(eapi=None):
     return cmp_sort_key(cmp_cpv)
 
 
-def catsplit(mydep):
+def catsplit(mydep: Union[_pkg_str, str]) -> List[str]:
     return mydep.split("/", 1)
 
 
-def best(mymatches, eapi=None):
+def best(mymatches: List[_pkg_str], eapi: Optional[Any] = None) -> _pkg_str:
     """Accepts None arguments; assumes matches are valid."""
     if not mymatches:
         return ""

@@ -3,6 +3,7 @@
 
 from portage.util.SlotObject import SlotObject
 from _emerge.DepPriority import DepPriority
+from typing import Any
 
 
 class Dependency(SlotObject):
@@ -20,7 +21,7 @@ class Dependency(SlotObject):
         "collapsed_priority",
     )
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         SlotObject.__init__(self, **kwargs)
         if self.priority is None:
             self.priority = DepPriority()

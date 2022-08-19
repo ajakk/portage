@@ -8,9 +8,14 @@ __all__ = (
 
 from _emerge.Package import Package
 from portage.dep import best_match_to_list, _repo_separator
+from typing import Any
+from typing import Optional
+from typing import List
 
 
-def ordered_by_atom_specificity(cpdict, pkg, repo=None):
+def ordered_by_atom_specificity(
+    cpdict: Any, pkg: Package, repo: Optional[Any] = None
+) -> Any:
     """
     Return a list of matched values from the given cpdict,
     in ascending order by atom specificity. The rationale
@@ -47,7 +52,7 @@ def ordered_by_atom_specificity(cpdict, pkg, repo=None):
     return results
 
 
-def prune_incremental(split):
+def prune_incremental(split: List[str]) -> List[str]:
     """
     Prune off any parts of an incremental variable that are
     made irrelevant by the latest occuring * or -*. This

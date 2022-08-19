@@ -15,6 +15,8 @@ from portage import _encodings, _unicode_decode, _unicode_encode
 from portage import os
 from portage.const import HASHING_BLOCKSIZE, PRELINK_BINARY
 from portage.localization import _
+from typing import Tuple
+from _io import BufferedReader
 
 
 # Summary of all available hashes and their implementations,
@@ -38,7 +40,7 @@ hashfunc_map = {}
 hashorigin_map = {}
 
 
-def _open_file(filename):
+def _open_file(filename: bytes) -> BufferedReader:
     try:
         return open(
             _unicode_encode(filename, encoding=_encodings["fs"], errors="strict"), "rb"
@@ -76,7 +78,7 @@ class _generate_hash_function:
         checksum.update(data)
         return checksum.hexdigest()
 
-    def checksum_file(self, filename):
+    def checksum_file(self, filename: bytes) -> Tuple[str, int]:
         """
         Run a checksum against a file.
 
@@ -368,7 +370,7 @@ def perform_all(x, calc_prelink=0):
     return mydict
 
 
-def get_valid_checksum_keys():
+def get_valid_checksum_keys() -> frozenset:
     return hashfunc_keys
 
 
@@ -525,7 +527,9 @@ def verify_all(filename, mydict, calc_prelink=0, strict=0):
     return file_is_ok, reason
 
 
-def perform_checksum(filename, hashname="MD5", calc_prelink=0):
+def perform_checksum(
+    filename: str, hashname: str = "MD5", calc_prelink: int = 0
+) -> Tuple[str, int]:
     """
     Run a specific checksum against a file. The filename can
     be either unicode or an encoded byte string. If filename

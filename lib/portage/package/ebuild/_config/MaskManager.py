@@ -11,17 +11,36 @@ from portage.localization import _
 from portage.repository.config import allow_profile_repo_deps
 from portage.util import append_repo, grabfile_package, stack_lists, writemsg
 from portage.versions import _pkg_str
+from portage.dep import Atom
+from portage.repository.config import RepoConfig
+from typing import List
+from typing import Tuple
+from portage.repository.config import RepoConfigLoader
+from portage.repository.config import _profile_node
+from typing import Optional
+from typing import Any
 
 
 class MaskManager:
     def __init__(
         self,
-        repositories,
-        profiles,
-        abs_user_config,
-        user_config=True,
-        strict_umatched_removal=False,
-    ):
+        repositories: RepoConfigLoader,
+        profiles: Tuple[
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+        ],
+        abs_user_config: str,
+        user_config: bool = True,
+        strict_umatched_removal: bool = False,
+    ) -> None:
         self._punmaskdict = ExtendedAtomDict(list)
         self._pmaskdict = ExtendedAtomDict(list)
         # Preserves atoms that are eliminated by negative
@@ -39,7 +58,7 @@ class MaskManager:
         # repo may be often referenced by others as the master.
         pmask_cache = {}
 
-        def grab_pmask(loc, repo_config):
+        def grab_pmask(loc: str, repo_config: RepoConfig) -> List[Tuple[Atom, str]]:
             if loc not in pmask_cache:
                 path = os.path.join(loc, "profiles", "package.mask")
                 pmask_cache[loc] = grabfile_package(
@@ -268,7 +287,13 @@ class MaskManager:
             for k, v in d.items():
                 d[k] = tuple(v)
 
-    def _getMaskAtom(self, cpv, slot, repo, unmask_atoms=None):
+    def _getMaskAtom(
+        self,
+        cpv: _pkg_str,
+        slot: str,
+        repo: str,
+        unmask_atoms: Optional[List[Atom]] = None,
+    ) -> Optional[Atom]:
         """
         Take a package and return a matching package.mask atom, or None if no
         such atom exists or it has been cancelled by package.unmask.
@@ -305,7 +330,7 @@ class MaskManager:
                 return x
         return None
 
-    def getMaskAtom(self, cpv, slot, repo):
+    def getMaskAtom(self, cpv: _pkg_str, slot: str, repo: str) -> Optional[Atom]:
         """
         Take a package and return a matching package.mask atom, or None if no
         such atom exists or it has been cancelled by package.unmask.
@@ -329,7 +354,7 @@ class MaskManager:
 
         return self._getMaskAtom(pkg, slot, repo, self._punmaskdict.get(pkg.cp))
 
-    def getRawMaskAtom(self, cpv, slot, repo):
+    def getRawMaskAtom(self, cpv: _pkg_str, slot: str, repo: str) -> Optional[Any]:
         """
         Take a package and return a matching package.mask atom, or None if no
         such atom exists. It HAS NOT! been cancelled by any package.unmask.

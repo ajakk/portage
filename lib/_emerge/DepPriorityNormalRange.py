@@ -22,19 +22,19 @@ class DepPriorityNormalRange:
     NONE = 0
 
     @classmethod
-    def _ignore_optional(cls, priority):
+    def _ignore_optional(cls, priority: DepPriority) -> bool:
         if priority.__class__ is not DepPriority:
             return False
         return bool(priority.optional)
 
     @classmethod
-    def _ignore_runtime_post(cls, priority):
+    def _ignore_runtime_post(cls, priority: DepPriority) -> bool:
         if priority.__class__ is not DepPriority:
             return False
         return bool(priority.optional or priority.runtime_post)
 
     @classmethod
-    def _ignore_runtime(cls, priority):
+    def _ignore_runtime(cls, priority: DepPriority) -> bool:
         if priority.__class__ is not DepPriority:
             return False
         return bool(priority.optional or not priority.buildtime)

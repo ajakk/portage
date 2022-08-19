@@ -38,6 +38,9 @@ from portage.exception import (
 from portage.util import writemsg
 from portage.util.install_mask import _raise_exc
 from portage.localization import _
+from mypy_extensions import NoReturn
+from typing import Any
+from typing import Optional
 
 
 HARDLINK_FD = -2
@@ -157,7 +160,13 @@ def unlockdir(mylock):
     return unlockfile(mylock)
 
 
-def lockfile(mypath, wantnewlockfile=0, unlinkfile=0, waiting_msg=None, flags=0):
+def lockfile(
+    mypath: str,
+    wantnewlockfile: int = 0,
+    unlinkfile: int = 0,
+    waiting_msg: Optional[Any] = None,
+    flags: int = 0,
+) -> NoReturn:
     """
     If wantnewlockfile is True then this creates a lockfile in the parent
     directory as the file: '.' + basename + '.portage_lockfile'.
@@ -177,8 +186,12 @@ def lockfile(mypath, wantnewlockfile=0, unlinkfile=0, waiting_msg=None, flags=0)
 
 
 def _lockfile_iteration(
-    mypath, wantnewlockfile=False, unlinkfile=False, waiting_msg=None, flags=0
-):
+    mypath: str,
+    wantnewlockfile: int = False,
+    unlinkfile: int = False,
+    waiting_msg: Optional[Any] = None,
+    flags: int = 0,
+) -> NoReturn:
     """
     Acquire a lock on mypath, without retry. Return None if the lockfile
     was removed by previous lock holder (caller must retry).

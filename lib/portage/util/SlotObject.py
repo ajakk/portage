@@ -1,3 +1,5 @@
+from typing import Any
+
 # Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
@@ -5,7 +7,7 @@
 class SlotObject:
     __slots__ = ("__weakref__",)
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         classes = [self.__class__]
         while classes:
             c = classes.pop()

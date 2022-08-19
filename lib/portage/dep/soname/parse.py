@@ -4,13 +4,15 @@
 from portage.exception import InvalidData
 from portage.localization import _
 from portage.dep.soname.SonameAtom import SonameAtom
+from typing import Iterator
+from typing import Union
 
 _error_empty_category = _("Multilib category empty: %s")
 _error_missing_category = _("Multilib category missing: %s")
 _error_duplicate_category = _("Multilib category occurs" " more than once: %s")
 
 
-def parse_soname_deps(s):
+def parse_soname_deps(s: str) -> Iterator[Union[Iterator, Iterator[SonameAtom]]]:
     """
     Parse a REQUIRES or PROVIDES dependency string, and raise
     InvalidData if necessary.

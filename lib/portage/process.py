@@ -19,6 +19,12 @@ from portage import os
 from portage import _encodings
 from portage import _unicode_encode
 import portage
+from typing import Any
+from typing import Optional
+from typing import Callable
+from os import _Environ
+from typing import Dict
+from typing import List
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -132,7 +138,9 @@ def sanitize_fds():
                     pass
 
 
-def spawn_bash(mycommand, debug=False, opt_name=None, **keywords):
+def spawn_bash(
+    mycommand: str, debug: bool = False, opt_name: Optional[Any] = None, **keywords: Any
+) -> int:
     """
     Spawns a bash shell running a specific commands
 
@@ -187,7 +195,7 @@ def spawn_fakeroot(mycommand, fakeroot_state=None, opt_name=None, **keywords):
 _exithandlers = []
 
 
-def atexit_register(func, *args, **kargs):
+def atexit_register(func: Callable, *args: Any, **kargs: Any) -> None:
     """Wrapper around atexit.register that is needed in order to track
     what is registered.  For example, when portage restarts itself via
     os.execv, the atexit module does not work so we have to do it
@@ -245,26 +253,26 @@ def cleanup():
 
 
 def spawn(
-    mycommand,
-    env=None,
-    opt_name=None,
-    fd_pipes=None,
-    returnpid=False,
-    uid=None,
-    gid=None,
-    groups=None,
-    umask=None,
-    cwd=None,
-    logfile=None,
-    path_lookup=True,
-    pre_exec=None,
-    close_fds=False,
-    unshare_net=False,
-    unshare_ipc=False,
-    unshare_mount=False,
-    unshare_pid=False,
-    cgroup=None,
-):
+    mycommand: List[str],
+    env: Optional[_Environ] = None,
+    opt_name: Optional[str] = None,
+    fd_pipes: Optional[Dict[int, int]] = None,
+    returnpid: bool = False,
+    uid: Optional[Any] = None,
+    gid: Optional[Any] = None,
+    groups: Optional[Any] = None,
+    umask: Optional[Any] = None,
+    cwd: Optional[Any] = None,
+    logfile: Optional[Any] = None,
+    path_lookup: bool = True,
+    pre_exec: Optional[Any] = None,
+    close_fds: bool = False,
+    unshare_net: bool = False,
+    unshare_ipc: bool = False,
+    unshare_mount: bool = False,
+    unshare_pid: bool = False,
+    cgroup: Optional[Any] = None,
+) -> int:
     """
     Spawns a given command.
 
@@ -509,7 +517,7 @@ def spawn(
 __has_ipv6 = None
 
 
-def _has_ipv6():
+def _has_ipv6() -> bool:
     """
     Test that both userland and kernel support IPv6, by attempting
     to create a socket and listen on any unused port of the IPv6
@@ -1070,7 +1078,7 @@ def _setup_pipes(fd_pipes, close_fds=True, inheritable=None):
                     pass
 
 
-def find_binary(binary):
+def find_binary(binary: str) -> str:
     """
     Given a binary name, find the binary in PATH
 

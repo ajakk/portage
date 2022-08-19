@@ -2,6 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 from .AsyncScheduler import AsyncScheduler
+from typing import Any
+from typing import Iterator
+from mypy_extensions import NoReturn
 
 
 class TaskScheduler(AsyncScheduler):
@@ -13,9 +16,9 @@ class TaskScheduler(AsyncScheduler):
     tasks have completed.
     """
 
-    def __init__(self, task_iter, **kwargs):
+    def __init__(self, task_iter: Iterator, **kwargs: Any) -> None:
         AsyncScheduler.__init__(self, **kwargs)
         self._task_iter = task_iter
 
-    def _next_task(self):
+    def _next_task(self) -> NoReturn:
         return next(self._task_iter)

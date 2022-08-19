@@ -16,9 +16,16 @@ from portage.update import (
     update_dbentry,
 )
 from portage.util import grabfile, shlex_split, writemsg, writemsg_stdout, write_atomic
+from portage import _trees_dict
+from typing import Dict
 
 
-def _global_updates(trees, prev_mtimes, quiet=False, if_mtime_changed=True):
+def _global_updates(
+    trees: _trees_dict,
+    prev_mtimes: Dict[str, int],
+    quiet: bool = False,
+    if_mtime_changed: bool = True,
+) -> bool:
     """
     Perform new global updates if they exist in 'profiles/updates/'
     subdirectories of all active repositories (PORTDIR + PORTDIR_OVERLAY).

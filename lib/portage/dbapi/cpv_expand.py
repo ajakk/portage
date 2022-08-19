@@ -6,9 +6,16 @@ __all__ = ["cpv_expand"]
 import portage
 from portage.exception import AmbiguousPackageName
 from portage.versions import _pkgsplit
+from _emerge.PackageVirtualDbapi import PackageVirtualDbapi
+from portage.package.ebuild.config import config
 
 
-def cpv_expand(mycpv, mydb=None, use_cache=1, settings=None):
+def cpv_expand(
+    mycpv: str,
+    mydb: PackageVirtualDbapi = None,
+    use_cache: int = 1,
+    settings: config = None,
+) -> str:
     """Given a string (packagename or virtual) expand it into a valid
     cat/package string. Virtuals use the mydb to determine which provided
     virtual is a valid choice and defaults to the first element when there

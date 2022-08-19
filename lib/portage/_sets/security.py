@@ -5,6 +5,9 @@ import portage.glsa as glsa
 from portage._sets.base import PackageSet
 from portage.versions import vercmp
 from portage._sets import get_boolean
+from portage.dbapi.porttree import portdbapi
+from portage.dbapi.vartree import vardbapi
+from portage.package.ebuild.config import config
 
 __all__ = ["SecuritySet", "NewGlsaSet", "NewAffectedSet", "AffectedSet"]
 
@@ -15,7 +18,13 @@ class SecuritySet(PackageSet):
 
     description = "package set that includes all packages possibly affected by a GLSA"
 
-    def __init__(self, settings, vardbapi, portdbapi, least_change=True):
+    def __init__(
+        self,
+        settings: config,
+        vardbapi: vardbapi,
+        portdbapi: portdbapi,
+        least_change: bool = True,
+    ) -> None:
         super(SecuritySet, self).__init__()
         self._settings = settings
         self._vardbapi = vardbapi

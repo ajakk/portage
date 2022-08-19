@@ -13,14 +13,35 @@ from portage.package.ebuild._config.helper import ordered_by_atom_specificity
 from portage.repository.config import allow_profile_repo_deps
 from portage.util import grabdict_package, stack_lists
 from portage.versions import _pkg_str
+from typing import List
+from typing import Set
+from typing import Union
+from portage.repository.config import _profile_node
+from typing import Tuple
+from typing import Optional
 
 
 class KeywordsManager:
     """Manager class to handle keywords processing and validation"""
 
     def __init__(
-        self, profiles, abs_user_config, user_config=True, global_accept_keywords=""
-    ):
+        self,
+        profiles: Tuple[
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+        ],
+        abs_user_config: str,
+        user_config: bool = True,
+        global_accept_keywords: str = "",
+    ) -> None:
         self._pkeywords_list = []
         rawpkeywords = [
             grabdict_package(
@@ -113,7 +134,9 @@ class KeywordsManager:
                     v = tuple(v)
                 self.pkeywordsdict.setdefault(k.cp, {})[k] = v
 
-    def getKeywords(self, cpv, slot, keywords, repo):
+    def getKeywords(
+        self, cpv: _pkg_str, slot: Optional[str], keywords: str, repo: Optional[str]
+    ) -> List[str]:
         try:
             cpv.slot
         except AttributeError:
@@ -130,7 +153,9 @@ class KeywordsManager:
                     keywords.extend(pkg_keywords)
         return stack_lists(keywords, incremental=True)
 
-    def isStable(self, pkg, global_accept_keywords, backuped_accept_keywords):
+    def isStable(
+        self, pkg: _pkg_str, global_accept_keywords: str, backuped_accept_keywords: str
+    ) -> bool:
         mygroups = self.getKeywords(pkg, None, pkg._metadata["KEYWORDS"], None)
         pgroups = global_accept_keywords.split()
 
@@ -162,13 +187,13 @@ class KeywordsManager:
 
     def getMissingKeywords(
         self,
-        cpv,
-        slot,
-        keywords,
-        repo,
-        global_accept_keywords,
-        backuped_accept_keywords,
-    ):
+        cpv: _pkg_str,
+        slot: str,
+        keywords: str,
+        repo: str,
+        global_accept_keywords: str,
+        backuped_accept_keywords: str,
+    ) -> List[str]:
         """
         Take a package and return a list of any KEYWORDS that the user may
         need to accept for the given package. If the KEYWORDS are empty
@@ -209,7 +234,14 @@ class KeywordsManager:
 
         return self._getMissingKeywords(cpv, pgroups, mygroups)
 
-    def getRawMissingKeywords(self, cpv, slot, keywords, repo, global_accept_keywords):
+    def getRawMissingKeywords(
+        self,
+        cpv: _pkg_str,
+        slot: str,
+        keywords: str,
+        repo: str,
+        global_accept_keywords: str,
+    ) -> List:
         """
         Take a package and return a list of any KEYWORDS that the user may
         need to accept for the given package. If the KEYWORDS are empty,
@@ -236,7 +268,7 @@ class KeywordsManager:
         return self._getMissingKeywords(cpv, pgroups, mygroups)
 
     @staticmethod
-    def _getEgroups(egroups, mygroups):
+    def _getEgroups(egroups: List, mygroups: List[str]) -> Set[str]:
         """gets any keywords defined in the environment
 
         @param backuped_accept_keywords: ACCEPT_KEYWORDS from the backup env
@@ -258,7 +290,9 @@ class KeywordsManager:
         return inc_pgroups
 
     @staticmethod
-    def _getMissingKeywords(cpv, pgroups, mygroups):
+    def _getMissingKeywords(
+        cpv: _pkg_str, pgroups: Set[str], mygroups: Union[List[str], Set[str]]
+    ) -> List[str]:
         """Determines the missing keywords
 
         @param pgroups: The pkg keywords accepted
@@ -304,7 +338,13 @@ class KeywordsManager:
             missing = mygroups
         return missing
 
-    def getPKeywords(self, cpv, slot, repo, global_accept_keywords):
+    def getPKeywords(
+        self,
+        cpv: _pkg_str,
+        slot: Optional[str],
+        repo: Optional[str],
+        global_accept_keywords: str,
+    ) -> List:
         """Gets any package.keywords settings for cp for the given
         cpv, slot and repo
 

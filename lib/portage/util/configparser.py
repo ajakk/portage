@@ -26,9 +26,13 @@ from configparser import ConfigParser as SafeConfigParser
 
 from portage import _encodings
 from portage import _unicode_encode
+from configparser import ConfigParser
+from typing import Iterator
+from typing import List
+from typing import Union
 
 
-def read_configs(parser, paths):
+def read_configs(parser: ConfigParser, paths: Union[Iterator, List[str]]) -> None:
     """
     Read configuration files from given paths into the specified
     ConfigParser, handling path encoding portably.

@@ -26,7 +26,7 @@ class AsynchronousTask(SlotObject):
 
     _cancelled_returncode = -signal.SIGINT
 
-    def start(self):
+    def start(self) -> None:
         """
         Start an asynchronous task and then return as soon as possible.
         """
@@ -65,7 +65,7 @@ class AsynchronousTask(SlotObject):
     def isAlive(self):
         return self.returncode is None
 
-    def poll(self):
+    def poll(self) -> int:
         if self.returncode is not None:
             return self.returncode
         self._poll()
@@ -75,7 +75,7 @@ class AsynchronousTask(SlotObject):
     def _poll(self):
         return self.returncode
 
-    def wait(self):
+    def wait(self) -> int:
         """
         Wait for the returncode attribute to become ready, and return
         it. If the returncode is not ready and the event loop is already
@@ -93,7 +93,7 @@ class AsynchronousTask(SlotObject):
         self._wait_hook()
         return self.returncode
 
-    def _async_wait(self):
+    def _async_wait(self) -> None:
         """
         Subclasses call this method in order to invoke exit listeners when
         self.returncode is set. Subclasses may override this method in order
@@ -151,7 +151,7 @@ class AsynchronousTask(SlotObject):
             return
         self._start_listeners.remove(f)
 
-    def _start_hook(self):
+    def _start_hook(self) -> None:
         if self._start_listeners is not None:
             start_listeners = self._start_listeners
             self._start_listeners = None
@@ -181,7 +181,7 @@ class AsynchronousTask(SlotObject):
             if handle is not None:
                 handle.cancel()
 
-    def _wait_hook(self):
+    def _wait_hook(self) -> None:
         """
         Call this method after the task completes, just before returning
         the returncode from wait() or poll(). This hook is

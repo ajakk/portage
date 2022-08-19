@@ -3,9 +3,11 @@
 
 from _emerge.DepPriority import DepPriority
 from _emerge.Package import Package
+from portage.util.digraph import digraph
+from typing import Set
 
 
-def _find_deep_system_runtime_deps(graph):
+def _find_deep_system_runtime_deps(graph: digraph) -> Set[Package]:
     deep_system_deps = set()
     node_stack = []
     for node in graph:
@@ -14,7 +16,7 @@ def _find_deep_system_runtime_deps(graph):
         if node.root_config.sets["system"].findAtomForPackage(node):
             node_stack.append(node)
 
-    def ignore_priority(priority):
+    def ignore_priority(priority: DepPriority) -> bool:
         """
         Ignore non-runtime priorities.
         """

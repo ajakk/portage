@@ -27,12 +27,38 @@ from portage.util import (
 from portage.versions import _pkg_str
 
 from portage.package.ebuild._config.helper import ordered_by_atom_specificity
+from portage.repository.config import RepoConfigLoader
+from portage.repository.config import _profile_node
+from typing import Callable
+from typing import Tuple
+from typing import Any
+from typing import Optional
+from portage.dep import Atom
+from typing import Dict
+from portage.dep import ExtendedAtomDict
+from typing import Union
 
 
 class UseManager:
     def __init__(
-        self, repositories, profiles, abs_user_config, is_stable, user_config=True
-    ):
+        self,
+        repositories: RepoConfigLoader,
+        profiles: Tuple[
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+        ],
+        abs_user_config: str,
+        is_stable: Callable,
+        user_config: bool = True,
+    ) -> None:
         # 	file				variable
         # --------------------------------
         # 	repositories
@@ -154,8 +180,13 @@ class UseManager:
         self.repositories = repositories
 
     def _parse_file_to_tuple(
-        self, file_name, recursive=True, eapi_filter=None, eapi=None, eapi_default="0"
-    ):
+        self,
+        file_name: str,
+        recursive: bool = True,
+        eapi_filter: Optional[Any] = None,
+        eapi: Optional[str] = None,
+        eapi_default: Optional[str] = "0",
+    ) -> Tuple[()]:
         """
         @param file_name: input file name
         @type file_name: str
@@ -205,16 +236,16 @@ class UseManager:
 
     def _parse_file_to_dict(
         self,
-        file_name,
-        juststrings=False,
-        recursive=True,
-        eapi_filter=None,
-        user_config=False,
-        eapi=None,
-        eapi_default="0",
-        allow_repo=False,
-        allow_build_id=False,
-    ):
+        file_name: str,
+        juststrings: bool = False,
+        recursive: bool = True,
+        eapi_filter: Optional[Callable] = None,
+        user_config: bool = False,
+        eapi: Optional[str] = None,
+        eapi_default: Optional[str] = "0",
+        allow_repo: bool = False,
+        allow_build_id: bool = False,
+    ) -> Dict[str, Dict[Atom, Tuple[str, ...]]]:
         """
         @param file_name: input file name
         @type file_name: str
@@ -307,7 +338,9 @@ class UseManager:
             ret.setdefault(k.cp, {})[k] = v
         return ret
 
-    def _parse_user_files_to_extatomdict(self, file_name, location, user_config):
+    def _parse_user_files_to_extatomdict(
+        self, file_name: str, location: str, user_config: bool
+    ) -> ExtendedAtomDict:
         ret = ExtendedAtomDict(dict)
         if user_config:
             pusedict = grabdict_package(
@@ -340,8 +373,11 @@ class UseManager:
         return ret
 
     def _parse_repository_files_to_dict_of_tuples(
-        self, file_name, repositories, eapi_filter=None
-    ):
+        self,
+        file_name: str,
+        repositories: RepoConfigLoader,
+        eapi_filter: Optional[Callable] = None,
+    ) -> Dict[str, Tuple[()]]:
         ret = {}
         for repo in repositories.repos_with_profiles():
             ret[repo.name] = self._parse_file_to_tuple(
@@ -352,8 +388,11 @@ class UseManager:
         return ret
 
     def _parse_repository_files_to_dict_of_dicts(
-        self, file_name, repositories, eapi_filter=None
-    ):
+        self,
+        file_name: str,
+        repositories: RepoConfigLoader,
+        eapi_filter: Optional[Callable] = None,
+    ) -> Union[Dict[str, Dict[str, Dict[Atom, Tuple[str, ...]]]], Dict[str, Dict]]:
         ret = {}
         for repo in repositories.repos_with_profiles():
             ret[repo.name] = self._parse_file_to_dict(
@@ -366,8 +405,33 @@ class UseManager:
         return ret
 
     def _parse_profile_files_to_tuple_of_tuples(
-        self, file_name, locations, eapi_filter=None
-    ):
+        self,
+        file_name: str,
+        locations: Tuple[
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+        ],
+        eapi_filter: Optional[Callable] = None,
+    ) -> Tuple[
+        Tuple[str, ...],
+        Tuple[str, ...],
+        Tuple[()],
+        Tuple[str, ...],
+        Tuple[str, ...],
+        Tuple[str, ...],
+        Tuple[()],
+        Tuple[()],
+        Tuple[()],
+        Tuple[str, ...],
+    ]:
         return tuple(
             self._parse_file_to_tuple(
                 os.path.join(profile.location, file_name),
@@ -380,8 +444,42 @@ class UseManager:
         )
 
     def _parse_profile_files_to_tuple_of_dicts(
-        self, file_name, locations, juststrings=False, eapi_filter=None
-    ):
+        self,
+        file_name: str,
+        locations: Tuple[
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+            _profile_node,
+        ],
+        juststrings: bool = False,
+        eapi_filter: Optional[Callable] = None,
+    ) -> Tuple[
+        Union[
+            Dict[str, Dict[Atom, Tuple[str, ...]]],
+            Dict[str, Dict[Atom, Tuple[str]]],
+            Dict[str, Dict[Atom, str]],
+        ],
+        Union[Dict[str, Dict[Atom, Tuple[str]]], Dict[str, Dict[Atom, str]]],
+        Dict[str, Dict[Atom, Tuple[str]]],
+        Dict[str, Dict[Atom, Tuple[str]]],
+        Union[Dict[str, Dict[Atom, Tuple[str]]], Dict[str, Dict[Atom, str]]],
+        Union[
+            Dict[str, Dict[Atom, Tuple[str, ...]]],
+            Dict[str, Dict[Atom, Tuple[str]]],
+            Dict[str, Dict[Atom, str]],
+        ],
+        Dict,
+        Dict[str, Dict[Atom, Tuple[str]]],
+        Dict,
+        Union[Dict[str, Dict[Atom, Tuple[str]]], Dict[str, Dict[Atom, str]]],
+    ]:
         return tuple(
             self._parse_file_to_dict(
                 os.path.join(profile.location, file_name),
@@ -397,7 +495,7 @@ class UseManager:
             for profile in locations
         )
 
-    def _isStable(self, pkg):
+    def _isStable(self, pkg: Package) -> bool:
         if self._user_config:
             try:
                 return pkg.stable
@@ -416,7 +514,9 @@ class UseManager:
         # stable check against the correct profile here.
         return self._is_stable(pkg)
 
-    def getUseMask(self, pkg=None, stable=None):
+    def getUseMask(
+        self, pkg: Optional[Package] = None, stable: Optional[Any] = None
+    ) -> frozenset:
         if pkg is None:
             return frozenset(stack_lists(self._usemask_list, incremental=True))
 
@@ -475,7 +575,9 @@ class UseManager:
 
         return frozenset(stack_lists(usemask, incremental=True))
 
-    def getUseForce(self, pkg=None, stable=None):
+    def getUseForce(
+        self, pkg: Optional[Package] = None, stable: Optional[Any] = None
+    ) -> frozenset:
         if pkg is None:
             return frozenset(stack_lists(self._useforce_list, incremental=True))
 
@@ -533,7 +635,7 @@ class UseManager:
 
         return frozenset(stack_lists(useforce, incremental=True))
 
-    def getPUSE(self, pkg):
+    def getPUSE(self, pkg: Package) -> str:
         cp = getattr(pkg, "cp", None)
         if cp is None:
             slot = dep_getslot(pkg)
@@ -551,7 +653,7 @@ class UseManager:
                 ret = " ".join(puse_list)
         return ret
 
-    def extract_global_USE_changes(self, old=""):
+    def extract_global_USE_changes(self, old: str = "") -> str:
         ret = old
         cpdict = self._pusedict.get("*/*")
         if cpdict is not None:

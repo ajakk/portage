@@ -7,6 +7,16 @@ import functools
 import re
 
 import portage
+from portage.versions import _pkg_str
+from typing import List
+from portage.dep import Atom
+from typing import Iterator
+from typing import Union
+from typing import Any
+from typing import Optional
+from _emerge.Package import _PackageMetadataWrapper
+from typing import Callable
+from typing import Dict
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -34,7 +44,7 @@ class dbapi:
     _known_keys = frozenset(auxdbkeys)
     _pkg_str_aux_keys = ("EAPI", "KEYWORDS", "SLOT", "repository")
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @property
@@ -56,7 +66,7 @@ class dbapi:
         raise NotImplementedError(self)
 
     @staticmethod
-    def _cmp_cpv(cpv1, cpv2):
+    def _cmp_cpv(cpv1: _pkg_str, cpv2: _pkg_str) -> int:
         result = vercmp(cpv1.version, cpv2.version)
         if result == 0 and cpv1.build_time is not None and cpv2.build_time is not None:
             result = (cpv1.build_time > cpv2.build_time) - (
@@ -65,7 +75,7 @@ class dbapi:
         return result
 
     @staticmethod
-    def _cpv_sort_ascending(cpv_list):
+    def _cpv_sort_ascending(cpv_list: List[_pkg_str]) -> None:
         """
         Use this to sort self.cp_list() results in ascending
         order. It sorts in place and returns None.
@@ -138,7 +148,9 @@ class dbapi:
             self._iter_match(mydep, self.cp_list(mydep.cp, use_cache=use_cache))
         )
 
-    def _iter_match(self, atom, cpv_iter):
+    def _iter_match(
+        self, atom: Atom, cpv_iter: List[_pkg_str]
+    ) -> Union[Iterator, list_iterator]:
         cpv_iter = iter(match_from_list(atom, cpv_iter))
         if atom.repo:
             cpv_iter = self._iter_match_repo(atom, cpv_iter)
@@ -148,7 +160,7 @@ class dbapi:
             cpv_iter = self._iter_match_use(atom, cpv_iter)
         return cpv_iter
 
-    def _pkg_str(self, cpv, repo):
+    def _pkg_str(self, cpv: Union[_pkg_str, str], repo: Optional[Any]) -> _pkg_str:
         """
         This is used to contruct _pkg_str instances on-demand during
         matching. If cpv is a _pkg_str instance with slot attribute,
@@ -181,7 +193,9 @@ class dbapi:
                 if pkg_str.repo == atom.repo:
                     yield pkg_str
 
-    def _iter_match_slot(self, atom, cpv_iter):
+    def _iter_match_slot(
+        self, atom: Atom, cpv_iter: list_iterator
+    ) -> Iterator[Union[Iterator, Iterator[_pkg_str]]]:
         for cpv in cpv_iter:
             try:
                 pkg_str = self._pkg_str(cpv, atom.repo)
@@ -191,7 +205,9 @@ class dbapi:
                 if _match_slot(atom, pkg_str):
                     yield pkg_str
 
-    def _iter_match_use(self, atom, cpv_iter):
+    def _iter_match_use(
+        self, atom: Atom, cpv_iter: Union[Iterator, list_iterator]
+    ) -> Iterator[Union[Iterator, Iterator[_pkg_str]]]:
         """
         1) Check for required IUSE intersection (need implicit IUSE here).
         2) Check enabled/disabled flag states.
@@ -219,7 +235,9 @@ class dbapi:
 
             yield cpv
 
-    def _iuse_implicit_cnstr(self, pkg, metadata):
+    def _iuse_implicit_cnstr(
+        self, pkg: _pkg_str, metadata: Union[Dict[str, str], _PackageMetadataWrapper]
+    ) -> Callable:
         """
         Construct a callable that checks if a given USE flag should
         be considered to be a member of the implicit IUSE for the
@@ -259,7 +277,13 @@ class dbapi:
 
         return iuse_implicit_match
 
-    def _match_use(self, atom, pkg, metadata, ignore_profile=False):
+    def _match_use(
+        self,
+        atom: Atom,
+        pkg: _pkg_str,
+        metadata: Dict[str, str],
+        ignore_profile: bool = False,
+    ) -> bool:
         iuse_implicit_match = self._iuse_implicit_cnstr(pkg, metadata)
         iuse = Package._iuse(
             None,

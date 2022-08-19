@@ -16,6 +16,16 @@ import warnings
 from itertools import chain
 
 import portage
+from typing import Any
+from typing import Iterator
+from _emerge.actions import _emerge_config
+from _emerge.stdout_spinner import stdout_spinner
+from typing import Optional
+from portage import _trees_dict
+from typing import Dict
+from portage.package.ebuild.config import config
+from typing import List
+from typing import Tuple
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -101,14 +111,14 @@ from _emerge.UserQuery import UserQuery
 
 
 def action_build(
-    emerge_config,
-    trees=DeprecationWarning,
-    mtimedb=DeprecationWarning,
-    myopts=DeprecationWarning,
-    myaction=DeprecationWarning,
-    myfiles=DeprecationWarning,
-    spinner=None,
-):
+    emerge_config: _emerge_config,
+    trees: type = DeprecationWarning,
+    mtimedb: type = DeprecationWarning,
+    myopts: type = DeprecationWarning,
+    myaction: type = DeprecationWarning,
+    myfiles: type = DeprecationWarning,
+    spinner: stdout_spinner = None,
+) -> Optional[Any]:
 
     if not isinstance(emerge_config, _emerge_config):
         warnings.warn(
@@ -2658,7 +2668,7 @@ def action_uninstall(settings, trees, ldpath_mtimes, opts, action, files, spinne
     return rval
 
 
-def adjust_configs(myopts, trees):
+def adjust_configs(myopts: Dict[str, Any], trees: _trees_dict) -> None:
     for myroot, mytrees in trees.items():
         mysettings = trees[myroot]["vartree"].settings
         mysettings.unlock()
@@ -2680,7 +2690,7 @@ def adjust_configs(myopts, trees):
         mysettings.lock()
 
 
-def adjust_config(myopts, settings):
+def adjust_config(myopts: Dict[str, Any], settings: config) -> None:
     """Make emerge specific adjustments to the config."""
 
     # Kill noauto as it will break merges otherwise.
@@ -2886,7 +2896,7 @@ class _emerge_config(SlotObject):
     __slots__ = ("action", "args", "opts", "running_config", "target_config", "trees")
 
     # Support unpack as tuple, for load_emerge_config backward compatibility.
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Any]:
         yield self.target_config.settings
         yield self.trees
         yield self.target_config.mtimedb
@@ -2898,7 +2908,9 @@ class _emerge_config(SlotObject):
         return 3
 
 
-def load_emerge_config(emerge_config=None, env=None, **kargs):
+def load_emerge_config(
+    emerge_config: Optional[Any] = None, env: Optional[Any] = None, **kargs: Any
+) -> _emerge_config:
 
     if emerge_config is None:
         emerge_config = _emerge_config(**kargs)
@@ -3007,7 +3019,7 @@ def getgccversion(chost=None):
 _emerge_features_warn = frozenset(["keeptemp", "keepwork"])
 
 
-def validate_ebuild_environment(trees):
+def validate_ebuild_environment(trees: _trees_dict) -> None:
     features_warn = set()
     for myroot in trees:
         settings = trees[myroot]["vartree"].settings
@@ -3027,7 +3039,7 @@ def validate_ebuild_environment(trees):
     check_locale()
 
 
-def check_procfs():
+def check_procfs() -> int:
     procfs_path = "/proc"
     if platform.system() not in ("Linux",) or os.path.ismount(procfs_path):
         return os.EX_OK
@@ -3040,7 +3052,7 @@ def check_procfs():
     return 1
 
 
-def config_protect_check(trees):
+def config_protect_check(trees: _trees_dict) -> None:
     for root, root_trees in trees.items():
         settings = root_trees["root_config"].settings
         if not settings.get("CONFIG_PROTECT"):
@@ -3051,13 +3063,13 @@ def config_protect_check(trees):
             writemsg_level(msg, level=logging.WARN, noiselevel=-1)
 
 
-def apply_priorities(settings):
+def apply_priorities(settings: config) -> None:
     ionice(settings)
     nice(settings)
     set_scheduling_policy(settings)
 
 
-def nice(settings):
+def nice(settings: config) -> None:
     try:
         os.nice(int(settings.get("PORTAGE_NICENESS", "0")))
     except (OSError, ValueError) as e:
@@ -3069,7 +3081,7 @@ def nice(settings):
         out.eerror("%s\n" % str(e))
 
 
-def ionice(settings):
+def ionice(settings: config) -> None:
 
     ionice_cmd = settings.get("PORTAGE_IONICE_COMMAND")
     if ionice_cmd:
@@ -3095,7 +3107,7 @@ def ionice(settings):
         )
 
 
-def set_scheduling_policy(settings):
+def set_scheduling_policy(settings: config) -> int:
     scheduling_policy = settings.get("PORTAGE_SCHEDULING_POLICY")
     scheduling_priority = settings.get("PORTAGE_SCHEDULING_PRIORITY")
 
@@ -3146,7 +3158,7 @@ def setconfig_fallback(root_config):
     root_config.sets = setconfig.getSets()
 
 
-def get_missing_sets(root_config):
+def get_missing_sets(root_config: RootConfig) -> List:
     # emerge requires existence of "world", "selected", and "system"
     missing_sets = []
 
@@ -3190,7 +3202,7 @@ def missing_sets_warning(root_config, missing_sets):
         writemsg_level(line + "\n", level=logging.ERROR, noiselevel=-1)
 
 
-def ensure_required_sets(trees):
+def ensure_required_sets(trees: _trees_dict) -> None:
     warning_shown = False
     for root_trees in trees.values():
         missing_sets = get_missing_sets(root_trees["root_config"])
@@ -3201,7 +3213,9 @@ def ensure_required_sets(trees):
             setconfig_fallback(root_trees["root_config"])
 
 
-def expand_set_arguments(myfiles, myaction, root_config):
+def expand_set_arguments(
+    myfiles: List[str], myaction: Optional[Any], root_config: RootConfig
+) -> Tuple[List[str], int]:
     retval = os.EX_OK
     setconfig = root_config.setconfig
 
@@ -3343,7 +3357,7 @@ def expand_set_arguments(myfiles, myaction, root_config):
     return (newargs, retval)
 
 
-def repo_name_check(trees):
+def repo_name_check(trees: _trees_dict) -> bool:
     missing_repo_names = set()
     for root_trees in trees.values():
         porttree = root_trees.get("porttree")
@@ -3383,7 +3397,7 @@ def repo_name_check(trees):
     return bool(missing_repo_names)
 
 
-def repo_name_duplicate_check(trees):
+def repo_name_duplicate_check(trees: _trees_dict) -> bool:
     ignored_repos = {}
     for root, root_trees in trees.items():
         if "porttree" in root_trees:
@@ -3422,7 +3436,7 @@ def repo_name_duplicate_check(trees):
     return bool(ignored_repos)
 
 
-def run_action(emerge_config):
+def run_action(emerge_config: _emerge_config) -> Optional[Any]:
 
     # skip global updates prior to sync, since it's called after sync
     if (

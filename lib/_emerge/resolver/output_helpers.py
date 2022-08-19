@@ -23,6 +23,15 @@ from portage.output import (
     turquoise,
     yellow,
 )
+from _emerge.depgraph import depgraph
+from typing import Any
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import Iterator
+from typing import Union
+from _emerge.resolver.output_helpers import _DisplayConfig
+from typing import Set
 
 bad = create_color_func("BAD")
 from portage.util import writemsg
@@ -86,7 +95,7 @@ class _RepoDisplay:
 
 
 class _PackageCounters:
-    def __init__(self):
+    def __init__(self) -> None:
         self.upgrades = 0
         self.downgrades = 0
         self.new = 0
@@ -101,7 +110,7 @@ class _PackageCounters:
         self.interactive = 0
         self.binary = 0
 
-    def __str__(self):
+    def __str__(self) -> str:
         total_installs = (
             self.upgrades + self.downgrades + self.newslot + self.new + self.reinst
         )
@@ -169,7 +178,13 @@ class _PackageCounters:
 
 
 class _DisplayConfig:
-    def __init__(self, depgraph, mylist, favorites, verbosity):
+    def __init__(
+        self,
+        depgraph: depgraph,
+        mylist: Tuple[Package],
+        favorites: List[str],
+        verbosity: Optional[Any],
+    ) -> None:
         frozen_config = depgraph._frozen_config
         dynamic_config = depgraph._dynamic_config
 
@@ -247,8 +262,12 @@ class _DisplayConfig:
 _alnum_sort_re = re.compile(r"(\d+)")
 
 
-def _alnum_sort_key(x):
-    def _convert_even_to_int(it):
+def _alnum_sort_key(
+    x: str,
+) -> Union[Tuple[str, int, str, int, str], Tuple[str, int, str], Tuple[str]]:
+    def _convert_even_to_int(
+        it: Union[List[str], list_iterator]
+    ) -> Iterator[Union[Iterator, Iterator[int], Iterator[str]]]:
         it = iter(it)
         try:
             while True:
@@ -261,17 +280,17 @@ def _alnum_sort_key(x):
 
 
 def _create_use_string(
-    conf,
-    name,
-    cur_iuse,
-    iuse_forced,
-    cur_use,
-    old_iuse,
-    old_use,
-    is_new,
-    feature_flags,
-    reinst_flags,
-):
+    conf: _DisplayConfig,
+    name: str,
+    cur_iuse: List[str],
+    iuse_forced: Union[List, Set],
+    cur_use: List,
+    old_iuse: List[str],
+    old_use: List,
+    is_new: bool,
+    feature_flags: frozenset,
+    reinst_flags: Optional[Any],
+) -> str:
 
     if not conf.print_use_string:
         return ""
@@ -570,7 +589,7 @@ class PkgInfo:
         "world",
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.built = False
         self.cp = ""
         self.ebuild_path = ""
@@ -607,7 +626,7 @@ class PkgAttrDisplay(SlotObject):
         "replace",
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         output = []
 
         if self.interactive:

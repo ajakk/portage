@@ -4,6 +4,20 @@
 __all__ = ["close_portdbapi_caches", "FetchlistDict", "portagetree", "portdbapi"]
 
 import portage
+from _asyncio import Future
+from portage.util._eventloop.asyncio_event_loop import AsyncioEventLoop
+from portage.repository.config import RepoConfigLoader
+from portage.repository.config import RepoConfig
+from typing import List
+from portage.package.ebuild.config import config
+from typing import Tuple
+from portage.cache.flat_hash import md5_database
+from portage.versions import _pkg_str
+from typing import Any
+from typing import Optional
+from typing import Union
+from portage.eclass_cache import hashed_path
+from typing import Dict
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -131,7 +145,7 @@ class _better_cache:
     Portage.
     """
 
-    def __init__(self, repositories):
+    def __init__(self, repositories: RepoConfigLoader) -> None:
         self._items = collections.defaultdict(list)
         self._scanned_cats = set()
 
@@ -140,7 +154,7 @@ class _better_cache:
             repo for repo in reversed(list(repositories)) if repo.location is not None
         ]
 
-    def __getitem__(self, catpkg):
+    def __getitem__(self, catpkg: str) -> List[RepoConfig]:
         result = self._items.get(catpkg)
         if result is not None:
             return result
@@ -150,7 +164,7 @@ class _better_cache:
             self._scan_cat(cat)
         return self._items[catpkg]
 
-    def _scan_cat(self, cat):
+    def _scan_cat(self, cat: str) -> None:
         for repo in self._repo_list:
             cat_dir = repo.location + "/" + cat
             try:
@@ -177,7 +191,7 @@ class portdbapi(dbapi):
     _use_mutable = True
 
     @property
-    def _categories(self):
+    def _categories(self) -> frozenset:
         return self.settings.categories
 
     @property
@@ -203,7 +217,9 @@ class portdbapi(dbapi):
             return None
         return main_repo.eclass_db
 
-    def __init__(self, _unused_param=DeprecationWarning, mysettings=None):
+    def __init__(
+        self, _unused_param: type = DeprecationWarning, mysettings: config = None
+    ) -> None:
         """
         @param _unused_param: deprecated, use mysettings['PORTDIR'] instead
         @type _unused_param: None
@@ -357,7 +373,7 @@ class portdbapi(dbapi):
         self._better_cache = None
         self._broken_ebuilds = set()
 
-    def _set_porttrees(self, porttrees):
+    def _set_porttrees(self, porttrees: List[str]) -> None:
         """
         Consumers, such as emirrordist, may modify the porttrees attribute in
         order to modify the effective set of repositories for all portdbapi
@@ -376,16 +392,16 @@ class portdbapi(dbapi):
         )
         self._porttrees = tuple(porttrees)
 
-    def _get_porttrees(self):
+    def _get_porttrees(self) -> Tuple[str, str, str, str, str, str]:
         return self._porttrees
 
     porttrees = property(_get_porttrees, _set_porttrees)
 
     @property
-    def _event_loop(self):
+    def _event_loop(self) -> AsyncioEventLoop:
         return asyncio._safe_loop()
 
-    def _create_pregen_cache(self, tree):
+    def _create_pregen_cache(self, tree: str) -> md5_database:
         conf = self.repositories.get_repo_for_location(tree)
         cache = conf.get_pregenerated_cache(self._known_keys, readonly=True)
         if cache is not None:
@@ -406,7 +422,7 @@ class portdbapi(dbapi):
 
         return cache
 
-    def _init_cache_dirs(self):
+    def _init_cache_dirs(self) -> None:
         """Create /var/cache/edb/dep and adjust permissions for the portage
         group."""
 
@@ -437,10 +453,12 @@ class portdbapi(dbapi):
                 return license_path
         return None
 
-    def findname(self, mycpv, mytree=None, myrepo=None):
+    def findname(
+        self, mycpv: _pkg_str, mytree: Optional[Any] = None, myrepo: str = None
+    ) -> str:
         return self.findname2(mycpv, mytree, myrepo)[0]
 
-    def getRepositoryPath(self, repository_id):
+    def getRepositoryPath(self, repository_id: str) -> str:
         """
         This function is required for GLEP 42 compliance; given a valid repository ID
         it must return a path to the repository
@@ -463,7 +481,9 @@ class portdbapi(dbapi):
         except KeyError:
             return None
 
-    def getRepositories(self, catpkg=None):
+    def getRepositories(
+        self, catpkg: Optional[Any] = None
+    ) -> Tuple[str, str, str, str, str, str]:
         """
         With catpkg=None, this will return a complete list of repositories in this dbapi. With catpkg set to a value,
         this method will return a short-list of repositories that contain this catpkg. Use this second approach if
@@ -483,20 +503,25 @@ class portdbapi(dbapi):
             return [repo.name for repo in self._better_cache[catpkg]]
         return self._ordered_repo_name_list
 
-    def getMissingRepoNames(self):
+    def getMissingRepoNames(self) -> frozenset:
         """
         Returns a list of repository paths that lack profiles/repo_name.
         """
         return self.settings.repositories.missing_repo_names
 
-    def getIgnoredRepos(self):
+    def getIgnoredRepos(self) -> Tuple[()]:
         """
         Returns a list of repository paths that have been ignored, because
         another repo with the same name exists.
         """
         return self.settings.repositories.ignored_repos
 
-    def findname2(self, mycpv, mytree=None, myrepo=None):
+    def findname2(
+        self,
+        mycpv: Union[_pkg_str, str],
+        mytree: Optional[str] = None,
+        myrepo: Optional[str] = None,
+    ) -> Tuple[Optional[str], Union[int, str]]:
         """
         Returns the location of the CPV, and what overlay it was in.
         Searches overlays first, then PORTDIR; this allows us to return the first
@@ -591,7 +616,9 @@ class portdbapi(dbapi):
                 # a traceback for debugging purposes.
                 traceback.print_exc()
 
-    def _pull_valid_cache(self, cpv, ebuild_path, repo_path):
+    def _pull_valid_cache(
+        self, cpv: _pkg_str, ebuild_path: str, repo_path: str
+    ) -> Tuple[Dict[str, str], hashed_path]:
         try:
             ebuild_hash = eclass_cache.hashed_path(ebuild_path)
             # snag mtime since we use it later, and to trigger stat failure
@@ -646,7 +673,13 @@ class portdbapi(dbapi):
 
         return (metadata, ebuild_hash)
 
-    def aux_get(self, mycpv, mylist, mytree=None, myrepo=None):
+    def aux_get(
+        self,
+        mycpv: Union[_pkg_str, str],
+        mylist: Union[List[str], Tuple[str, str, str, str]],
+        mytree: Optional[Any] = None,
+        myrepo: Optional[str] = None,
+    ) -> List[str]:
         "stub code for returning auxilliary db information, such as SLOT, DEPEND, etc."
         'input: "sys-apps/foo-1.0",["SLOT","DEPEND","HOMEPAGE"]'
         'return: ["0",">=sys-libs/bar-1.0","http://www.foo.com"] or raise PortageKeyError if error'
@@ -658,7 +691,14 @@ class portdbapi(dbapi):
             self.async_aux_get(mycpv, mylist, mytree=mytree, myrepo=myrepo, loop=loop)
         )
 
-    def async_aux_get(self, mycpv, mylist, mytree=None, myrepo=None, loop=None):
+    def async_aux_get(
+        self,
+        mycpv: Union[_pkg_str, str],
+        mylist: Union[List[str], Tuple[str, str, str, str]],
+        mytree: Optional[Any] = None,
+        myrepo: Optional[str] = None,
+        loop: AsyncioEventLoop = None,
+    ) -> Future:
         """
         Asynchronous form form of aux_get.
 
@@ -782,16 +822,16 @@ class portdbapi(dbapi):
 
     def _aux_get_return(
         self,
-        future,
-        mycpv,
-        mylist,
-        myebuild,
-        ebuild_hash,
-        mydata,
-        mylocation,
-        cache_me,
-        proc,
-    ):
+        future: Future,
+        mycpv: Union[_pkg_str, str],
+        mylist: Union[List[str], Tuple[str, str, str, str]],
+        myebuild: str,
+        ebuild_hash: hashed_path,
+        mydata: Dict[str, str],
+        mylocation: str,
+        cache_me: bool,
+        proc: Optional[Any],
+    ) -> None:
         if future.cancelled():
             return
         if proc is not None:
@@ -820,7 +860,9 @@ class portdbapi(dbapi):
 
         future.set_result(returnme)
 
-    def getFetchMap(self, mypkg, useflags=None, mytree=None):
+    def getFetchMap(
+        self, mypkg: _pkg_str, useflags: List[str] = None, mytree: str = None
+    ) -> OrderedDict:
         """
         Get the SRC_URI metadata as a dict which maps each file name to a
         set of alternative URIs.
@@ -842,7 +884,13 @@ class portdbapi(dbapi):
             self.async_fetch_map(mypkg, useflags=useflags, mytree=mytree, loop=loop)
         )
 
-    def async_fetch_map(self, mypkg, useflags=None, mytree=None, loop=None):
+    def async_fetch_map(
+        self,
+        mypkg: _pkg_str,
+        useflags: List[str] = None,
+        mytree: str = None,
+        loop: AsyncioEventLoop = None,
+    ) -> Future:
         """
         Asynchronous form of getFetchMap.
 
@@ -863,7 +911,7 @@ class portdbapi(dbapi):
         loop = asyncio._wrap_loop(loop)
         result = loop.create_future()
 
-        def aux_get_done(aux_get_future):
+        def aux_get_done(aux_get_future: Future) -> None:
             if result.cancelled():
                 return
             if aux_get_future.exception() is not None:
@@ -911,7 +959,13 @@ class portdbapi(dbapi):
         aux_get_future.add_done_callback(aux_get_done)
         return result
 
-    def getfetchsizes(self, mypkg, useflags=None, debug=0, myrepo=None):
+    def getfetchsizes(
+        self,
+        mypkg: _pkg_str,
+        useflags: List[str] = None,
+        debug: int = 0,
+        myrepo: str = None,
+    ) -> Dict[str, int]:
         # returns a filename:size dictionnary of remaining downloads
         myebuild, mytree = self.findname2(mypkg, myrepo=myrepo)
         if myebuild is None:
@@ -1076,7 +1130,9 @@ class portdbapi(dbapi):
             l.sort(reverse=reverse)
         return l
 
-    def cp_list(self, mycp, use_cache=1, mytree=None):
+    def cp_list(
+        self, mycp: str, use_cache: int = 1, mytree: Optional[Any] = None
+    ) -> List[_pkg_str]:
         # NOTE: Cache can be safely shared with the match cache, since the
         # match cache uses the result from dep_expand for the cache_key.
         if (
@@ -1180,7 +1236,7 @@ class portdbapi(dbapi):
             self.xcache["match-all"][(mycp, mycp)] = cachelist
         return mylist
 
-    def freeze(self):
+    def freeze(self) -> None:
         for x in (
             "bestmatch-visible",
             "cp-list",
@@ -1487,8 +1543,11 @@ class portdbapi(dbapi):
 
 class portagetree:
     def __init__(
-        self, root=DeprecationWarning, virtual=DeprecationWarning, settings=None
-    ):
+        self,
+        root: type = DeprecationWarning,
+        virtual: type = DeprecationWarning,
+        settings: config = None,
+    ) -> None:
         """
         Constructor for a PortageTree
 
@@ -1733,7 +1792,9 @@ def _async_manifest_fetchlist(
     return result
 
 
-def _parse_uri_map(cpv, metadata, use=None):
+def _parse_uri_map(
+    cpv: _pkg_str, metadata: Dict[str, str], use: List[str] = None
+) -> OrderedDict:
 
     myuris = use_reduce(
         metadata.get("SRC_URI", ""),

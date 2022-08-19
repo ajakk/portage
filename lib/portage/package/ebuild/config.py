@@ -21,6 +21,19 @@ import warnings
 
 from _emerge.Package import Package
 import portage
+from portage.package.ebuild.config import config
+from typing import Any
+from typing import Optional
+from typing import Dict
+from typing import Set
+from os import _Environ
+from portage.util import LazyItemsDict
+from typing import List
+from _emerge.Package import _PackageMetadataWrapper
+from portage.dep import Atom
+from _emerge.FakeVartree import FakeVartree
+from portage.eapi import _eapi_attrs
+from typing import Tuple
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -110,7 +123,7 @@ from portage.package.ebuild._config.helper import (
 _feature_flags_cache = {}
 
 
-def _get_feature_flags(eapi_attrs):
+def _get_feature_flags(eapi_attrs: _eapi_attrs) -> frozenset:
     cache_key = (eapi_attrs.feature_flag_test,)
     flags = _feature_flags_cache.get(cache_key)
     if flags is not None:
@@ -138,7 +151,14 @@ def check_config_instance(test):
         )
 
 
-def best_from_dict(key, top_dict, key_order, EmptyOnError=1, FullCopy=1, AllowEmpty=1):
+def best_from_dict(
+    key: str,
+    top_dict: Dict[str, Dict[str, str]],
+    key_order: Tuple[str, str],
+    EmptyOnError: int = 1,
+    FullCopy: int = 1,
+    AllowEmpty: int = 1,
+) -> str:
     for x in key_order:
         if x in top_dict and key in top_dict[x]:
             if FullCopy:
@@ -164,7 +184,7 @@ def _lazy_iuse_regex(iuse_implicit):
 
 
 class _iuse_implicit_match_cache:
-    def __init__(self, settings):
+    def __init__(self, settings: config) -> None:
         self._iuse_implicit_re = re.compile(
             "^(%s)$" % "|".join(settings._get_implicit_iuse())
         )
@@ -237,19 +257,19 @@ class config:
 
     def __init__(
         self,
-        clone=None,
-        mycpv=None,
-        config_profile_path=None,
-        config_incrementals=None,
-        config_root=None,
-        target_root=None,
-        sysroot=None,
-        eprefix=None,
-        local_config=True,
-        env=None,
-        _unmatched_removal=False,
-        repositories=None,
-    ):
+        clone: Optional[config] = None,
+        mycpv: Optional[Any] = None,
+        config_profile_path: Optional[Any] = None,
+        config_incrementals: Optional[Any] = None,
+        config_root: Optional[Any] = None,
+        target_root: Optional[Any] = None,
+        sysroot: Optional[Any] = None,
+        eprefix: Optional[Any] = None,
+        local_config: bool = True,
+        env: Optional[_Environ] = None,
+        _unmatched_removal: bool = False,
+        repositories: Optional[Any] = None,
+    ) -> None:
         """
         @param clone: If provided, init will use deepcopy to copy by value the instance.
         @type clone: Instance of config class.
@@ -1202,7 +1222,7 @@ class config:
         if mycpv:
             self.setcpv(mycpv)
 
-    def _get_env_d(self, broot, eroot, tolerant):
+    def _get_env_d(self, broot: str, eroot: str, tolerant: bool) -> Dict[str, str]:
         broot_only_variables = (
             "PATH",
             "PREROOTPATH",
@@ -1257,7 +1277,7 @@ class config:
 
         return env_d
 
-    def _init_iuse(self):
+    def _init_iuse(self) -> None:
         self._iuse_effective = self._calc_iuse_effective()
         self._iuse_implicit_match = _iuse_implicit_match_cache(self)
 
@@ -1266,7 +1286,7 @@ class config:
         warnings.warn("portage.config.mygcfg is deprecated", stacklevel=3)
         return {}
 
-    def _validate_commands(self):
+    def _validate_commands(self) -> None:
         for k in special_env_vars.validate_commands:
             v = self.get(k)
             if v is not None:
@@ -1308,7 +1328,7 @@ class config:
                         # restore validated default
                         self.configdict["globals"][k] = v
 
-    def _init_dirs(self):
+    def _init_dirs(self) -> None:
         """
         Create a few directories that are critical to portage operation
         """
@@ -1340,7 +1360,7 @@ class config:
                 writemsg("!!! %s\n" % str(e), noiselevel=-1)
 
     @property
-    def _keywords_manager(self):
+    def _keywords_manager(self) -> KeywordsManager:
         if self._keywords_manager_obj is None:
             self._keywords_manager_obj = KeywordsManager(
                 self._locations_manager.profiles_complex,
@@ -1353,7 +1373,7 @@ class config:
         return self._keywords_manager_obj
 
     @property
-    def _mask_manager(self):
+    def _mask_manager(self) -> MaskManager:
         if self._mask_manager_obj is None:
             self._mask_manager_obj = MaskManager(
                 self.repositories,
@@ -1365,7 +1385,7 @@ class config:
         return self._mask_manager_obj
 
     @property
-    def _virtuals_manager(self):
+    def _virtuals_manager(self) -> VirtualsManager:
         if self._virtuals_manager_obj is None:
             self._virtuals_manager_obj = VirtualsManager(self.profiles)
         return self._virtuals_manager_obj
@@ -1408,7 +1428,7 @@ class config:
         group.  If a group is negated then negate all group elements."""
         return self._license_manager.expandLicenseTokens(tokens)
 
-    def validate(self):
+    def validate(self) -> None:
         """Validate miscellaneous settings and display warnings if necessary.
         (This code was previously in the global scope of portage.py)"""
 
@@ -1593,7 +1613,7 @@ class config:
                             noiselevel=-1,
                         )
 
-    def load_best_module(self, property_string):
+    def load_best_module(self, property_string: str) -> type:
         best_mod = best_from_dict(property_string, self.modules, self.module_priority)
         mod = None
         try:
@@ -1611,24 +1631,24 @@ class config:
                     raise
         return mod
 
-    def lock(self):
+    def lock(self) -> None:
         self.locked = 1
 
-    def unlock(self):
+    def unlock(self) -> None:
         self.locked = 0
 
-    def modifying(self):
+    def modifying(self) -> None:
         if self.locked:
             raise Exception(_("Configuration is locked."))
 
-    def backup_changes(self, key=None):
+    def backup_changes(self, key: str = None) -> None:
         self.modifying()
         if key and key in self.configdict["env"]:
             self.backupenv[key] = copy.deepcopy(self.configdict["env"][key])
         else:
             raise KeyError(_("No such key defined in environment: %s") % key)
 
-    def reset(self, keeping_pkg=0, use_cache=None):
+    def reset(self, keeping_pkg: int = 0, use_cache: Optional[Any] = None) -> None:
         """
         Restore environment from self.backupenv, call self.regenerate()
         @param keeping_pkg: Should we keep the setcpv() data or delete it.
@@ -1666,7 +1686,7 @@ class config:
 
         __slots__ = ("built_use", "settings", "values")
 
-        def __init__(self, built_use, settings):
+        def __init__(self, built_use: Optional[Any], settings: config) -> None:
             self.built_use = built_use
             self.settings = settings
             self.values = None
@@ -1714,14 +1734,14 @@ class config:
 
         def __init__(
             self,
-            settings,
-            unfiltered_use,
-            use,
-            usemask,
-            iuse_effective,
-            use_expand_split,
-            use_expand_dict,
-        ):
+            settings: config,
+            unfiltered_use: frozenset,
+            use: Set[str],
+            usemask: frozenset,
+            iuse_effective: Set[str],
+            use_expand_split: Set[str],
+            use_expand_dict: Dict[str, str],
+        ) -> None:
             self._settings = settings
             self._unfiltered_use = unfiltered_use
             self._use = use
@@ -1780,7 +1800,7 @@ class config:
         Raise AssertionError for recursive setcpv calls.
         """
 
-        def wrapper(self, *args, **kwargs):
+        def wrapper(self: Any, *args: Package, **kwargs: Any) -> Optional[Any]:
             if hasattr(self, "_setcpv_active"):
                 raise AssertionError("setcpv recursion detected")
             self._setcpv_active = True
@@ -1792,7 +1812,12 @@ class config:
         return wrapper
 
     @_setcpv_recursion_gate
-    def setcpv(self, mycpv, use_cache=None, mydb=None):
+    def setcpv(
+        self,
+        mycpv: Package,
+        use_cache: Optional[Any] = None,
+        mydb: Optional[Any] = None,
+    ) -> None:
         """
         Load a particular CPV into the config, this lets us see the
         Default USE flags for a particular ebuild as well as the USE
@@ -2261,7 +2286,9 @@ class config:
         # setcpv triggers lazy instantiation of things like _use_manager.
         _eapi_cache.clear()
 
-    def _grab_pkg_env(self, penv, container, protected_keys=None):
+    def _grab_pkg_env(
+        self, penv: List[str], container: LazyItemsDict, protected_keys: Set[str] = None
+    ) -> None:
         if protected_keys is None:
             protected_keys = ()
         abs_user_config = os.path.join(self["PORTAGE_CONFIGROOT"], USER_CONFIG_PATH)
@@ -2300,10 +2327,10 @@ class config:
                     else:
                         container[k] = v
 
-    def _iuse_effective_match(self, flag):
+    def _iuse_effective_match(self, flag: str) -> bool:
         return flag in self._iuse_effective
 
-    def _calc_iuse_effective(self):
+    def _calc_iuse_effective(self) -> frozenset:
         """
         Beginning with EAPI 5, IUSE_EFFECTIVE is defined by PMS.
         """
@@ -2331,7 +2358,7 @@ class config:
 
         return frozenset(iuse_effective)
 
-    def _get_implicit_iuse(self):
+    def _get_implicit_iuse(self) -> Set[str]:
         """
         Prior to EAPI 5, these flags are considered to
         be implicit members of IUSE:
@@ -2370,7 +2397,9 @@ class config:
     def _getUseForce(self, pkg, stable=None):
         return self._use_manager.getUseForce(pkg, stable=stable)
 
-    def _getMaskAtom(self, cpv, metadata):
+    def _getMaskAtom(
+        self, cpv: _pkg_str, metadata: _PackageMetadataWrapper
+    ) -> Optional[Atom]:
         """
         Take a package and return a matching package.mask atom, or None if no
         such atom exists or it has been cancelled by package.unmask.
@@ -2386,7 +2415,9 @@ class config:
             cpv, metadata["SLOT"], metadata.get("repository")
         )
 
-    def _getRawMaskAtom(self, cpv, metadata):
+    def _getRawMaskAtom(
+        self, cpv: _pkg_str, metadata: _PackageMetadataWrapper
+    ) -> Optional[Any]:
         """
         Take a package and return a matching package.mask atom, or None if no
         such atom exists or it has been cancelled by package.unmask.
@@ -2436,7 +2467,7 @@ class config:
                 return x
         return None
 
-    def _isStable(self, pkg):
+    def _isStable(self, pkg: _pkg_str) -> bool:
         return self._keywords_manager.isStable(
             pkg,
             self.get("ACCEPT_KEYWORDS", ""),
@@ -2451,7 +2482,9 @@ class config:
             metadata.get("repository"),
         )
 
-    def _getMissingKeywords(self, cpv, metadata):
+    def _getMissingKeywords(
+        self, cpv: _pkg_str, metadata: _PackageMetadataWrapper
+    ) -> List[str]:
         """
         Take a package and return a list of any KEYWORDS that the user may
         need to accept for the given package. If the KEYWORDS are empty
@@ -2484,7 +2517,9 @@ class config:
             backuped_accept_keywords,
         )
 
-    def _getRawMissingKeywords(self, cpv, metadata):
+    def _getRawMissingKeywords(
+        self, cpv: _pkg_str, metadata: _PackageMetadataWrapper
+    ) -> List:
         """
         Take a package and return a list of any KEYWORDS that the user may
         need to accept for the given package. If the KEYWORDS are empty,
@@ -2515,7 +2550,9 @@ class config:
             cpv, metadata["SLOT"], metadata.get("repository"), global_accept_keywords
         )
 
-    def _getMissingLicenses(self, cpv, metadata):
+    def _getMissingLicenses(
+        self, cpv: _pkg_str, metadata: _PackageMetadataWrapper
+    ) -> List:
         """
         Take a LICENSE string and return a list of any licenses that the user
         may need to accept for the given package.  The returned list will not
@@ -2537,7 +2574,9 @@ class config:
             metadata.get("repository"),
         )
 
-    def _getMissingProperties(self, cpv, metadata):
+    def _getMissingProperties(
+        self, cpv: _pkg_str, metadata: _PackageMetadataWrapper
+    ) -> List:
         """
         Take a PROPERTIES string and return a list of any properties the user
         may need to accept for the given package.  The returned list will not
@@ -2590,7 +2629,9 @@ class config:
             if x not in acceptable_properties
         ]
 
-    def _getMissingRestrict(self, cpv, metadata):
+    def _getMissingRestrict(
+        self, cpv: _pkg_str, metadata: _PackageMetadataWrapper
+    ) -> List:
         """
         Take a RESTRICT string and return a list of any tokens the user
         may need to accept for the given package.  The returned list will not
@@ -2643,7 +2684,7 @@ class config:
             if x not in acceptable_restricts
         ]
 
-    def _accept_chost(self, cpv, metadata):
+    def _accept_chost(self, cpv: _pkg_str, metadata: _PackageMetadataWrapper) -> bool:
         """
         @return True if pkg CHOST is accepted, False otherwise.
         """
@@ -2681,12 +2722,12 @@ class config:
         pkg_chost = metadata.get("CHOST", "")
         return not pkg_chost or self._accept_chost_re.match(pkg_chost) is not None
 
-    def setinst(self, mycpv, mydbapi):
+    def setinst(self, mycpv: _pkg_str, mydbapi: _PackageMetadataWrapper) -> None:
         """This used to update the preferences for old-style virtuals.
         It is no-op now."""
         pass
 
-    def reload(self):
+    def reload(self) -> None:
         """Reload things like /etc/profile.env that can change during runtime."""
         self.configdict["env.d"].clear()
         env_d = self._get_env_d(
@@ -2696,7 +2737,7 @@ class config:
             env_d.pop(k, None)
         self.configdict["env.d"].update(env_d)
 
-    def regenerate(self, useonly=0, use_cache=None):
+    def regenerate(self, useonly: int = 0, use_cache: Optional[Any] = None) -> None:
         """
         Regenerate settings
         This involves regenerating valid USE flags, re-expanding USE_EXPAND flags
@@ -3084,7 +3125,7 @@ class config:
         self.getvirtuals()
         return self._virtuals_manager.get_virts_p()
 
-    def getvirtuals(self):
+    def getvirtuals(self) -> Dict:
         if self._virtuals_manager._treeVirtuals is None:
             # Hack around the fact that VirtualsManager needs a vartree
             # and vartree needs a config instance.
@@ -3097,7 +3138,7 @@ class config:
 
         return self._virtuals_manager.getvirtuals()
 
-    def _populate_treeVirtuals_if_needed(self, vartree):
+    def _populate_treeVirtuals_if_needed(self, vartree: FakeVartree) -> None:
         """Reduce the provides into a list by CP."""
         if self._virtuals_manager._treeVirtuals is None:
             if self.local_config:
@@ -3108,7 +3149,7 @@ class config:
     def __delitem__(self, mykey):
         self.pop(mykey)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> str:
         try:
             return self._getitem(key)
         except KeyError:
@@ -3145,7 +3186,7 @@ class config:
                 )
                 return ""
 
-    def _getitem(self, mykey):
+    def _getitem(self, mykey: str) -> str:
 
         if mykey in self._constant_keys:
             # These two point to temporary values when
@@ -3190,7 +3231,7 @@ class config:
 
         raise KeyError(mykey)
 
-    def get(self, k, x=None):
+    def get(self, k: str, x: Optional[str] = None) -> Optional[str]:
         try:
             return self._getitem(k)
         except KeyError:
@@ -3211,7 +3252,7 @@ class config:
             raise KeyError(key)
         return v
 
-    def __contains__(self, mykey):
+    def __contains__(self, mykey: str) -> bool:
         """Called to implement membership test operators (in and not in)."""
         try:
             self._getitem(mykey)
@@ -3241,7 +3282,7 @@ class config:
         for k in self:
             yield (k, self._getitem(k))
 
-    def __setitem__(self, mykey, myvalue):
+    def __setitem__(self, mykey: str, myvalue: str) -> None:
         "set a value; will be thrown away at reset() time"
         if not isinstance(myvalue, str):
             raise ValueError(
@@ -3430,7 +3471,7 @@ class config:
             self._thirdpartymirrors = stack_dictlist(thirdparty_lists, incremental=True)
         return self._thirdpartymirrors
 
-    def archlist(self):
+    def archlist(self) -> List[str]:
         _archlist = []
         for myarch in self["PORTAGE_ARCHLIST"].split():
             _archlist.append(myarch)

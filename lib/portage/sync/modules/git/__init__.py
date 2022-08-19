@@ -8,19 +8,20 @@ __doc__ = doc[:]
 from portage.localization import _
 from portage.sync.config_checks import CheckSyncConfig
 from portage.util import writemsg_level
+from portage.repository.config import RepoConfig
 
 
 class CheckGitConfig(CheckSyncConfig):
-    def __init__(self, repo, logger):
+    def __init__(self, repo: RepoConfig, logger: module) -> None:
         CheckSyncConfig.__init__(self, repo, logger)
         self.checks.append("check_depth")
         self.checks.append("check_verify_commit_signature")
 
-    def check_depth(self):
+    def check_depth(self) -> None:
         for attr in ("clone_depth", "sync_depth"):
             self._check_depth(attr)
 
-    def _check_depth(self, attr):
+    def _check_depth(self, attr: str) -> None:
         d = getattr(self.repo, attr)
 
         if d is not None:
@@ -37,7 +38,7 @@ class CheckGitConfig(CheckSyncConfig):
             else:
                 setattr(self.repo, attr, d)
 
-    def check_verify_commit_signature(self):
+    def check_verify_commit_signature(self) -> None:
         v = self.repo.module_specific_options.get(
             "sync-git-verify-commit-signature", "false"
         ).lower()

@@ -13,9 +13,11 @@ import logging
 
 from portage.localization import _
 from portage.util import writemsg_level
+from portage.repository.config import RepoConfig
+from typing import List
 
 
-def check_type(repo, logger, module_names):
+def check_type(repo: RepoConfig, logger: module, module_names: List[str]) -> bool:
     if repo.sync_uri is not None and repo.sync_type is None:
         writemsg_level(
             "!!! %s\n"
@@ -49,7 +51,7 @@ def check_type(repo, logger, module_names):
 class CheckSyncConfig:
     """Base repos.conf settings checks class"""
 
-    def __init__(self, repo=None, logger=None):
+    def __init__(self, repo: RepoConfig = None, logger: module = None) -> None:
         """Class init function
 
         @param logger: optional logging instance,
@@ -59,12 +61,12 @@ class CheckSyncConfig:
         self.repo = repo
         self.checks = ["check_uri", "check_auto_sync"]
 
-    def repo_checks(self):
+    def repo_checks(self) -> None:
         """Perform all checks available"""
         for check in self.checks:
             getattr(self, check)()
 
-    def check_uri(self):
+    def check_uri(self) -> None:
         """Check the sync_uri setting"""
         if self.repo.sync_uri is None:
             writemsg_level(
@@ -77,7 +79,7 @@ class CheckSyncConfig:
                 noiselevel=-1,
             )
 
-    def check_auto_sync(self):
+    def check_auto_sync(self) -> None:
         """Check the auto_sync setting"""
         if self.repo.auto_sync is None:
             writemsg_level(

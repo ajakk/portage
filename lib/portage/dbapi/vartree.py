@@ -4,6 +4,16 @@
 __all__ = ["vardbapi", "vartree", "dblink"] + ["write_contents", "tar_contents"]
 
 import portage
+from portage.dbapi.vartree import vardbapi
+from typing import Any
+from typing import Dict
+from portage.dbapi.vartree import vartree
+from portage.package.ebuild.config import config
+from typing import Optional
+from portage.versions import _pkg_str
+from typing import List
+from typing import Iterator
+from os import stat_result
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -134,11 +144,11 @@ class vardbapi(dbapi):
 
     def __init__(
         self,
-        _unused_param=DeprecationWarning,
-        categories=None,
-        settings=None,
-        vartree=None,
-    ):
+        _unused_param: type = DeprecationWarning,
+        categories: Optional[Any] = None,
+        settings: config = None,
+        vartree: vartree = None,
+    ) -> None:
         """
         The categories parameter is unused since the dbapi class
         now has a categories property that is generated from the
@@ -260,7 +270,7 @@ class vardbapi(dbapi):
         )
         return self.settings["ROOT"]
 
-    def getpath(self, mykey, filename=None):
+    def getpath(self, mykey: _pkg_str, filename: Optional[Any] = None) -> str:
         # This is an optimized hotspot, so don't use unicode-wrapped
         # os module and don't use os.path.join().
         rValue = self._eroot + VDB_PATH + _os.sep + mykey
@@ -519,7 +529,7 @@ class vardbapi(dbapi):
             del self.cpcache[mycp]
         return returnme
 
-    def cpv_all(self, use_cache=1):
+    def cpv_all(self, use_cache: int = 1) -> List[_pkg_str]:
         """
         Set use_cache=0 to bypass the portage.cachedir() cache in cases
         when the accuracy of mtime staleness checks should not be trusted
@@ -528,7 +538,9 @@ class vardbapi(dbapi):
         """
         return list(self._iter_cpv_all(use_cache=use_cache))
 
-    def _iter_cpv_all(self, use_cache=True, sort=False):
+    def _iter_cpv_all(
+        self, use_cache: int = True, sort: bool = False
+    ) -> Iterator[_pkg_str]:
         returnme = []
         basepath = os.path.join(self._eroot, VDB_PATH) + os.path.sep
 
@@ -651,7 +663,7 @@ class vardbapi(dbapi):
     def findname(self, mycpv, myrepo=None):
         return self.getpath(str(mycpv), filename=catsplit(mycpv)[1] + ".ebuild")
 
-    def flush_cache(self):
+    def flush_cache(self) -> None:
         """If the current user has permission and the internal aux_get cache has
         been updated, save it to disk and mark it unmodified.  This is called
         by emerge after it has loaded the full vdb for use in dependency
@@ -691,12 +703,12 @@ class vardbapi(dbapi):
             self._aux_cache["modified"] = set()
 
     @property
-    def _aux_cache(self):
+    def _aux_cache(self) -> Dict[str, Any]:
         if self._aux_cache_obj is None:
             self._aux_cache_init()
         return self._aux_cache_obj
 
-    def _aux_cache_init(self):
+    def _aux_cache_init(self) -> None:
         aux_cache = None
         open_kwargs = {}
         try:
@@ -758,7 +770,9 @@ class vardbapi(dbapi):
         aux_cache["modified"] = set()
         self._aux_cache_obj = aux_cache
 
-    def aux_get(self, mycpv, wants, myrepo=None):
+    def aux_get(
+        self, mycpv: _pkg_str, wants: List[str], myrepo: Optional[Any] = None
+    ) -> List[str]:
         """This automatically caches selected keys that are frequently needed
         by emerge for dependency calculations.  The cached metadata is
         considered valid if the mtime of the package directory has not changed
@@ -855,7 +869,9 @@ class vardbapi(dbapi):
 
         return [mydata[x] for x in wants]
 
-    def _aux_get(self, mycpv, wants, st=None):
+    def _aux_get(
+        self, mycpv: _pkg_str, wants: List[str], st: stat_result = None
+    ) -> Dict[str, str]:
         mydir = self.getpath(mycpv)
         if st is None:
             try:
@@ -1437,7 +1453,7 @@ class vardbapi(dbapi):
             return (str(cpv), counter, mtime)
 
     class _owners_db:
-        def __init__(self, vardb):
+        def __init__(self, vardb: vardbapi) -> None:
             self._vardb = vardb
 
         def populate(self):
@@ -1657,8 +1673,12 @@ class vartree:
     "this tree will scan a var/db/pkg database located at root (passed to init)"
 
     def __init__(
-        self, root=None, virtual=DeprecationWarning, categories=None, settings=None
-    ):
+        self,
+        root: Optional[Any] = None,
+        virtual: type = DeprecationWarning,
+        categories: frozenset = None,
+        settings: config = None,
+    ) -> None:
 
         if settings is None:
             settings = portage.settings
@@ -1710,7 +1730,7 @@ class vartree:
     def get_provide(self, mycpv):
         return []
 
-    def get_all_provides(self):
+    def get_all_provides(self) -> Dict:
         return {}
 
     def dep_bestmatch(self, mydep, use_cache=1):

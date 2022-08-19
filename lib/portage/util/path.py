@@ -4,9 +4,11 @@
 import errno
 
 from portage import os
+from typing import Iterator
+from typing import Union
 
 
-def first_existing(path):
+def first_existing(path: str) -> str:
     """
     Returns the first existing path element, traversing from the given
     path to the root directory. A path is considered to exist if lstat
@@ -36,7 +38,7 @@ def first_existing(path):
     return os.sep
 
 
-def iter_parents(path):
+def iter_parents(path: str) -> Iterator[Union[Iterator, Iterator[str]]]:
     """
     @param path: a filesystem path
     @type path: str

@@ -3,6 +3,7 @@
 
 import copy
 from portage.util.SlotObject import SlotObject
+from _emerge.DepPriority import DepPriority
 
 
 class AbstractDepPriority(SlotObject):
@@ -14,7 +15,7 @@ class AbstractDepPriority(SlotObject):
         "runtime_slot_op",
     )
 
-    def __lt__(self, other):
+    def __lt__(self, other: DepPriority) -> bool:
         return self.__int__() < other
 
     def __le__(self, other):
@@ -26,11 +27,11 @@ class AbstractDepPriority(SlotObject):
     def __ne__(self, other):
         return self.__int__() != other
 
-    def __gt__(self, other):
+    def __gt__(self, other: int) -> bool:
         return self.__int__() > other
 
     def __ge__(self, other):
         return self.__int__() >= other
 
-    def copy(self):
+    def copy(self) -> DepPriority:
         return copy.copy(self)

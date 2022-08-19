@@ -11,6 +11,7 @@ from portage.util._async.SchedulerInterface import SchedulerInterface
 from portage.util._eventloop.global_event_loop import global_event_loop
 
 from _emerge.getloadavg import getloadavg
+from portage.util._eventloop.asyncio_event_loop import AsyncioEventLoop
 
 
 class PollScheduler:
@@ -18,7 +19,7 @@ class PollScheduler:
     # max time between loadavg checks (milliseconds)
     _loadavg_latency = None
 
-    def __init__(self, main=False, event_loop=None):
+    def __init__(self, main: bool = False, event_loop: AsyncioEventLoop = None) -> None:
         """
         @param main: If True then use global_event_loop(), otherwise use
                 a local EventLoop instance (default is False, for safe use in
@@ -46,7 +47,7 @@ class PollScheduler:
     def _is_background(self):
         return self._background
 
-    def _cleanup(self):
+    def _cleanup(self) -> None:
         """
         Cleanup any callbacks that have been registered with the global
         event loop.
@@ -140,7 +141,7 @@ class PollScheduler:
         """
         pass
 
-    def _schedule(self):
+    def _schedule(self) -> bool:
         """
         Calls _schedule_tasks() and automatically returns early from
         any recursive calls to this method that the _schedule_tasks()
@@ -157,13 +158,13 @@ class PollScheduler:
             self._scheduling = False
         return True
 
-    def _is_work_scheduled(self):
+    def _is_work_scheduled(self) -> bool:
         return bool(self._running_job_count())
 
     def _running_job_count(self):
         raise NotImplementedError(self)
 
-    def _can_add_job(self):
+    def _can_add_job(self) -> bool:
         if self._terminated_tasks:
             return False
 

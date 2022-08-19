@@ -1,3 +1,9 @@
+from portage._sets import SetConfig
+from portage.package.ebuild.config import config
+from portage.util import LazyItemsDict
+from typing import Dict
+from typing import Union
+
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
@@ -14,7 +20,9 @@ class RootConfig:
     for k, v in pkg_tree_map.items():
         tree_pkg_map[v] = k
 
-    def __init__(self, settings, trees, setconfig):
+    def __init__(
+        self, settings: config, trees: Union[Dict, LazyItemsDict], setconfig: SetConfig
+    ) -> None:
         self.trees = trees
         self.settings = settings
         self.root = self.settings["EROOT"]

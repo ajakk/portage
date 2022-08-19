@@ -8,6 +8,9 @@ from collections import OrderedDict
 from portage.module import Modules
 from portage.sync.controller import SyncManager
 from portage.sync.config_checks import check_type
+from portage.repository.config import RepoConfig
+from typing import Any
+from typing import Optional
 
 _SUBMODULE_PATH_MAP = OrderedDict(
     [
@@ -28,7 +31,7 @@ module_controller = Modules(path=path, namepath="portage.sync.modules")
 module_names = module_controller.module_names[:]
 
 
-def module_specific_options(repo):
+def module_specific_options(repo: RepoConfig) -> frozenset:
     """Get the authorized module specific options set for
     the repos.conf settings for the repo"""
     global module_controller
@@ -43,7 +46,7 @@ def module_specific_options(repo):
     return frozenset()
 
 
-def validate_config(repo, logger):
+def validate_config(repo: RepoConfig, logger: module) -> Optional[Any]:
     """Validate the repos.conf settings for the repo"""
     global module_names, module_controller
     if not check_type(repo, logger, module_names):

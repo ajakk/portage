@@ -4,9 +4,11 @@
 from portage import os
 from portage.process import find_binary
 from portage.util import shlex_split
+from typing import List
+from typing import Tuple
 
 
-def validate_cmd_var(v):
+def validate_cmd_var(v: str) -> Tuple[bool, List[str]]:
     """
     Validate an evironment variable value to see if it
     contains an executable command as the first token.

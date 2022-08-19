@@ -7,18 +7,21 @@ from itertools import chain
 from portage.output import red
 from portage.util import cmp_sort_key
 from portage.output import blue
+from _emerge.Package import Package
+from typing import Any
+from typing import Dict
 
 
 class UseFlagDisplay:
 
     __slots__ = ("name", "enabled", "forced")
 
-    def __init__(self, name, enabled, forced):
+    def __init__(self, name: str, enabled: bool, forced: bool) -> None:
         self.name = name
         self.enabled = enabled
         self.forced = forced
 
-    def __str__(self):
+    def __str__(self) -> str:
         s = self.name
         if self.enabled:
             s = red(s)
@@ -54,7 +57,9 @@ class UseFlagDisplay:
 _flag_info = collections.namedtuple("_flag_info", ("flag", "display"))
 
 
-def pkg_use_display(pkg, opts, modified_use=None):
+def pkg_use_display(
+    pkg: Package, opts: Dict[str, Any], modified_use: frozenset = None
+) -> str:
     settings = pkg.root_config.settings
     use_expand = pkg.use.expand
     use_expand_hidden = pkg.use.expand_hidden

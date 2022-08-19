@@ -5,6 +5,10 @@ from portage.dep import Atom, paren_enclose, use_reduce
 from portage.eapi import _get_eapi_attrs
 from portage.exception import InvalidData
 from _emerge.Package import Package
+from typing import Dict
+from typing import List
+from typing import Iterator
+from typing import Union
 
 
 def strip_slots(dep_struct):
@@ -20,7 +24,7 @@ def strip_slots(dep_struct):
             dep_struct[i] = x.with_slot("=")
 
 
-def find_built_slot_operator_atoms(pkg):
+def find_built_slot_operator_atoms(pkg: Package) -> Dict[str, List[Atom]]:
     atoms = {}
     for k in Package._dep_keys:
         atom_list = list(
@@ -38,7 +42,11 @@ def find_built_slot_operator_atoms(pkg):
     return atoms
 
 
-def _find_built_slot_operator(dep_struct):
+def _find_built_slot_operator(
+    dep_struct: Union[
+        List[Union[List[Atom], Atom, str]], List[Union[List[Atom], str]], List[Atom]
+    ]
+) -> Iterator[Union[Iterator, Iterator[Atom]]]:
     for x in dep_struct:
         if isinstance(x, list):
             for atom in _find_built_slot_operator(x):

@@ -4,6 +4,7 @@
 from portage.dbapi import dbapi
 from portage.dbapi.dep_expand import dep_expand
 from portage.versions import cpv_getkey, _pkg_str
+from portage.package.ebuild.config import config
 
 
 class fakedbapi(dbapi):
@@ -11,7 +12,12 @@ class fakedbapi(dbapi):
     portage.settings is required to maintain the dbAPI.
     """
 
-    def __init__(self, settings=None, exclusive_slots=True, multi_instance=False):
+    def __init__(
+        self,
+        settings: config = None,
+        exclusive_slots: bool = True,
+        multi_instance: bool = False,
+    ) -> None:
         """
         @param exclusive_slots: When True, injecting a package with SLOT
                 metadata causes an existing package in the same slot to be
@@ -31,7 +37,7 @@ class fakedbapi(dbapi):
         self._match_cache = {}
         self._set_multi_instance(multi_instance)
 
-    def _set_multi_instance(self, multi_instance):
+    def _set_multi_instance(self, multi_instance: bool) -> None:
         """
         Enable or disable multi_instance mode. This should before any
         packages are injected, so that all packages are indexed with

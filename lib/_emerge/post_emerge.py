@@ -15,6 +15,13 @@ from portage.util._info_files import chk_updated_info_files
 from .chk_updated_cfg_files import chk_updated_cfg_files
 from .emergelog import emergelog
 from ._flush_elog_mod_echo import _flush_elog_mod_echo
+from _emerge.RootConfig import RootConfig
+from typing import Any
+from typing import Dict
+from portage import _trees_dict
+from portage.util.mtimedb import MtimeDB
+from typing import List
+from typing import Optional
 
 
 def clean_logs(settings):
@@ -34,7 +41,7 @@ def clean_logs(settings):
             out.eerror(msg)
 
 
-def display_news_notification(root_config, myopts):
+def display_news_notification(root_config: RootConfig, myopts: Dict[str, Any]) -> bool:
     if "news" not in root_config.settings.features:
         return False
     portdb = root_config.trees["porttree"].dbapi
@@ -57,7 +64,15 @@ def show_depclean_suggestion():
         out.ewarn(line)
 
 
-def post_emerge(myaction, myopts, myfiles, target_root, trees, mtimedb, retval):
+def post_emerge(
+    myaction: Optional[Any],
+    myopts: Dict[str, Any],
+    myfiles: List[str],
+    target_root: str,
+    trees: _trees_dict,
+    mtimedb: MtimeDB,
+    retval: Optional[Any],
+) -> None:
     """
     Misc. things to run at the end of a merge session.
 

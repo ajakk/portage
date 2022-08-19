@@ -27,6 +27,18 @@ from portage.output import (
     nc_len,
     teal,
 )
+from _emerge.resolver.output_helpers import PkgInfo
+from _emerge.Package import Package
+from typing import Dict
+from typing import List
+from typing import Set
+from typing import Tuple
+from typing import Union
+from typing import Any
+from typing import Optional
+from portage.versions import _pkg_str
+from _emerge.depgraph import depgraph
+from typing import Callable
 
 bad = create_color_func("BAD")
 from portage._sets.base import InternalPackageSet
@@ -54,7 +66,7 @@ class Display:
     @param verbosity: integer, defaults to None
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.print_msg = []
         self.blockers = []
         self.counters = _PackageCounters()
@@ -125,10 +137,10 @@ class Display:
         else:
             self.blockers.append(addl)
 
-    def include_mask_str(self):
+    def include_mask_str(self) -> bool:
         return self.conf.verbosity > 1
 
-    def gen_mask_str(self, pkg):
+    def gen_mask_str(self, pkg: Package) -> str:
         """
         @param pkg: _emerge.Package.Package instance
         """
@@ -156,7 +168,9 @@ class Display:
             space += " "
         return space
 
-    def map_to_use_expand(self, myvals, forced_flags=False, remove_hidden=True):
+    def map_to_use_expand(
+        self, myvals: List[str], forced_flags: bool = False, remove_hidden: bool = True
+    ) -> Union[Dict[str, List], Tuple[Dict[str, List], Dict[str, Set]]]:
         """Map use expand variables
 
         @param myvals: list
@@ -185,7 +199,7 @@ class Display:
             return ret, forced
         return ret
 
-    def _display_use(self, pkg, pkg_info):
+    def _display_use(self, pkg: Package, pkg_info: PkgInfo) -> None:
         """USE flag display
 
         @param pkg: _emerge.Package.Package instance
@@ -266,7 +280,7 @@ class Display:
             )
 
     @staticmethod
-    def pkgprint(pkg_str, pkg_info):
+    def pkgprint(pkg_str: str, pkg_info: PkgInfo) -> str:
         """Colorizes a string acording to pkg_info settings
 
         @param pkg_str: string
@@ -296,7 +310,9 @@ class Display:
             return colorize("PKG_NOMERGE_WORLD", pkg_str)
         return colorize("PKG_NOMERGE", pkg_str)
 
-    def verbose_size(self, pkg, repoadd_set, pkg_info):
+    def verbose_size(
+        self, pkg: Package, repoadd_set: Optional[Any], pkg_info: PkgInfo
+    ) -> None:
         """Determines the size of the downloads required
 
         @param pkg: _emerge.Package.Package instance
@@ -363,7 +379,7 @@ class Display:
             if self.repoadd:
                 repoadd_set.add(self.repoadd)
 
-    def convert_myoldbest(self, pkg, pkg_info):
+    def convert_myoldbest(self, pkg: Package, pkg_info: PkgInfo) -> str:
         """converts and colorizes a version list to a string
 
         @param pkg: _emerge.Package.Package instance
@@ -400,7 +416,9 @@ class Display:
             myoldbest_str = blue("[" + ", ".join(versions) + "]")
         return myoldbest_str
 
-    def _append_slot(self, pkg_str, pkg, pkg_info):
+    def _append_slot(
+        self, pkg_str: _pkg_str, pkg: Package, pkg_info: PkgInfo
+    ) -> _pkg_str:
         """Potentially appends slot and subslot to package string.
 
         @param pkg_str: string
@@ -423,7 +441,9 @@ class Display:
                 pkg_str += "/" + pkg_info.sub_slot
         return pkg_str
 
-    def _append_repository(self, pkg_str, pkg, pkg_info):
+    def _append_repository(
+        self, pkg_str: _pkg_str, pkg: Package, pkg_info: PkgInfo
+    ) -> str:
         """Potentially appends repository to package string.
 
         @param pkg_str: string
@@ -435,7 +455,9 @@ class Display:
             pkg_str += _repo_separator + pkg.repo
         return pkg_str
 
-    def _append_build_id(self, pkg_str, pkg, pkg_info):
+    def _append_build_id(
+        self, pkg_str: _pkg_str, pkg: Package, pkg_info: PkgInfo
+    ) -> _pkg_str:
         """Potentially appends repository to package string.
 
         @param pkg_str: string
@@ -538,7 +560,7 @@ class Display:
             myprint += pkg_info.oldbest
         return myprint
 
-    def _set_no_columns(self, pkg, pkg_info):
+    def _set_no_columns(self, pkg: Package, pkg_info: PkgInfo) -> str:
         """prints pkg info without column indentation.
 
         @param pkg: _emerge.Package.Package instance
@@ -568,7 +590,7 @@ class Display:
             )
         return myprint
 
-    def print_messages(self, show_repos):
+    def print_messages(self, show_repos: bool) -> None:
         """Performs the actual output printing of the pre-formatted
         messages
 
@@ -585,14 +607,14 @@ class Display:
                 myprint += " " + teal("[%s]" % repoadd)
             writemsg_stdout("%s\n" % (myprint,), noiselevel=-1)
 
-    def print_blockers(self):
+    def print_blockers(self) -> None:
         """Performs the actual output printing of the pre-formatted
         blocker messages
         """
         for pkg in self.blockers:
             writemsg_stdout("%s\n" % (pkg,), noiselevel=-1)
 
-    def print_verbose(self, show_repos):
+    def print_verbose(self, show_repos: bool) -> None:
         """Prints the verbose output to std_out
 
         @param show_repos: bool.
@@ -601,7 +623,9 @@ class Display:
         if show_repos:
             writemsg_stdout("%s" % (self.conf.repo_display,), noiselevel=-1)
 
-    def get_display_list(self, mylist):
+    def get_display_list(
+        self, mylist: Tuple[Package]
+    ) -> List[Tuple[Package, int, bool]]:
         """Determines the display list to process
 
         @param mylist
@@ -629,7 +653,7 @@ class Display:
             display_list.append((pkg, 0, True))
         return display_list
 
-    def set_pkg_info(self, pkg, ordered):
+    def set_pkg_info(self, pkg: Package, ordered: bool) -> PkgInfo:
         """Sets various pkg_info dictionary variables
 
         @param pkg: _emerge.Package.Package instance
@@ -698,7 +722,7 @@ class Display:
 
         return pkg_info
 
-    def check_system_world(self, pkg):
+    def check_system_world(self, pkg: Package) -> Tuple[None, None]:
         """Checks for any occurances of the package in the system or world sets
 
         @param pkg: _emerge.Package.Package instance
@@ -732,7 +756,7 @@ class Display:
         return system, world
 
     @staticmethod
-    def get_ver_str(pkg):
+    def get_ver_str(pkg: Package) -> str:
         """Obtains the version string
         @param pkg: _emerge.Package.Package instance
         @rtype string
@@ -742,7 +766,9 @@ class Display:
             ver_str = ver_str[:-3]
         return ver_str
 
-    def _get_installed_best(self, pkg, pkg_info):
+    def _get_installed_best(
+        self, pkg: Package, pkg_info: PkgInfo
+    ) -> Tuple[List[Package], List[Package]]:
         """we need to use "--emptrytree" testing here rather than
         "empty" param testing because "empty"
         param is used for -u, where you still *do* want to see when
@@ -804,7 +830,13 @@ class Display:
                 self.counters.new += 1
         return myoldbest, myinslotlist
 
-    def __call__(self, depgraph, mylist, favorites=None, verbosity=None):
+    def __call__(
+        self,
+        depgraph: depgraph,
+        mylist: Tuple[Package],
+        favorites: List[str] = None,
+        verbosity: Optional[Any] = None,
+    ) -> int:
         """The main operation to format and display the resolver output.
 
         @param depgraph: dependency grah
@@ -936,7 +968,9 @@ class Display:
         return os.EX_OK
 
 
-def format_unmatched_atom(pkg, atom, pkg_use_enabled):
+def format_unmatched_atom(
+    pkg: Package, atom: Atom, pkg_use_enabled: Callable
+) -> Tuple[str, str]:
     """
     Returns two strings. The first string contains the
     'atom' with parts of the atom colored, which 'pkg'
@@ -957,7 +991,7 @@ def format_unmatched_atom(pkg, atom, pkg_use_enabled):
 
     highlight = set()
 
-    def perform_coloring():
+    def perform_coloring() -> Tuple[str, str]:
         atom_str = ""
         marker_str = ""
         for ii, x in enumerate(atom):

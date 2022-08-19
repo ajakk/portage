@@ -3,6 +3,7 @@
 
 import copy
 from portage.cache import template
+from typing import Any
 
 
 class database(template.database):
@@ -11,7 +12,7 @@ class database(template.database):
     serialize_eclasses = False
     store_eclass_paths = False
 
-    def __init__(self, *args, **config):
+    def __init__(self, *args: Any, **config: Any) -> None:
         config.pop("gid", None)
         config.pop("perms", None)
         super(database, self).__init__(*args, **config)

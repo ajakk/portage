@@ -33,7 +33,7 @@ class PreservedLibsRegistry:
         "sort_keys": True,
     }
 
-    def __init__(self, root, filename):
+    def __init__(self, root: str, filename: str) -> None:
         """
             @param root: root used to check existence of paths in pruneNonExisting
         @type root: String

@@ -16,6 +16,15 @@ from portage.eapi import _get_eapi_attrs
 from portage.exception import InvalidData, InvalidDependString
 from portage.update import grab_updates, parse_updates, update_dbentries
 from portage.versions import _pkg_str
+from _emerge.RootConfig import RootConfig
+from typing import Dict
+from portage.dep import Atom
+from typing import List
+from typing import Any
+from typing import Optional
+from typing import Tuple
+from typing import Union
+from portage.dbapi.porttree import portdbapi
 
 
 class FakeVardbGetPath:
@@ -24,7 +33,7 @@ class FakeVardbGetPath:
     code for the Package class and vartree.get_provide().
     """
 
-    def __init__(self, vardb):
+    def __init__(self, vardb: PackageVirtualDbapi) -> None:
         self.settings = vardb.settings
 
     def __call__(self, cpv, filename=None):
@@ -52,13 +61,13 @@ class FakeVartree(vartree):
 
     def __init__(
         self,
-        root_config,
-        pkg_cache=None,
-        pkg_root_config=None,
-        dynamic_deps=False,
-        ignore_built_slot_operator_deps=False,
-        soname_deps=False,
-    ):
+        root_config: RootConfig,
+        pkg_cache: Dict = None,
+        pkg_root_config: RootConfig = None,
+        dynamic_deps: bool = False,
+        ignore_built_slot_operator_deps: bool = False,
+        soname_deps: bool = False,
+    ) -> None:
         self._root_config = root_config
         self._dynamic_deps = dynamic_deps
         self._ignore_built_slot_operator_deps = ignore_built_slot_operator_deps
@@ -107,7 +116,7 @@ class FakeVartree(vartree):
         )
         return self.settings["ROOT"]
 
-    def _match_wrapper(self, cpv, use_cache=1):
+    def _match_wrapper(self, cpv: Atom, use_cache: int = 1) -> List[_pkg_str]:
         """
         Make sure the metadata in Package instances gets updated for any
         cpv that is returned from a match() call, since the metadata can
@@ -121,7 +130,12 @@ class FakeVartree(vartree):
             self._aux_get_wrapper(cpv, [])
         return matches
 
-    def _aux_get_wrapper(self, cpv, wants, myrepo=None):
+    def _aux_get_wrapper(
+        self,
+        cpv: Union[_pkg_str, str],
+        wants: Union[List[str], Tuple[str, str, str, str]],
+        myrepo: Optional[Any] = None,
+    ) -> List[str]:
         if cpv in self._aux_get_history:
             return self._aux_get(cpv, wants)
         self._aux_get_history.add(cpv)
@@ -143,7 +157,7 @@ class FakeVartree(vartree):
 
         return self._aux_get(cpv, wants)
 
-    def _apply_dynamic_deps(self, pkg, live_metadata):
+    def _apply_dynamic_deps(self, pkg: Package, live_metadata: Dict[str, str]) -> None:
 
         try:
             if live_metadata is None:
@@ -191,7 +205,7 @@ class FakeVartree(vartree):
             aux_dict = dict(zip(aux_keys, self._aux_get(pkg.cpv, aux_keys)))
             perform_global_updates(pkg.cpv, aux_dict, self.dbapi, self._global_updates)
 
-    def dynamic_deps_preload(self, pkg, metadata):
+    def dynamic_deps_preload(self, pkg: Package, metadata: Dict[str, str]) -> None:
         if metadata is not None:
             metadata = dict((k, metadata.get(k, "")) for k in self._portdb_keys)
         self._apply_dynamic_deps(pkg, metadata)
@@ -207,7 +221,7 @@ class FakeVartree(vartree):
             self._pkg_cache.pop(old_pkg, None)
             self._aux_get_history.discard(old_pkg.cpv)
 
-    def sync(self, acquire_lock=1):
+    def sync(self, acquire_lock: int = 1) -> None:
         """
         Call this method to synchronize state with the real vardb
         after one or more packages may have been installed or
@@ -233,7 +247,7 @@ class FakeVartree(vartree):
             if self._dynamic_deps:
                 self.dbapi.aux_get = self._aux_get_wrapper
 
-    def _sync(self):
+    def _sync(self) -> None:
 
         real_vardb = self._root_config.trees["vartree"].dbapi
         current_cpv_set = frozenset(real_vardb.cpv_all())
@@ -278,7 +292,7 @@ class FakeVartree(vartree):
 
         real_vardb.flush_cache()
 
-    def _pkg(self, cpv):
+    def _pkg(self, cpv: _pkg_str) -> Package:
         """
         The RootConfig instance that will become the Package.root_config
         attribute can be overridden by the FakeVartree pkg_root_config
@@ -299,7 +313,7 @@ class FakeVartree(vartree):
         return pkg
 
 
-def grab_global_updates(portdb):
+def grab_global_updates(portdb: portdbapi) -> Dict[str, List[List[Union[Atom, str]]]]:
     retupdates = {}
 
     for repo_name in portdb.getRepositories():
@@ -327,7 +341,12 @@ def grab_global_updates(portdb):
     return retupdates
 
 
-def perform_global_updates(mycpv, aux_dict, mydb, myupdates):
+def perform_global_updates(
+    mycpv: _pkg_str,
+    aux_dict: Dict[str, str],
+    mydb: PackageVirtualDbapi,
+    myupdates: Dict[str, List[List[Union[Atom, str]]]],
+) -> None:
     try:
         pkg = _pkg_str(mycpv, metadata=aux_dict, settings=mydb.settings)
     except InvalidData:

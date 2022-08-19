@@ -13,6 +13,10 @@ from portage.localization import _
 from portage._sets.base import PackageSet
 from portage._sets import SetConfigError, get_boolean
 import portage
+from portage.dbapi.vartree import vardbapi
+from typing import Any
+from portage.dbapi.porttree import portdbapi
+from portage.dbapi.bintree import bindbapi
 
 __all__ = [
     "CategorySet",
@@ -32,7 +36,7 @@ class EverythingSet(PackageSet):
     )
     _filter = None
 
-    def __init__(self, vdbapi, **kwargs):
+    def __init__(self, vdbapi: vardbapi, **kwargs: Any) -> None:
         super(EverythingSet, self).__init__()
         self._db = vdbapi
 
@@ -70,7 +74,12 @@ class OwnerSet(PackageSet):
         "Package set which contains all packages " + "that own one or more files."
     )
 
-    def __init__(self, vardb=None, exclude_files=None, files=None):
+    def __init__(
+        self,
+        vardb: vardbapi = None,
+        exclude_files: frozenset = None,
+        files: frozenset = None,
+    ) -> None:
         super(OwnerSet, self).__init__()
         self._db = vardb
         self._exclude_files = exclude_files
@@ -154,8 +163,13 @@ class VariableSet(EverythingSet):
     )
 
     def __init__(
-        self, vardb, metadatadb=None, variable=None, includes=None, excludes=None
-    ):
+        self,
+        vardb: vardbapi,
+        metadatadb: vardbapi = None,
+        variable: str = None,
+        includes: frozenset = None,
+        excludes: frozenset = None,
+    ) -> None:
         super(VariableSet, self).__init__(vardb)
         self._metadatadb = metadatadb
         self._variable = variable
@@ -213,7 +227,7 @@ class SubslotChangedSet(PackageSet):
         + "different than the currently installed version."
     )
 
-    def __init__(self, portdb=None, vardb=None):
+    def __init__(self, portdb: portdbapi = None, vardb: vardbapi = None) -> None:
         super(SubslotChangedSet, self).__init__()
         self._portdb = portdb
         self._vardb = vardb
@@ -250,7 +264,7 @@ class DowngradeSet(PackageSet):
         + "the currently installed version."
     )
 
-    def __init__(self, portdb=None, vardb=None):
+    def __init__(self, portdb: portdbapi = None, vardb: vardbapi = None) -> None:
         super(DowngradeSet, self).__init__()
         self._portdb = portdb
         self._vardb = vardb
@@ -289,7 +303,7 @@ class UnavailableSet(EverythingSet):
         + "corresponding to the same $CATEGORY/$PN:$SLOT."
     )
 
-    def __init__(self, vardb, metadatadb=None):
+    def __init__(self, vardb: vardbapi, metadatadb: portdbapi = None) -> None:
         super(UnavailableSet, self).__init__(vardb)
         self._metadatadb = metadatadb
 
@@ -322,7 +336,7 @@ class UnavailableBinaries(EverythingSet):
         + "are not available."
     )
 
-    def __init__(self, vardb, metadatadb=None):
+    def __init__(self, vardb: vardbapi, metadatadb: bindbapi = None) -> None:
         super(UnavailableBinaries, self).__init__(vardb)
         self._metadatadb = metadatadb
 
@@ -571,7 +585,7 @@ class RebuiltBinaries(EverythingSet):
     _operations = ("merge",)
     _aux_keys = ("BUILD_TIME",)
 
-    def __init__(self, vardb, bindb=None):
+    def __init__(self, vardb: vardbapi, bindb: bindbapi = None) -> None:
         super(RebuiltBinaries, self).__init__(vardb, bindb=bindb)
         self._bindb = bindb
 
@@ -600,7 +614,7 @@ class ChangedDepsSet(PackageSet):
         + "compared to corresponding portdb entries."
     )
 
-    def __init__(self, portdb=None, vardb=None):
+    def __init__(self, portdb: portdbapi = None, vardb: vardbapi = None) -> None:
         super(ChangedDepsSet, self).__init__()
         self._portdb = portdb
         self._vardb = vardb

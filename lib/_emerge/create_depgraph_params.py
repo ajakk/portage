@@ -3,9 +3,14 @@
 
 import logging
 from portage.util import writemsg_level
+from typing import Any
+from typing import Dict
+from typing import Optional
 
 
-def create_depgraph_params(myopts, myaction):
+def create_depgraph_params(
+    myopts: Dict[str, Any], myaction: Optional[Any]
+) -> Dict[str, Any]:
     # configure emerge engine parameters
     #
     # autounmask:               enable autounmask

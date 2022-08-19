@@ -4,12 +4,16 @@
 import signal
 from portage import _encodings, _unicode_decode
 from portage.localization import _
+from portage.dep import Atom
+from typing import Union
+from typing import Any
+from typing import Optional
 
 
 class PortageException(Exception):
     """General superclass for portage exceptions"""
 
-    def __init__(self, value):
+    def __init__(self, value: Union[Atom, str]) -> None:
         self.value = value[:]
 
     def __str__(self):
@@ -21,7 +25,7 @@ class PortageException(Exception):
 class PortageKeyError(KeyError, PortageException):
     __doc__ = KeyError.__doc__
 
-    def __init__(self, value):
+    def __init__(self, value: str) -> None:
         KeyError.__init__(self, value)
         PortageException.__init__(self, value)
 
@@ -61,7 +65,7 @@ class ParseError(PortageException):
 class InvalidData(PortageException):
     """An incorrect formatting was passed instead of the expected one"""
 
-    def __init__(self, value, category=None):
+    def __init__(self, value: str, category: Optional[Any] = None) -> None:
         PortageException.__init__(self, value)
         self.category = category
 
@@ -200,7 +204,7 @@ class CompressorOperationFailed(PortagePackageException):
 class InvalidAtom(PortagePackageException):
     """Malformed atom spec"""
 
-    def __init__(self, value, category=None):
+    def __init__(self, value: Atom, category: Optional[Any] = None) -> None:
         PortagePackageException.__init__(self, value)
         self.category = category
 

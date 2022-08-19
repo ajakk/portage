@@ -6,6 +6,13 @@ import errno
 import io
 import stat
 import portage
+from typing import Any
+from typing import Optional
+from typing import Dict
+from typing import Tuple
+from typing import Callable
+from typing import Iterator
+from typing import Union
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -37,7 +44,7 @@ class LoaderError(Exception):
         )
 
 
-def RecursiveFileLoader(filename):
+def RecursiveFileLoader(filename: str) -> Iterator[Union[Iterator, Iterator[str]]]:
     """
     If filename is of type file, return a generate that yields filename
     else if filename is of type directory, return a generator that fields
@@ -73,12 +80,12 @@ def RecursiveFileLoader(filename):
 
 
 class DataLoader:
-    def __init__(self, validator):
+    def __init__(self, validator: Optional[Any]) -> None:
         f = validator
         if f is None:
             # if they pass in no validator, just make a fake one
             # that always returns true
-            def validate(key):
+            def validate(key: str) -> bool:
                 return True
 
             f = validate
@@ -131,7 +138,7 @@ class TestTextLoader(DataLoader):
 class FileLoader(DataLoader):
     """Class to access data in files"""
 
-    def __init__(self, filename, validator):
+    def __init__(self, filename: str, validator: Optional[Any]) -> None:
         """
         Args:
                 filename : Name of file or directory to open
@@ -140,7 +147,7 @@ class FileLoader(DataLoader):
         DataLoader.__init__(self, validator)
         self.fname = filename
 
-    def load(self):
+    def load(self) -> Tuple[Dict[str, str], Dict]:
         """
         Return the {source: {key: value}} pairs from a file
         Return the {source: [list of errors] from a load
@@ -207,10 +214,12 @@ class ItemFileLoader(FileLoader):
     are removed.
     """
 
-    def __init__(self, filename, validator):
+    def __init__(self, filename: str, validator: Callable) -> None:
         FileLoader.__init__(self, filename, validator)
 
-    def lineParser(self, line, line_num, data, errors):
+    def lineParser(
+        self, line: str, line_num: int, data: Dict[str, None], errors: Dict
+    ) -> None:
         line = line.strip()
         if line.startswith("#"):  # Skip commented lines
             return
@@ -295,20 +304,27 @@ class KeyValuePairFileLoader(FileLoader):
      'foo':'bar'}
     """
 
-    def __init__(self, filename, validator, valuevalidator=None):
+    def __init__(
+        self,
+        filename: str,
+        validator: Optional[Any],
+        valuevalidator: Optional[Any] = None,
+    ) -> None:
         FileLoader.__init__(self, filename, validator)
 
         f = valuevalidator
         if f is None:
             # if they pass in no validator, just make a fake one
             # that always returns true
-            def validate(key):
+            def validate(key: str) -> bool:
                 return True
 
             f = validate
         self._valueValidate = f
 
-    def lineParser(self, line, line_num, data, errors):
+    def lineParser(
+        self, line: str, line_num: int, data: Dict[str, str], errors: Dict
+    ) -> None:
         line = line.strip()
         if line.startswith("#"):  # skip commented lines
             return

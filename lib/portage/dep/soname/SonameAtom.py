@@ -9,7 +9,7 @@ class SonameAtom:
     # Distiguishes package atoms from other atom types
     package = False
 
-    def __init__(self, multilib_category, soname):
+    def __init__(self, multilib_category: str, soname: str) -> None:
         object.__setattr__(self, "multilib_category", multilib_category)
         object.__setattr__(self, "soname", soname)
         object.__setattr__(self, "_hash_key", (multilib_category, soname))
@@ -27,7 +27,7 @@ class SonameAtom:
         for k, v in state.items():
             object.__setattr__(self, k, v)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return self._hash_value
 
     def __eq__(self, other):

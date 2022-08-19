@@ -4,6 +4,14 @@
 from portage.dep import Atom, ExtendedAtomDict, best_match_to_list, match_from_list
 from portage.exception import InvalidAtom
 from portage.versions import cpv_getkey
+from typing import Iterator
+from typing import Union
+from typing import Set
+from itertools import chain
+from typing import List
+from typing import Optional
+from _emerge.Package import Package
+from typing import Tuple
 
 
 OPERATIONS = ["merge", "unmerge"]
@@ -17,7 +25,7 @@ class PackageSet:
     _operations = ["merge"]
     description = "generic package set"
 
-    def __init__(self, allow_wildcard=False, allow_repo=False):
+    def __init__(self, allow_wildcard: bool = False, allow_repo: bool = False) -> None:
         self._atoms = set()
         self._atommap = ExtendedAtomDict(set)
         self._loaded = False
@@ -32,7 +40,7 @@ class PackageSet:
         self._load()
         return atom in self._atoms or atom in self._nonatoms
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Union[Iterator, Iterator[Atom]]]:
         self._load()
         for x in self._atoms:
             yield x
@@ -48,22 +56,22 @@ class PackageSet:
             raise ValueError(op)
         return op in self._operations
 
-    def _load(self):
+    def _load(self) -> None:
         if not (self._loaded or self._loading):
             self._loading = True
             self.load()
             self._loaded = True
             self._loading = False
 
-    def getAtoms(self):
+    def getAtoms(self) -> Set[Atom]:
         self._load()
         return self._atoms.copy()
 
-    def getNonAtoms(self):
+    def getNonAtoms(self) -> Set[str]:
         self._load()
         return self._nonatoms.copy()
 
-    def _setAtoms(self, atoms):
+    def _setAtoms(self, atoms: Union[List[str], chain]) -> None:
         self._atoms.clear()
         self._nonatoms.clear()
         for a in atoms:
@@ -103,7 +111,7 @@ class PackageSet:
             return getattr(self, key.lower())
         return ""
 
-    def _updateAtomMap(self, atoms=None):
+    def _updateAtomMap(self, atoms: Optional[List[Atom]] = None) -> None:
         """Update self._atommap for specific atoms or all atoms."""
         if not atoms:
             self._atommap.clear()
@@ -112,7 +120,9 @@ class PackageSet:
             self._atommap.setdefault(a.cp, set()).add(a)
 
     # Not sure if this one should really be in PackageSet
-    def findAtomForPackage(self, pkg, modified_use=None):
+    def findAtomForPackage(
+        self, pkg: Package, modified_use: frozenset = None
+    ) -> Optional[Atom]:
         """Return the best match for a given package from the arguments, or
         None if there are no matches.  This matches virtual arguments against
         the PROVIDE metadata.  This can raise an InvalidDependString exception
@@ -141,7 +151,9 @@ class PackageSet:
             return rev_transform[best_match]
         return None
 
-    def iterAtomsForPackage(self, pkg):
+    def iterAtomsForPackage(
+        self, pkg: Package
+    ) -> Iterator[Union[Iterator, Iterator[Atom]]]:
         """
         Find all matching atoms for a given package. This matches virtual
         arguments against the PROVIDE metadata.  This will raise an
@@ -159,12 +171,12 @@ class PackageSet:
 
 
 class EditablePackageSet(PackageSet):
-    def __init__(self, allow_wildcard=False, allow_repo=False):
+    def __init__(self, allow_wildcard: bool = False, allow_repo: bool = False) -> None:
         super(EditablePackageSet, self).__init__(
             allow_wildcard=allow_wildcard, allow_repo=allow_repo
         )
 
-    def update(self, atoms):
+    def update(self, atoms: Union[List, Tuple[Atom], chain]) -> None:
         self._load()
         modified = False
         normal_atoms = []
@@ -216,7 +228,12 @@ class EditablePackageSet(PackageSet):
 
 
 class InternalPackageSet(EditablePackageSet):
-    def __init__(self, initial_atoms=None, allow_wildcard=False, allow_repo=True):
+    def __init__(
+        self,
+        initial_atoms: Optional[Tuple[Atom]] = None,
+        allow_wildcard: bool = False,
+        allow_repo: bool = True,
+    ) -> None:
         """
         Repo atoms are allowed more often than not, so it makes sense for this
         class to allow them by default. The Atom constructor and isvalidatom()
@@ -229,24 +246,24 @@ class InternalPackageSet(EditablePackageSet):
         if initial_atoms is not None:
             self.update(initial_atoms)
 
-    def clear(self):
+    def clear(self) -> None:
         self._atoms.clear()
         self._updateAtomMap()
 
-    def load(self):
+    def load(self) -> None:
         pass
 
-    def write(self):
+    def write(self) -> None:
         pass
 
 
 class DummyPackageSet(PackageSet):
-    def __init__(self, atoms=None):
+    def __init__(self, atoms: List[str] = None) -> None:
         super(DummyPackageSet, self).__init__()
         if atoms:
             self._setAtoms(atoms)
 
-    def load(self):
+    def load(self) -> None:
         pass
 
     def singleBuilder(cls, options, settings, trees):

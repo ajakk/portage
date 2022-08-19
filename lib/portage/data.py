@@ -9,6 +9,8 @@ import pwd
 
 import portage
 from portage.localization import _
+from os import stat_result
+from portage.package.ebuild.config import config
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -112,7 +114,7 @@ def portage_group_warning():
 # PORTAGE_USERNAME, and PORTAGE_GRPNAME settings.
 
 
-def _unprivileged_mode(eroot, eroot_st):
+def _unprivileged_mode(eroot: str, eroot_st: stat_result) -> bool:
     return (
         os.getuid() != 0 and os.access(eroot, os.W_OK) and not eroot_st.st_mode & 0o0002
     )
@@ -133,7 +135,7 @@ except KeyError:
 _initialized_globals = set()
 
 
-def _get_global(k):
+def _get_global(k: str) -> int:
     if k in _initialized_globals:
         return globals()[k]
 
@@ -317,7 +319,7 @@ for k in (
 del k
 
 
-def _init(settings):
+def _init(settings: config) -> None:
     """
     Use config variables like PORTAGE_GRPNAME and PORTAGE_USERNAME to
     initialize global variables. This allows settings to come from make.conf

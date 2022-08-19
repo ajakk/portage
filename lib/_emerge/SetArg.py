@@ -3,13 +3,14 @@
 
 from _emerge.DependencyArg import DependencyArg
 from portage._sets import SETPREFIX
+from typing import Any
 
 
 class SetArg(DependencyArg):
 
     __slots__ = ("name", "pset")
 
-    def __init__(self, pset=None, **kwargs):
+    def __init__(self, pset: Any = None, **kwargs: Any) -> None:
         DependencyArg.__init__(self, **kwargs)
         self.pset = pset
         self.name = self.arg[len(SETPREFIX) :]

@@ -11,6 +11,11 @@ import subprocess
 import sys
 
 import portage
+from mypy_extensions import NoReturn
+from typing import Callable
+from typing import Any
+from typing import Optional
+from typing import Tuple
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -167,7 +172,7 @@ _styles["PROMPT_CHOICE_DEFAULT"] = ("green",)
 _styles["PROMPT_CHOICE_OTHER"] = ("red",)
 
 
-def _parse_color_map(config_root="/", onerror=None):
+def _parse_color_map(config_root: str = "/", onerror: Callable = None) -> NoReturn:
     """
     Parse /etc/portage/color.map and return a dict of error codes.
 
@@ -271,7 +276,7 @@ _disable_xtermTitle = None
 _max_xtermTitle_len = 253
 
 
-def xtermTitle(mystr, raw=False):
+def xtermTitle(mystr: str, raw: bool = False) -> None:
     global _disable_xtermTitle
     if _disable_xtermTitle is None:
         _disable_xtermTitle = not (
@@ -359,7 +364,7 @@ def resetColor():
     return codes["reset"]
 
 
-def style_to_ansi_code(style):
+def style_to_ansi_code(style: str) -> str:
     """
     @param style: A style name
     @type style: String
@@ -392,7 +397,7 @@ def colormap():
     return "\n".join(mycolors)
 
 
-def colorize(color_key, text):
+def colorize(color_key: str, text: str) -> str:
     global havecolor
     if havecolor:
         if color_key in codes:
@@ -428,7 +433,7 @@ class create_color_func:
     def __init__(self, color_key):
         self._color_key = color_key
 
-    def __call__(self, text):
+    def __call__(self, text: str) -> str:
         return colorize(self._color_key, text)
 
 
@@ -508,7 +513,7 @@ class StyleWriter(formatter.DumbWriter):
             self.style_listener(styles)
 
 
-def get_term_size(fd=None):
+def get_term_size(fd: Optional[Any] = None) -> Tuple[int, int]:
     """
     Get the number of lines and columns of the tty that is connected to
     fd.  Returns a tuple of (lines, columns) or (0, 0) if an error
@@ -591,7 +596,7 @@ class EOutput:
     @type term_columns: IntType
     """
 
-    def __init__(self, quiet=False):
+    def __init__(self, quiet: bool = False) -> None:
         self.__last_e_cmd = ""
         self.__last_e_len = 0
         self.quiet = quiet
@@ -934,7 +939,7 @@ class TermProgressBar(ProgressBar):
 _color_map_loaded = False
 
 
-def _init(config_root="/"):
+def _init(config_root: str = "/") -> None:
     """
     Load color.map from the given config_root. This is called automatically
     on first access of the codes or _styles attributes (unless it has already

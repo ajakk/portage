@@ -53,6 +53,25 @@ import traceback
 import glob
 
 import portage
+from _emerge.Package import Package
+from portage.versions import _pkg_str
+from typing import Callable
+from typing import Union
+from portage.util import cmp_sort_key
+from portage.proxy.lazyimport import _LazyImportFrom
+from typing import Any
+from typing import Dict
+from typing import Tuple
+from portage.dbapi.porttree import portagetree
+from portage.dbapi.vartree import vartree
+from portage.util import LazyItemsDict
+from typing import List
+from _io import TextIOWrapper
+from typing import Optional
+from portage.dep import Atom
+from typing import Iterator
+from os import stat_result
+from portage.data import _GlobalProxy
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -95,7 +114,9 @@ def initialize_logger(level=logging.WARNING):
     logging.basicConfig(level=level, format="[%(levelname)-4s] %(message)s")
 
 
-def writemsg(mystr, noiselevel=0, fd=None):
+def writemsg(
+    mystr: str, noiselevel: int = 0, fd: Optional[TextIOWrapper] = None
+) -> None:
     """Prints out warning and debug messages based on the noiselimit setting"""
     global noiselimit
     if fd is None:
@@ -116,7 +137,7 @@ def writemsg(mystr, noiselevel=0, fd=None):
         fd.flush()
 
 
-def writemsg_stdout(mystr, noiselevel=0):
+def writemsg_stdout(mystr: str, noiselevel: int = 0) -> None:
     """Prints messages stdout based on the noiselimit setting"""
     writemsg(mystr, noiselevel=noiselevel, fd=sys.stdout)
 
@@ -142,7 +163,7 @@ def writemsg_level(msg, level=0, noiselevel=0):
     writemsg(msg, noiselevel=noiselevel, fd=fd)
 
 
-def normalize_path(mypath):
+def normalize_path(mypath: str) -> str:
     """
     os.path.normpath("//foo") returns "//foo" instead of "/foo"
     We dislike this behavior so we create our own normpath func
@@ -159,7 +180,12 @@ def normalize_path(mypath):
     return os.path.normpath(mypath)
 
 
-def grabfile(myfilename, compat_level=0, recursive=0, remember_source_file=False):
+def grabfile(
+    myfilename: str,
+    compat_level: int = 0,
+    recursive: int = 0,
+    remember_source_file: bool = False,
+) -> List[str]:
     """This function grabs the lines in a file, normalizes whitespace and returns lines in a list; if a line
     begins with a #, it is ignored, as are empty lines"""
 
@@ -213,7 +239,12 @@ def map_dictlist_vals(func, myDict):
     return new_dl
 
 
-def stack_dictlist(original_dicts, incremental=0, incrementals=[], ignore_none=0):
+def stack_dictlist(
+    original_dicts: List[Dict],
+    incremental: int = 0,
+    incrementals: List = [],
+    ignore_none: int = 0,
+) -> Dict:
     """
     Stacks an array of dict-types into one array. Optionally merging or
     overwriting matching key/value pairs for the dict[key]->list.
@@ -273,7 +304,12 @@ def stack_dictlist(original_dicts, incremental=0, incrementals=[], ignore_none=0
     return final_dict
 
 
-def stack_dicts(dicts, incremental=0, incrementals=[], ignore_none=0):
+def stack_dicts(
+    dicts: Union[List[Dict[str, str]], List[Optional[Dict[str, str]]]],
+    incremental: int = 0,
+    incrementals: frozenset = [],
+    ignore_none: int = 0,
+) -> Dict[str, str]:
     """Stacks an array of dict-types into one array. Optionally merging or
     overwriting matching key/value pairs for the dict[key]->string.
     Returns a single dict."""
@@ -289,7 +325,11 @@ def stack_dicts(dicts, incremental=0, incrementals=[], ignore_none=0):
     return final_dict
 
 
-def append_repo(atom_list, repo_name, remember_source_file=False):
+def append_repo(
+    atom_list: List[Tuple[Atom, str]],
+    repo_name: str,
+    remember_source_file: bool = False,
+) -> List[Tuple[Atom, str]]:
     """
     Takes a list of valid atoms without repo spec and appends ::repo_name.
     If an atom already has a repo part, then it is preserved (see bug #461948).
@@ -307,13 +347,28 @@ def append_repo(atom_list, repo_name, remember_source_file=False):
 
 
 def stack_lists(
-    lists,
-    incremental=1,
-    remember_source_file=False,
-    warn_for_unmatched_removal=False,
-    strict_warn_for_unmatched_removal=False,
-    ignore_repo=False,
-):
+    lists: Union[
+        List[List[str]],
+        List[Tuple[str, ...]],
+        Tuple[
+            Tuple[str, ...],
+            Tuple[str, ...],
+            Tuple[()],
+            Tuple[str, ...],
+            Tuple[str, ...],
+            Tuple[str, ...],
+            Tuple[()],
+            Tuple[()],
+            Tuple[()],
+            Tuple[str, ...],
+        ],
+    ],
+    incremental: int = 1,
+    remember_source_file: bool = False,
+    warn_for_unmatched_removal: bool = False,
+    strict_warn_for_unmatched_removal: bool = False,
+    ignore_repo: bool = False,
+) -> List[str]:
     """Stacks an array of list-types into one array. Optionally removing
     distinct values using '-value' notation. Higher index is preferenced.
 
@@ -398,8 +453,13 @@ def stack_lists(
 
 
 def grabdict(
-    myfilename, juststrings=0, empty=0, recursive=0, incremental=1, newlines=0
-):
+    myfilename: str,
+    juststrings: int = 0,
+    empty: int = 0,
+    recursive: int = 0,
+    incremental: int = 1,
+    newlines: int = 0,
+) -> Dict[str, List[str]]:
     """
     This function grabs the lines in a file, normalizes whitespace and returns lines in a dictionary
 
@@ -455,7 +515,7 @@ def grabdict(
 _eapi_cache = {}
 
 
-def read_corresponding_eapi_file(filename, default="0"):
+def read_corresponding_eapi_file(filename: str, default: str = "0") -> str:
     """
     Read the 'eapi' file from the directory 'filename' is in.
     Returns "0" if the file is not present or invalid.
@@ -497,18 +557,18 @@ def read_corresponding_eapi_file(filename, default="0"):
 
 
 def grabdict_package(
-    myfilename,
-    juststrings=0,
-    recursive=0,
-    newlines=0,
-    allow_wildcard=False,
-    allow_repo=False,
-    allow_build_id=False,
-    allow_use=True,
-    verify_eapi=False,
-    eapi=None,
-    eapi_default="0",
-):
+    myfilename: str,
+    juststrings: int = 0,
+    recursive: bool = 0,
+    newlines: int = 0,
+    allow_wildcard: bool = False,
+    allow_repo: bool = False,
+    allow_build_id: bool = False,
+    allow_use: bool = True,
+    verify_eapi: bool = False,
+    eapi: str = None,
+    eapi_default: Optional[str] = "0",
+) -> Dict[Atom, List[str]]:
     """Does the same thing as grabdict except it validates keys
     with isvalidatom()"""
 
@@ -563,17 +623,17 @@ def grabdict_package(
 
 
 def grabfile_package(
-    myfilename,
-    compatlevel=0,
-    recursive=0,
-    allow_wildcard=False,
-    allow_repo=False,
-    allow_build_id=False,
-    remember_source_file=False,
-    verify_eapi=False,
-    eapi=None,
-    eapi_default="0",
-):
+    myfilename: str,
+    compatlevel: int = 0,
+    recursive: int = 0,
+    allow_wildcard: bool = False,
+    allow_repo: bool = False,
+    allow_build_id: bool = False,
+    remember_source_file: bool = False,
+    verify_eapi: bool = False,
+    eapi: Optional[str] = None,
+    eapi_default: Optional[Any] = "0",
+) -> List[str]:
 
     pkgs = grabfile(
         myfilename, compatlevel, recursive=recursive, remember_source_file=True
@@ -626,14 +686,14 @@ def grabfile_package(
     return atoms
 
 
-def _recursive_basename_filter(f):
+def _recursive_basename_filter(f: str) -> bool:
     return not f.startswith(".") and not f.endswith("~")
 
 
-def _recursive_file_list(path):
+def _recursive_file_list(path: str) -> Iterator[Union[Iterator, Iterator[str]]]:
     # path may be a regular file or a directory
 
-    def onerror(e):
+    def onerror(e: FileNotFoundError) -> None:
         if e.errno == PermissionDenied.errno:
             raise PermissionDenied(path)
 
@@ -669,7 +729,9 @@ def _recursive_file_list(path):
                 yield fullpath
 
 
-def grablines(myfilename, recursive=0, remember_source_file=False):
+def grablines(
+    myfilename: str, recursive: int = 0, remember_source_file: bool = False
+) -> List[Tuple[str, str]]:
     mylines = []
     if recursive:
         for f in _recursive_file_list(myfilename):
@@ -712,7 +774,7 @@ def writedict(mydict, myfilename, writekey=True):
     write_atomic(myfilename, "".join(lines))
 
 
-def shlex_split(s):
+def shlex_split(s: str) -> List[str]:
     """
     This is equivalent to shlex.split, but if the current interpreter is
     python2, it temporarily encodes unicode strings to bytes since python2's
@@ -722,11 +784,11 @@ def shlex_split(s):
 
 
 class _getconfig_shlex(shlex.shlex):
-    def __init__(self, portage_tolerant=False, **kwargs):
+    def __init__(self, portage_tolerant: bool = False, **kwargs: Any) -> None:
         shlex.shlex.__init__(self, **kwargs)
         self.__portage_tolerant = portage_tolerant
 
-    def allow_sourcing(self, var_expand_map):
+    def allow_sourcing(self, var_expand_map: Dict[str, str]) -> None:
         self.source = portage._native_string("source")
         self.var_expand_map = var_expand_map
 
@@ -758,8 +820,12 @@ _invalid_var_name_re = re.compile(r"^\d|\W")
 
 
 def getconfig(
-    mycfg, tolerant=False, allow_sourcing=False, expand=True, recursive=False
-):
+    mycfg: str,
+    tolerant: bool = False,
+    allow_sourcing: bool = False,
+    expand: Union[Dict[str, str], bool] = True,
+    recursive: bool = False,
+) -> Optional[Dict[str, str]]:
 
     if isinstance(expand, dict):
         # Some existing variable definitions have been
@@ -919,7 +985,9 @@ _varexpand_word_chars = frozenset(string.ascii_letters + string.digits + "_")
 _varexpand_unexpected_eof_msg = "unexpected EOF while looking for matching `}'"
 
 
-def varexpand(mystring, mydict=None, error_leader=None):
+def varexpand(
+    mystring: str, mydict: Dict[str, str] = None, error_leader: Callable = None
+) -> str:
     if mydict is None:
         mydict = {}
 
@@ -1108,24 +1176,24 @@ class cmp_sort_key:
 
     __slots__ = ("_cmp_func",)
 
-    def __init__(self, cmp_func):
+    def __init__(self, cmp_func: Callable) -> None:
         """
         @type cmp_func: callable which takes 2 positional arguments
         @param cmp_func: A cmp function.
         """
         self._cmp_func = cmp_func
 
-    def __call__(self, lhs):
+    def __call__(self, lhs: Union[Package, _pkg_str]) -> cmp_sort_key._cmp_key:
         return self._cmp_key(self._cmp_func, lhs)
 
     class _cmp_key:
         __slots__ = ("_cmp_func", "_obj")
 
-        def __init__(self, cmp_func, obj):
+        def __init__(self, cmp_func: Callable, obj: Union[Package, _pkg_str]) -> None:
             self._cmp_func = cmp_func
             self._obj = obj
 
-        def __lt__(self, other):
+        def __lt__(self, other: cmp_sort_key._cmp_key) -> bool:
             if other.__class__ is not self.__class__:
                 raise TypeError(
                     "Expected type %s, got %s" % (self.__class__, other.__class__)
@@ -1189,7 +1257,7 @@ def unique_everseen(iterable, key=None):
                 yield element
 
 
-def _do_stat(filename, follow_links=True):
+def _do_stat(filename: str, follow_links: bool = True) -> stat_result:
     try:
         if follow_links:
             return os.stat(filename)
@@ -1206,8 +1274,14 @@ def _do_stat(filename, follow_links=True):
 
 
 def apply_permissions(
-    filename, uid=-1, gid=-1, mode=-1, mask=-1, stat_cached=None, follow_links=True
-):
+    filename: str,
+    uid: int = -1,
+    gid: Union[int, _GlobalProxy] = -1,
+    mode: int = -1,
+    mask: int = -1,
+    stat_cached: Optional[Any] = None,
+    follow_links: bool = True,
+) -> bool:
     """Apply user, group, and mode bits to a file if the existing bits do not
     already match.  The default behavior is to force an exact match of mode
     bits.  When mask=0 is specified, mode bits on the target file are allowed
@@ -1576,7 +1650,7 @@ def write_atomic(file_path, content, **kwargs):
             raise
 
 
-def ensure_dirs(dir_path, **kwargs):
+def ensure_dirs(dir_path: str, **kwargs: Any) -> bool:
     """Create a directory and call apply_permissions.
     Returns True if a directory is created or the permissions needed to be
     modified, and False otherwise.
@@ -1624,7 +1698,7 @@ class LazyItemsDict(UserDict):
 
     __slots__ = ("lazy_items",)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Dict[str, str], **kwargs: Any) -> None:
 
         self.lazy_items = {}
         UserDict.__init__(self, *args, **kwargs)
@@ -1636,14 +1710,20 @@ class LazyItemsDict(UserDict):
         # make it show up in self.keys(), etc...
         UserDict.__setitem__(self, item_key, None)
 
-    def addLazySingleton(self, item_key, value_callable, *pargs, **kwargs):
+    def addLazySingleton(
+        self,
+        item_key: str,
+        value_callable: Union[Callable, _LazyImportFrom, type],
+        *pargs: str,
+        **kwargs: Any
+    ) -> None:
         """This is like addLazyItem except value_callable will only be called
         a maximum of 1 time and the result will be cached for future requests."""
         self.lazy_items[item_key] = self._LazyItem(value_callable, pargs, kwargs, True)
         # make it show up in self.keys(), etc...
         UserDict.__setitem__(self, item_key, None)
 
-    def update(self, *args, **kwargs):
+    def update(self, *args: Dict[str, str], **kwargs: Any) -> None:
         if len(args) > 1:
             raise TypeError(
                 "expected at most 1 positional argument, got " + repr(len(args))
@@ -1666,7 +1746,7 @@ class LazyItemsDict(UserDict):
         if kwargs:
             UserDict.update(self, kwargs)
 
-    def __getitem__(self, item_key):
+    def __getitem__(self, item_key: str) -> Union[portagetree, vartree, str]:
         if item_key in self.lazy_items:
             lazy_item = self.lazy_items[item_key]
             pargs = lazy_item.pargs
@@ -1682,17 +1762,17 @@ class LazyItemsDict(UserDict):
 
         return UserDict.__getitem__(self, item_key)
 
-    def __setitem__(self, item_key, value):
+    def __setitem__(self, item_key: str, value: str) -> None:
         if item_key in self.lazy_items:
             del self.lazy_items[item_key]
         UserDict.__setitem__(self, item_key, value)
 
-    def __delitem__(self, item_key):
+    def __delitem__(self, item_key: str) -> None:
         if item_key in self.lazy_items:
             del self.lazy_items[item_key]
         UserDict.__delitem__(self, item_key)
 
-    def clear(self):
+    def clear(self) -> None:
         self.lazy_items.clear()
         UserDict.clear(self)
 
@@ -1702,7 +1782,9 @@ class LazyItemsDict(UserDict):
     def __copy__(self):
         return self.__class__(self)
 
-    def __deepcopy__(self, memo=None):
+    def __deepcopy__(
+        self, memo: Dict[int, Union[Dict[str, Any], List[Dict[str, str]]]] = None
+    ) -> LazyItemsDict:
         """
         This forces evaluation of each contained lazy item, and deepcopy of
         the result. A TypeError is raised if any contained lazy item is not
@@ -1734,7 +1816,13 @@ class LazyItemsDict(UserDict):
 
         __slots__ = ("func", "pargs", "kwargs", "singleton")
 
-        def __init__(self, func, pargs, kwargs, singleton):
+        def __init__(
+            self,
+            func: Union[Callable, _LazyImportFrom, type],
+            pargs: Tuple[str, ...],
+            kwargs: Dict[str, Any],
+            singleton: bool,
+        ) -> None:
 
             if not pargs:
                 pargs = None
@@ -1928,7 +2016,7 @@ def new_protect_filename(mydest, newmd5=None, force=False):
     return new_pfile
 
 
-def find_updated_config_files(target_root, config_protect):
+def find_updated_config_files(target_root: str, config_protect: List[str]) -> Iterator:
     """
     Return a tuple of configuration files that needs to be updated.
     The tuple contains lists organized like this:

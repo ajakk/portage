@@ -25,7 +25,7 @@ def process(mysettings, key, logentries, fulltext):
     _items.append((mysettings["ROOT"], key, logentries, logfile))
 
 
-def finalize():
+def finalize() -> None:
     # For consistency, send all message types to stdout.
     sys.stdout.flush()
     sys.stderr.flush()
@@ -39,7 +39,7 @@ def finalize():
         sys.stderr.flush()
 
 
-def _finalize():
+def _finalize() -> None:
     global _items
     printer = EOutput()
     for root, key, logentries, logfile in _items:

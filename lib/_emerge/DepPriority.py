@@ -8,7 +8,7 @@ class DepPriority(AbstractDepPriority):
 
     __slots__ = ("satisfied", "optional", "ignored")
 
-    def __int__(self):
+    def __int__(self) -> int:
         """
         Note: These priorities are only used for measuring hardness
         in the circular dependency display via digraph.debug_print(),

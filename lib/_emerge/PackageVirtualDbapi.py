@@ -3,6 +3,16 @@
 
 from portage.dbapi import dbapi
 from portage.dbapi.dep_expand import dep_expand
+from portage.package.ebuild.config import config
+from typing import Any
+from typing import Optional
+from typing import Tuple
+from _emerge.Package import Package
+from portage.dep import Atom
+from typing import List
+from portage.versions import _pkg_str
+from typing import Union
+from typing import Dict
 
 
 class PackageVirtualDbapi(dbapi):
@@ -14,7 +24,7 @@ class PackageVirtualDbapi(dbapi):
     internally (passed in via cpv_inject() and cpv_remove() calls).
     """
 
-    def __init__(self, settings):
+    def __init__(self, settings: config) -> None:
         dbapi.__init__(self)
         self.settings = settings
         self._match_cache = {}
@@ -39,10 +49,10 @@ class PackageVirtualDbapi(dbapi):
         obj._cpv_map = self._cpv_map.copy()
         return obj
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return bool(self._cpv_map)
 
-    def __iter__(self):
+    def __iter__(self) -> dict_valueiterator:
         return iter(self._cpv_map.values())
 
     def __contains__(self, item):
@@ -51,7 +61,9 @@ class PackageVirtualDbapi(dbapi):
             return True
         return False
 
-    def get(self, item, default=None):
+    def get(
+        self, item: Tuple[str, str, str, str, str], default: Optional[Any] = None
+    ) -> Optional[Any]:
         cpv = getattr(item, "cpv", None)
         if cpv is None:
             if len(item) != 5:
@@ -63,16 +75,16 @@ class PackageVirtualDbapi(dbapi):
             return existing
         return default
 
-    def match_pkgs(self, atom):
+    def match_pkgs(self, atom: Atom) -> List[Package]:
         return [self._cpv_map[cpv] for cpv in self.match(atom)]
 
-    def _clear_cache(self):
+    def _clear_cache(self) -> None:
         if self._categories is not None:
             self._categories = None
         if self._match_cache:
             self._match_cache = {}
 
-    def match(self, origdep, use_cache=1):
+    def match(self, origdep: Atom, use_cache: int = 1) -> List[_pkg_str]:
         atom = dep_expand(origdep, mydb=self, settings=self.settings)
         cache_key = (atom, atom.unevaluated_atom)
         result = self._match_cache.get(cache_key)
@@ -82,10 +94,10 @@ class PackageVirtualDbapi(dbapi):
         self._match_cache[cache_key] = result
         return result[:]
 
-    def cpv_exists(self, cpv, myrepo=None):
+    def cpv_exists(self, cpv: _pkg_str, myrepo: Optional[Any] = None) -> bool:
         return cpv in self._cpv_map
 
-    def cp_list(self, mycp, use_cache=1):
+    def cp_list(self, mycp: str, use_cache: int = 1) -> List[_pkg_str]:
         # NOTE: Cache can be safely shared with the match cache, since the
         # match cache uses the result from dep_expand for the cache_key.
         cache_key = (mycp, mycp)
@@ -107,7 +119,7 @@ class PackageVirtualDbapi(dbapi):
     def cpv_all(self):
         return list(self._cpv_map)
 
-    def cpv_inject(self, pkg):
+    def cpv_inject(self, pkg: Package) -> None:
         cp_list = self._cp_map.get(pkg.cp)
         if cp_list is None:
             cp_list = []
@@ -127,7 +139,7 @@ class PackageVirtualDbapi(dbapi):
         self._cpv_map[pkg.cpv] = pkg
         self._clear_cache()
 
-    def cpv_remove(self, pkg):
+    def cpv_remove(self, pkg: Package) -> None:
         old_pkg = self._cpv_map.get(pkg.cpv)
         if old_pkg != pkg:
             raise KeyError(pkg)
@@ -135,10 +147,15 @@ class PackageVirtualDbapi(dbapi):
         del self._cpv_map[pkg.cpv]
         self._clear_cache()
 
-    def aux_get(self, cpv, wants, myrepo=None):
+    def aux_get(
+        self,
+        cpv: Union[_pkg_str, str],
+        wants: Union[List[str], Tuple[str, ...]],
+        myrepo: Optional[Any] = None,
+    ) -> List[str]:
         metadata = self._cpv_map[cpv]._metadata
         return [metadata.get(x, "") for x in wants]
 
-    def aux_update(self, cpv, values):
+    def aux_update(self, cpv: _pkg_str, values: Dict[str, str]) -> None:
         self._cpv_map[cpv]._metadata.update(values)
         self._clear_cache()

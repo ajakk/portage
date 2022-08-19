@@ -14,13 +14,17 @@ from portage import _encodings
 from portage import _unicode_encode
 from portage.exception import InvalidData
 from portage.versions import _pkg_str
+from typing import Any
+from typing import Dict
+from typing import Union
+from typing import List
 
 
 class database(fs_template.FsBased):
 
     autocommits = True
 
-    def __init__(self, *args, **config):
+    def __init__(self, *args: Any, **config: Any) -> None:
         super(database, self).__init__(*args, **config)
         self.location = os.path.join(
             self.location, self.label.lstrip(os.path.sep).rstrip(os.path.sep)
@@ -32,7 +36,7 @@ class database(fs_template.FsBased):
         if not self.readonly and not os.path.exists(self.location):
             self._ensure_dirs()
 
-    def _getitem(self, cpv):
+    def _getitem(self, cpv: Union[_pkg_str, str]) -> Dict[str, str]:
         # Don't use os.path.join, for better performance.
         fp = self.location + _os.sep + cpv
         try:
@@ -56,7 +60,7 @@ class database(fs_template.FsBased):
                 raise cache_errors.CacheCorruption(cpv, e)
             raise KeyError(cpv, e)
 
-    def _parse_data(self, data, cpv):
+    def _parse_data(self, data: List[str], cpv: Union[_pkg_str, str]) -> Dict[str, str]:
         try:
             return dict(x.split("=", 1) for x in data)
         except ValueError as e:

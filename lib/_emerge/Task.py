@@ -2,12 +2,19 @@
 # Distributed under the terms of the GNU General Public License v2
 
 from portage.util.SlotObject import SlotObject
+from _emerge.Blocker import Blocker
+from _emerge.Package import Package
+from typing import Tuple
+from typing import Union
+from _emerge.SetArg import SetArg
 
 
 class Task(SlotObject):
     __slots__ = ("_hash_key", "_hash_value")
 
-    def __eq__(self, other):
+    def __eq__(
+        self, other: Union[Tuple[str, str, str, str, str], Blocker, Package]
+    ) -> bool:
         try:
             return self._hash_key == other._hash_key
         except AttributeError:
@@ -15,7 +22,7 @@ class Task(SlotObject):
             # for lookups here, so handle that
             return self._hash_key == other
 
-    def __ne__(self, other):
+    def __ne__(self, other: Union[Package, SetArg]) -> bool:
         try:
             return self._hash_key != other._hash_key
         except AttributeError:

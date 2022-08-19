@@ -12,6 +12,15 @@ __all__ = [
 ]
 
 import weakref
+from typing import Any
+from typing import Iterator
+from typing import Tuple
+from typing import Union
+from typing import Optional
+from typing import Dict
+from portage.dbapi.porttree import portagetree
+from portage.dbapi.vartree import vartree
+from typing import Set
 
 
 class Mapping:
@@ -49,7 +58,7 @@ class Mapping:
         for _, v in self.items():
             yield v
 
-    def get(self, key, default=None):
+    def get(self, key: str, default: Optional[str] = None) -> Any:
         try:
             return self[key]
         except KeyError:
@@ -85,7 +94,7 @@ class MutableMapping(Mapping):
             self[key] = default
         return default
 
-    def pop(self, key, *args):
+    def pop(self, key: str, *args: Any) -> Optional[str]:
         if len(args) > 1:
             raise TypeError(
                 "pop expected at most 2 arguments, got " + repr(1 + len(args))
@@ -107,7 +116,7 @@ class MutableMapping(Mapping):
         del self[k]
         return (k, v)
 
-    def update(self, *args, **kwargs):
+    def update(self, *args: Dict[str, str], **kwargs: Any) -> None:
         if len(args) > 1:
             raise TypeError(
                 "expected at most 1 positional argument, got " + repr(len(args))
@@ -145,7 +154,7 @@ class UserDict(MutableMapping):
 
     __slots__ = ("data",)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Dict[str, str], **kwargs: Any) -> None:
 
         self.data = {}
 
@@ -163,25 +172,25 @@ class UserDict(MutableMapping):
     def __repr__(self):
         return repr(self.data)
 
-    def __contains__(self, key):
+    def __contains__(self, key: str) -> bool:
         return key in self.data
 
-    def __iter__(self):
+    def __iter__(self) -> dict_keyiterator:
         return iter(self.data)
 
     def __len__(self):
         return len(self.data)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> Union[portagetree, vartree, str]:
         return self.data[key]
 
-    def __setitem__(self, key, item):
+    def __setitem__(self, key: str, item: Optional[str]) -> None:
         self.data[key] = item
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: str) -> None:
         del self.data[key]
 
-    def clear(self):
+    def clear(self) -> None:
         self.data.clear()
 
     keys = __iter__
@@ -205,7 +214,7 @@ class ProtectedDict(MutableMapping):
         if key in self.blacklist:
             del self.blacklist[key]
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> Dict[str, Any]:
         if key in self.new:
             return self.new[key]
         if key in self.blacklist:
@@ -275,7 +284,7 @@ class LazyLoad(Mapping):
 _slot_dict_classes = weakref.WeakValueDictionary()
 
 
-def slot_dict_class(keys, prefix="_val_"):
+def slot_dict_class(keys: Set[str], prefix: str = "_val_") -> type:
     """
     Generates mapping classes that behave similar to a dict but store values
     as object attributes that are allocated via __slots__. Instances of these
@@ -303,7 +312,7 @@ def slot_dict_class(keys, prefix="_val_"):
             _prefix = prefix
             __slots__ = ("__weakref__",) + tuple(prefix + k for k in allowed_keys)
 
-            def __init__(self, *args, **kwargs):
+            def __init__(self, *args: Any, **kwargs: Any) -> None:
 
                 if len(args) > 1:
                     raise TypeError(
@@ -320,13 +329,13 @@ def slot_dict_class(keys, prefix="_val_"):
                 for k, v in self.iteritems():
                     yield k
 
-            def __len__(self):
+            def __len__(self) -> int:
                 l = 0
                 for i in self.iteritems():
                     l += 1
                 return l
 
-            def iteritems(self):
+            def iteritems(self) -> Iterator[Tuple[str, str]]:
                 prefix = self._prefix
                 for k in self.allowed_keys:
                     try:
@@ -344,7 +353,7 @@ def slot_dict_class(keys, prefix="_val_"):
                 except AttributeError:
                     raise KeyError(k)
 
-            def __setitem__(self, k, v):
+            def __setitem__(self, k: str, v: str) -> None:
                 setattr(self, self._prefix + k, v)
 
             def setdefault(self, key, default=None):
@@ -354,7 +363,7 @@ def slot_dict_class(keys, prefix="_val_"):
                     self[key] = default
                 return default
 
-            def update(self, *args, **kwargs):
+            def update(self, *args: Any, **kwargs: Any) -> None:
                 if len(args) > 1:
                     raise TypeError(
                         "expected at most 1 positional argument, got " + repr(len(args))
@@ -381,19 +390,21 @@ def slot_dict_class(keys, prefix="_val_"):
                 if kwargs:
                     self.update(kwargs)
 
-            def __getitem__(self, k):
+            def __getitem__(self, k: str) -> Union[float, str]:
                 try:
                     return getattr(self, self._prefix + k)
                 except AttributeError:
                     raise KeyError(k)
 
-            def get(self, key, default=None):
+            def get(
+                self, key: str, default: Optional[str] = None
+            ) -> Union[None, float, str]:
                 try:
                     return self[key]
                 except KeyError:
                     return default
 
-            def __contains__(self, k):
+            def __contains__(self, k: str) -> bool:
                 return hasattr(self, self._prefix + k)
 
             def pop(self, key, *args):

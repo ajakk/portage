@@ -5,6 +5,8 @@ __all__ = ["lazyimport"]
 
 import sys
 import types
+from typing import Any
+from typing import Dict
 
 try:
     import threading
@@ -54,7 +56,7 @@ def _register_module_proxy(name, proxy):
         _module_proxies_lock.release()
 
 
-def _unregister_module_proxy(name):
+def _unregister_module_proxy(name: str) -> None:
     """
     Destroy all proxies that reference the give module name. Also, check
     for other proxies referenced by modules that have been imported and
@@ -152,7 +154,7 @@ class _LazyImportFrom(_LazyImport):
         return target
 
 
-def lazyimport(scope, *args):
+def lazyimport(scope: Dict[str, Any], *args: str) -> None:
     """
     Create a proxy in the given scope in order to performa a lazy import.
 

@@ -36,6 +36,9 @@ from asyncio import (
     InvalidStateError,
     TimeoutError,
 )
+from portage.util._eventloop.asyncio_event_loop import AsyncioEventLoop
+from typing import Any
+from typing import Optional
 
 try:
     import threading
@@ -221,7 +224,7 @@ def sleep(delay, result=None, loop=None):
     return future
 
 
-def _wrap_loop(loop=None):
+def _wrap_loop(loop: AsyncioEventLoop = None) -> AsyncioEventLoop:
     """
     In order to deal with asyncio event loop compatibility issues,
     use this function to wrap the loop parameter for functions
@@ -242,7 +245,7 @@ def _wrap_loop(loop=None):
     return loop if hasattr(loop, "_asyncio_wrapper") else _AsyncioEventLoop(loop=loop)
 
 
-def _safe_loop():
+def _safe_loop() -> AsyncioEventLoop:
     """
     Return an event loop that's safe to use within the current context.
     For portage internal callers or external API consumers calling from
@@ -298,7 +301,7 @@ def _safe_loop():
     return loop
 
 
-def _get_running_loop():
+def _get_running_loop() -> Optional[Any]:
     with _thread_weakrefs.lock:
         if _thread_weakrefs.pid == portage.getpid():
             try:

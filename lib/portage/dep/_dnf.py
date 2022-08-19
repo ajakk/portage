@@ -2,9 +2,15 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import itertools
+from portage.dep import Atom
+from typing import Any
+from typing import List
+from typing import Union
 
 
-def dnf_convert(dep_struct):
+def dnf_convert(
+    dep_struct: Any,
+) -> Union[List[List[Union[List[Atom], str]]], List[Atom]]:
     """
     Convert dep_struct to disjunctive normal form (DNF), where dep_struct
     is either a conjunction or disjunction of the form produced by
@@ -75,7 +81,7 @@ def dnf_convert(dep_struct):
     return result
 
 
-def contains_disjunction(dep_struct):
+def contains_disjunction(dep_struct: Any) -> bool:
     """
     Search for a disjunction contained in dep_struct, where dep_struct
     is either a conjunction or disjunction of the form produced by

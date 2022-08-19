@@ -7,7 +7,7 @@ from portage import os
 from portage.exception import PermissionDenied
 
 
-def exists_raise_eaccess(path):
+def exists_raise_eaccess(path: str) -> bool:
     try:
         os.stat(path)
     except OSError as e:
@@ -18,7 +18,7 @@ def exists_raise_eaccess(path):
         return True
 
 
-def isdir_raise_eaccess(path):
+def isdir_raise_eaccess(path: str) -> bool:
     try:
         st = os.stat(path)
     except OSError as e:

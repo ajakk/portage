@@ -25,6 +25,7 @@ from portage.util import varexpand
 from portage.util import writemsg_level
 from portage.util._dyn_libs.NeededEntry import NeededEntry
 from portage.util.elf.header import ELFHeader
+from portage.dbapi.vartree import vardbapi
 
 
 # Map ELF e_machine values from NEEDED.ELF.2 to approximate multilib
@@ -77,7 +78,7 @@ class LinkageMapELF:
             self.alt_paths = alt_paths
             self.owner = owner
 
-    def __init__(self, vardbapi):
+    def __init__(self, vardbapi: vardbapi) -> None:
         self._dbapi = vardbapi
         self._root = self._dbapi.settings["ROOT"]
         self._libs = {}

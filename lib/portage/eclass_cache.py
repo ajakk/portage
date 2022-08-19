@@ -13,13 +13,19 @@ from portage.exception import FileNotFound, PermissionDenied
 from portage import os
 from portage import checksum
 from portage import _shell_quote
+from typing import Union
+from typing import Any
+from typing import Optional
+from portage.eclass_cache import cache
+from portage.eclass_cache import hashed_path
+from typing import Dict
 
 
 class hashed_path:
-    def __init__(self, location):
+    def __init__(self, location: str) -> None:
         self.location = location
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: str) -> Union[int, str]:
         if attr == "mtime":
             # use stat.ST_MTIME; accessing .st_mtime gets you a float
             # depending on the python version, and int(float) introduces
@@ -55,7 +61,9 @@ class cache:
     Maintains the cache information about eclasses used in ebuild.
     """
 
-    def __init__(self, porttree_root, overlays=None):
+    def __init__(
+        self, porttree_root: Optional[str], overlays: Optional[Any] = None
+    ) -> None:
         if overlays is not None:
             warnings.warn(
                 "overlays parameter of portage.eclass_cache.cache constructor is deprecated and no longer used",
@@ -79,10 +87,10 @@ class cache:
             self.porttrees = ()
             self._master_eclass_root = None
 
-    def copy(self):
+    def copy(self) -> cache:
         return self.__copy__()
 
-    def __copy__(self):
+    def __copy__(self) -> cache:
         result = self.__class__(None)
         result.eclasses = self.eclasses.copy()
         result._eclass_locations = self._eclass_locations.copy()
@@ -91,7 +99,7 @@ class cache:
         result._master_eclass_root = self._master_eclass_root
         return result
 
-    def append(self, other):
+    def append(self, other: cache) -> None:
         """
         Append another instance to this instance. This will cause eclasses
         from the other instance to override any eclasses from this instance
@@ -104,7 +112,7 @@ class cache:
         self._eclass_locations.update(other._eclass_locations)
         self._eclass_locations_str = None
 
-    def update_eclasses(self):
+    def update_eclasses(self) -> None:
         self.eclasses = {}
         self._eclass_locations = {}
         master_eclasses = {}
@@ -146,7 +154,9 @@ class cache:
                 self.eclasses[ys] = obj
                 self._eclass_locations[ys] = x
 
-    def validate_and_rewrite_cache(self, ec_dict, chf_type, stores_paths):
+    def validate_and_rewrite_cache(
+        self, ec_dict: Dict[str, str], chf_type: str, stores_paths: bool
+    ) -> Dict[str, hashed_path]:
         """
         This will return an empty dict if the ec_dict parameter happens
         to be empty, therefore callers must take care to distinguish

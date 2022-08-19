@@ -8,9 +8,10 @@ from portage import os
 from portage.localization import _
 from portage.output import bold, colorize, yellow
 from portage.util import writemsg_level
+from typing import List
 
 
-def chk_updated_cfg_files(eroot, config_protect):
+def chk_updated_cfg_files(eroot: str, config_protect: List[str]) -> None:
     target_root = eroot
     result = list(portage.util.find_updated_config_files(target_root, config_protect))
 

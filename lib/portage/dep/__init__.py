@@ -35,6 +35,22 @@ import warnings
 from functools import lru_cache
 
 import portage
+from typing import List
+from typing import Union
+from portage.versions import _pkg_str
+from typing import Iterator
+from typing import Tuple
+from portage.dep import Atom
+from portage.eapi import _eapi_attrs
+from typing import Any
+from typing import Optional
+from typing import Set
+from portage.dep import _use_dep
+from typing import Callable
+from typing import Dict
+from _emerge.Package import Package
+from portage.dep import _RequiredUseBranch
+from re import Pattern
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -80,7 +96,7 @@ _extended_cat = r"[\w+*][\w+.*-]*"
 _slot_dep_re_cache = {}
 
 
-def _get_slot_dep_re(eapi_attrs):
+def _get_slot_dep_re(eapi_attrs: _eapi_attrs) -> Pattern:
     cache_key = eapi_attrs.slot_operator
     slot_re = _slot_dep_re_cache.get(cache_key)
     if slot_re is not None:
@@ -97,7 +113,7 @@ def _get_slot_dep_re(eapi_attrs):
     return slot_re
 
 
-def _match_slot(atom, pkg):
+def _match_slot(atom: Atom, pkg: Union[Package, _pkg_str]) -> bool:
     if pkg.slot == atom.slot:
         if not atom.sub_slot:
             return True
@@ -109,7 +125,7 @@ def _match_slot(atom, pkg):
 _atom_re = None
 
 
-def _get_atom_re(eapi_attrs):
+def _get_atom_re(eapi_attrs: _eapi_attrs) -> Pattern:
     global _atom_re
     if _atom_re is not None:
         return _atom_re
@@ -145,7 +161,7 @@ def _get_atom_re(eapi_attrs):
 _atom_wildcard_re = None
 
 
-def _get_atom_wildcard_re(eapi_attrs):
+def _get_atom_wildcard_re(eapi_attrs: _eapi_attrs) -> Pattern:
     global _atom_wildcard_re
     if _atom_wildcard_re is not None:
         return _atom_wildcard_re
@@ -180,7 +196,7 @@ def _get_atom_wildcard_re(eapi_attrs):
 _usedep_re = None
 
 
-def _get_usedep_re(eapi_attrs):
+def _get_usedep_re(eapi_attrs: _eapi_attrs) -> Pattern:
     """
     @param eapi_attrs: The EAPI attributes from _get_eapi_attrs
     @type eapi_attrs: _eapi_attrs
@@ -203,7 +219,7 @@ def _get_usedep_re(eapi_attrs):
 _useflag_re = None
 
 
-def _get_useflag_re(eapi):
+def _get_useflag_re(eapi: Optional[str]) -> Pattern:
     """
     When eapi is None then validation is not as strict, since we want the
     same to work for multiple EAPIs that may have slightly different rules.
@@ -221,7 +237,7 @@ def _get_useflag_re(eapi):
     return _useflag_re
 
 
-def cpvequal(cpv1, cpv2):
+def cpvequal(cpv1: Union[_pkg_str, str], cpv2: Union[_pkg_str, str]) -> bool:
     """
     Example Usage:
             >>> from portage.dep import cpvequal
@@ -444,7 +460,9 @@ class paren_normalize(list):
         return dest
 
 
-def paren_enclose(mylist, unevaluated_atom=False, opconvert=False):
+def paren_enclose(
+    mylist: List[str], unevaluated_atom: bool = False, opconvert: bool = False
+) -> str:
     """
     Convert a list to a string with sublists enclosed with parens.
 
@@ -474,20 +492,20 @@ def paren_enclose(mylist, unevaluated_atom=False, opconvert=False):
 
 @lru_cache(1024)
 def _use_reduce_cached(
-    depstr,
-    uselist,
-    masklist,
-    matchall,
-    excludeall,
-    is_src_uri,
-    eapi,
-    opconvert,
-    flat,
-    is_valid_flag,
-    token_class,
-    matchnone,
-    subset,
-):
+    depstr: str,
+    uselist: frozenset,
+    masklist: frozenset,
+    matchall: bool,
+    excludeall: frozenset,
+    is_src_uri: bool,
+    eapi: Optional[str],
+    opconvert: bool,
+    flat: bool,
+    is_valid_flag: Optional[Callable],
+    token_class: Optional[type],
+    matchnone: bool,
+    subset: Optional[Any],
+) -> Union[List[Union[List[Atom], Atom, str]], List[Atom], List[str]]:
     if opconvert and flat:
         raise ValueError(
             "portage.dep.use_reduce: 'opconvert' and 'flat' are mutually exclusive"
@@ -501,7 +519,7 @@ def _use_reduce_cached(
     eapi_attrs = _get_eapi_attrs(eapi)
     useflag_re = _get_useflag_re(eapi)
 
-    def is_active(conditional):
+    def is_active(conditional: str) -> bool:
         """
         Decides if a given use conditional is active.
         """
@@ -679,14 +697,14 @@ def _use_reduce_cached(
                             ignore = True
                         stack[level].pop()
 
-                def ends_in_any_of_dep(k):
+                def ends_in_any_of_dep(k: int) -> Union[List, bool]:
                     return k >= 0 and stack[k] and stack[k][-1] == "||"
 
                 def starts_with_any_of_dep(k):
                     # 'ends_in_any_of_dep' for opconvert
                     return k >= 0 and stack[k] and stack[k][0] == "||"
 
-                def last_any_of_operator_level(k):
+                def last_any_of_operator_level(k: int) -> int:
                     # Returns the level of the last || operator if it is in effect for
                     # the current level. It is not in effect, if there is a level, that
                     # ends in a non-operator. This is almost equivalent to stack[level][-1]=="||",
@@ -700,7 +718,7 @@ def _use_reduce_cached(
                         k -= 1
                     return -1
 
-                def special_append():
+                def special_append() -> None:
                     """
                     Use extend instead of append if possible. This kills all redundant brackets.
                     """
@@ -863,20 +881,24 @@ def _use_reduce_cached(
 
 
 def use_reduce(
-    depstr,
-    uselist=(),
-    masklist=(),
-    matchall=False,
-    excludeall=(),
-    is_src_uri=False,
-    eapi=None,
-    opconvert=False,
-    flat=False,
-    is_valid_flag=None,
-    token_class=None,
-    matchnone=False,
-    subset=None,
-):
+    depstr: str,
+    uselist: Union[List, Tuple[()], frozenset] = (),
+    masklist: Tuple[()] = (),
+    matchall: bool = False,
+    excludeall: Tuple[()] = (),
+    is_src_uri: bool = False,
+    eapi: Optional[str] = None,
+    opconvert: bool = False,
+    flat: bool = False,
+    is_valid_flag: Optional[Callable] = None,
+    token_class: Optional[type] = None,
+    matchnone: bool = False,
+    subset: Optional[Any] = None,
+) -> Union[
+    List[Union[List[List[Atom]], List[Atom], str]],
+    List[Union[List[Atom], Atom, str]],
+    List[Atom],
+]:
     """
     Takes a dep string and reduces the use? conditionals out, leaving an array
     with subarrays. All redundant brackets are removed.
@@ -1040,7 +1062,7 @@ class _use_dep:
     class _conditionals_class:
         __slots__ = ("enabled", "disabled", "equal", "not_equal")
 
-        def items(self):
+        def items(self) -> Iterator[Union[Iterator, Iterator[Tuple[str, frozenset]]]]:
             for k in self.__slots__:
                 v = getattr(self, k, None)
                 if v:
@@ -1062,15 +1084,15 @@ class _use_dep:
 
     def __init__(
         self,
-        use,
-        eapi_attrs,
-        enabled_flags=None,
-        disabled_flags=None,
-        missing_enabled=None,
-        missing_disabled=None,
-        conditional=None,
-        required=None,
-    ):
+        use: List[str],
+        eapi_attrs: _eapi_attrs,
+        enabled_flags: Optional[Set[str]] = None,
+        disabled_flags: Optional[Set[str]] = None,
+        missing_enabled: Optional[frozenset] = None,
+        missing_disabled: Optional[frozenset] = None,
+        conditional: Optional[Any] = None,
+        required: Optional[frozenset] = None,
+    ) -> None:
 
         self._eapi_attrs = eapi_attrs
 
@@ -1158,10 +1180,10 @@ class _use_dep:
             for k in "enabled", "disabled", "equal", "not_equal":
                 setattr(self.conditional, k, frozenset(conditional.get(k, ())))
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return bool(self.tokens)
 
-    def __str__(self):
+    def __str__(self) -> str:
         if not self.tokens:
             return ""
         return "[%s]" % (",".join(self.tokens),)
@@ -1169,7 +1191,7 @@ class _use_dep:
     def __repr__(self):
         return "portage.dep._use_dep(%s)" % repr(self.tokens)
 
-    def evaluate_conditionals(self, use):
+    def evaluate_conditionals(self, use: frozenset) -> _use_dep:
         """
         Create a new instance with conditionals evaluated.
 
@@ -1247,7 +1269,12 @@ class _use_dep:
             required=self.required,
         )
 
-    def violated_conditionals(self, other_use, is_valid_flag, parent_use=None):
+    def violated_conditionals(
+        self,
+        other_use: frozenset,
+        is_valid_flag: Callable,
+        parent_use: Optional[Any] = None,
+    ) -> _use_dep:
         """
         Create a new instance with satisfied use deps removed.
         """
@@ -1265,7 +1292,7 @@ class _use_dep:
 
         all_defaults = self.missing_enabled | self.missing_disabled
 
-        def validate_flag(flag):
+        def validate_flag(flag: str) -> bool:
             return is_valid_flag(flag) or flag in all_defaults
 
         usedep_re = _get_usedep_re(self._eapi_attrs)
@@ -1453,10 +1480,10 @@ class Atom(str):
         class _overlap:
             __slots__ = ("forbid",)
 
-            def __init__(self, forbid=False):
+            def __init__(self, forbid: bool = False) -> None:
                 self.forbid = forbid
 
-        def __init__(self, forbid_overlap=False):
+        def __init__(self, forbid_overlap: bool = False) -> None:
             self.overlap = self._overlap(forbid=forbid_overlap)
 
     def __new__(cls, s, *args, **kwargs):
@@ -1464,15 +1491,15 @@ class Atom(str):
 
     def __init__(
         self,
-        s,
-        unevaluated_atom=None,
-        allow_wildcard=False,
-        allow_repo=None,
-        _use=None,
-        eapi=None,
-        is_valid_flag=None,
-        allow_build_id=None,
-    ):
+        s: str,
+        unevaluated_atom: Optional[Any] = None,
+        allow_wildcard: bool = False,
+        allow_repo: Optional[bool] = None,
+        _use: Optional[Any] = None,
+        eapi: Optional[str] = None,
+        is_valid_flag: Optional[Any] = None,
+        allow_build_id: Optional[bool] = None,
+    ) -> None:
         if isinstance(s, Atom):
             # This is an efficiency assertion, to ensure that the Atom
             # constructor is not called redundantly.
@@ -1728,7 +1755,7 @@ class Atom(str):
                 )
 
     @property
-    def slot_operator_built(self):
+    def slot_operator_built(self) -> bool:
         """
         Returns True if slot_operator == "=" and sub_slot is not None.
         NOTE: foo/bar:2= is unbuilt and returns False, whereas foo/bar:2/2=
@@ -1737,7 +1764,7 @@ class Atom(str):
         return self.slot_operator == "=" and self.sub_slot is not None
 
     @property
-    def without_repo(self):
+    def without_repo(self) -> Atom:
         if self.repo is None:
             return self
         return Atom(
@@ -1745,7 +1772,7 @@ class Atom(str):
         )
 
     @property
-    def without_slot(self):
+    def without_slot(self) -> Atom:
         if self.slot is None and self.slot_operator is None:
             return self
         atom = remove_slot(self)
@@ -1755,7 +1782,7 @@ class Atom(str):
             atom += str(self.use)
         return Atom(atom, allow_repo=True, allow_wildcard=True)
 
-    def with_repo(self, repo):
+    def with_repo(self, repo: str) -> Atom:
         atom = remove_slot(self)
         if self.slot is not None or self.slot_operator is not None:
             atom += _slot_separator
@@ -1770,7 +1797,7 @@ class Atom(str):
             atom += str(self.use)
         return Atom(atom, allow_repo=True, allow_wildcard=True)
 
-    def with_slot(self, slot):
+    def with_slot(self, slot: str) -> Atom:
         atom = remove_slot(self) + _slot_separator + slot
         if self.repo is not None:
             atom += _repo_separator + self.repo
@@ -1813,7 +1840,7 @@ class Atom(str):
 
         return False
 
-    def evaluate_conditionals(self, use):
+    def evaluate_conditionals(self, use: frozenset) -> Atom:
         """
         Create an atom instance with any USE conditionals evaluated.
         @param use: The set of enabled USE flags
@@ -1841,7 +1868,12 @@ class Atom(str):
             _use=use_dep,
         )
 
-    def violated_conditionals(self, other_use, is_valid_flag, parent_use=None):
+    def violated_conditionals(
+        self,
+        other_use: frozenset,
+        is_valid_flag: Callable,
+        parent_use: Optional[Any] = None,
+    ) -> Atom:
         """
         Create an atom instance with any USE conditional removed, that is
         satisfied by other_use.
@@ -1899,12 +1931,12 @@ class Atom(str):
         """Immutable, so returns self."""
         return self
 
-    def __deepcopy__(self, memo=None):
+    def __deepcopy__(self, memo: Dict[int, Any] = None) -> Atom:
         """Immutable, so returns self."""
         memo[id(self)] = self
         return self
 
-    def match(self, pkg):
+    def match(self, pkg: Package) -> bool:
         """
         Check if the given package instance matches this atom.
 
@@ -1919,7 +1951,7 @@ class Atom(str):
 _extended_cp_re_cache = {}
 
 
-def extended_cp_match(extended_cp, other_cp):
+def extended_cp_match(extended_cp: str, other_cp: str) -> bool:
     """
     Checks if an extended syntax cp matches a non extended cp
     """
@@ -1945,7 +1977,7 @@ class ExtendedAtomDict(portage.cache.mappings.MutableMapping):
 
     __slots__ = ("_extended", "_normal", "_value_class")
 
-    def __init__(self, value_class):
+    def __init__(self, value_class: type) -> None:
         self._extended = {}
         self._normal = {}
         self._value_class = value_class
@@ -1962,7 +1994,7 @@ class ExtendedAtomDict(portage.cache.mappings.MutableMapping):
         for k in self._extended:
             yield k
 
-    def iteritems(self):
+    def iteritems(self) -> Iterator[Union[Iterator, Iterator[Tuple[str, List[Atom]]]]]:
         try:
             for item in self._normal.items():
                 yield item
@@ -1971,7 +2003,7 @@ class ExtendedAtomDict(portage.cache.mappings.MutableMapping):
         except AttributeError:
             pass  # FEATURES=python-trace
 
-    def __delitem__(self, cp):
+    def __delitem__(self, cp: str) -> Optional[Any]:
         if "*" in cp:
             return self._extended.__delitem__(cp)
         return self._normal.__delitem__(cp)
@@ -1982,12 +2014,14 @@ class ExtendedAtomDict(portage.cache.mappings.MutableMapping):
     def __len__(self):
         return len(self._normal) + len(self._extended)
 
-    def setdefault(self, cp, default=None):
+    def setdefault(
+        self, cp: str, default: Union[Dict, List, Set] = None
+    ) -> Union[Dict, List[Atom], Set]:
         if "*" in cp:
             return self._extended.setdefault(cp, default)
         return self._normal.setdefault(cp, default)
 
-    def __getitem__(self, cp):
+    def __getitem__(self, cp: str) -> Any:
 
         if not isinstance(cp, str):
             raise KeyError(cp)
@@ -2023,7 +2057,7 @@ class ExtendedAtomDict(portage.cache.mappings.MutableMapping):
 
         return ret
 
-    def __setitem__(self, cp, val):
+    def __setitem__(self, cp: str, val: Tuple[Atom, ...]) -> None:
         if "*" in cp:
             self._extended[cp] = val
         else:
@@ -2036,7 +2070,7 @@ class ExtendedAtomDict(portage.cache.mappings.MutableMapping):
             and self._normal == other._normal
         )
 
-    def clear(self):
+    def clear(self) -> None:
         self._extended.clear()
         self._normal.clear()
 
@@ -2081,7 +2115,7 @@ def dep_getcpv(mydep):
     return mydep.cpv
 
 
-def dep_getslot(mydep):
+def dep_getslot(mydep: Atom) -> Optional[str]:
     """
     Retrieve the slot on a depend.
 
@@ -2142,7 +2176,7 @@ def dep_getrepo(mydep):
     return None
 
 
-def remove_slot(mydep):
+def remove_slot(mydep: Atom) -> Union[Atom, str]:
     """
     Removes dep components from the right side of an atom:
             - slot
@@ -2225,13 +2259,13 @@ def dep_getusedeps(depend):
 
 
 def isvalidatom(
-    atom,
-    allow_blockers=False,
-    allow_wildcard=False,
-    allow_repo=False,
-    eapi=None,
-    allow_build_id=False,
-):
+    atom: str,
+    allow_blockers: bool = False,
+    allow_wildcard: bool = False,
+    allow_repo: bool = False,
+    eapi: Optional[Any] = None,
+    allow_build_id: bool = False,
+) -> bool:
     """
     Check to see if a depend atom is valid
 
@@ -2347,7 +2381,9 @@ def dep_getkey(mydep):
     return mydep.cp
 
 
-def match_to_list(mypkg, mylist):
+def match_to_list(
+    mypkg: Union[Package, _pkg_str], mylist: Union[List[Atom], dict_keyiterator]
+) -> List[Atom]:
     """
     Searches list for entries that matches the package.
 
@@ -2369,7 +2405,9 @@ def match_to_list(mypkg, mylist):
     return result
 
 
-def best_match_to_list(mypkg, mylist):
+def best_match_to_list(
+    mypkg: Union[Package, _pkg_str], mylist: Union[List[Atom], dict_keyiterator]
+) -> Optional[Atom]:
     """
     Returns the most specific entry that matches the package given.
 
@@ -2443,7 +2481,7 @@ def best_match_to_list(mypkg, mylist):
                 # Sort the cpvs to find the one closest to mypkg_cpv
                 cpv_list = [bestm.cpv, mypkg_cpv, x.cpv]
 
-                def cmp_cpv(cpv1, cpv2):
+                def cmp_cpv(cpv1: _pkg_str, cpv2: _pkg_str) -> int:
                     return vercmp(cpv1.version, cpv2.version)
 
                 cpv_list.sort(key=cmp_sort_key(cmp_cpv))
@@ -2457,7 +2495,12 @@ def best_match_to_list(mypkg, mylist):
     return bestm
 
 
-def match_from_list(mydep, candidate_list):
+def match_from_list(
+    mydep: Atom,
+    candidate_list: Union[
+        List[Package], List[_pkg_str], Tuple[Union[Package, _pkg_str]]
+    ],
+) -> Union[List[Package], List[_pkg_str]]:
     """
     Searches list for entries that matches the package.
 
@@ -2835,7 +2878,7 @@ class _RequiredUseLeaf:
 
     __slots__ = ("_satisfied", "_token")
 
-    def __init__(self, token, satisfied):
+    def __init__(self, token: str, satisfied: bool) -> None:
         self._token = token
         self._satisfied = satisfied
 
@@ -2847,13 +2890,17 @@ class _RequiredUseBranch:
 
     __slots__ = ("_children", "_operator", "_parent", "_satisfied")
 
-    def __init__(self, operator=None, parent=None):
+    def __init__(
+        self,
+        operator: Optional[str] = None,
+        parent: Optional[_RequiredUseBranch] = None,
+    ) -> None:
         self._children = []
         self._operator = operator
         self._parent = parent
         self._satisfied = False
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return self._satisfied
 
     def tounicode(self):
@@ -2888,7 +2935,9 @@ class _RequiredUseBranch:
         return " ".join(tokens)
 
 
-def check_required_use(required_use, use, iuse_match, eapi=None):
+def check_required_use(
+    required_use: str, use: Tuple[()], iuse_match: Callable, eapi: str = None
+) -> _RequiredUseBranch:
     """
     Checks if the use flags listed in 'use' satisfy all
     constraints specified in 'required_use'.
@@ -2910,7 +2959,7 @@ def check_required_use(required_use, use, iuse_match, eapi=None):
     else:
         valid_operators = ("||", "^^")
 
-    def is_active(token):
+    def is_active(token: str) -> bool:
         if token.startswith("!"):
             flag = token[1:]
             is_negated = True
@@ -2929,7 +2978,7 @@ def check_required_use(required_use, use, iuse_match, eapi=None):
 
         return (flag in use and not is_negated) or (flag not in use and is_negated)
 
-    def is_satisfied(operator, argument):
+    def is_satisfied(operator: str, argument: List[bool]) -> bool:
         if not argument and eapi_attrs.empty_groups_always_true:
             # || ( ) -> True
             return True

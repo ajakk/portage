@@ -31,6 +31,11 @@ from portage.repository.config import (
     _portage1_profiles_allow_directories,
     _profile_node,
 )
+from typing import Any
+from typing import Optional
+from portage.repository.config import RepoConfigLoader
+from typing import Dict
+from typing import Tuple
 
 
 _PORTAGE1_DIRECTORIES = frozenset(
@@ -51,13 +56,13 @@ _allow_parent_colon = frozenset(["portage-2"])
 class LocationsManager:
     def __init__(
         self,
-        config_root=None,
-        eprefix=None,
-        config_profile_path=None,
-        local_config=True,
-        target_root=None,
-        sysroot=None,
-    ):
+        config_root: Optional[Any] = None,
+        eprefix: Optional[Any] = None,
+        config_profile_path: Optional[Any] = None,
+        local_config: bool = True,
+        target_root: Optional[Any] = None,
+        sysroot: Optional[Any] = None,
+    ) -> None:
         self.user_profile_dir = None
         self._local_repo_conf_path = None
         self.eprefix = eprefix
@@ -99,7 +104,9 @@ class LocationsManager:
         # PORTAGE_OVERRIDE_EPREFIX.
         self.broot = portage.const.EPREFIX
 
-    def load_profiles(self, repositories, known_repository_paths):
+    def load_profiles(
+        self, repositories: RepoConfigLoader, known_repository_paths: frozenset
+    ) -> None:
         known_repository_paths = set(
             os.path.realpath(x) for x in known_repository_paths
         )
@@ -195,7 +202,7 @@ class LocationsManager:
         self.profiles = tuple(self.profiles)
         self.profiles_complex = tuple(self.profiles_complex)
 
-    def _check_var_directory(self, varname, var):
+    def _check_var_directory(self, varname: str, var: str) -> None:
         if not isdir_raise_eaccess(var):
             writemsg(
                 _("!!! Error: %s='%s' is not a directory. " "Please correct this.\n")
@@ -204,7 +211,20 @@ class LocationsManager:
             )
             raise DirectoryNotFound(var)
 
-    def _addProfile(self, currentPath, repositories, known_repos, previous_repos):
+    def _addProfile(
+        self,
+        currentPath: str,
+        repositories: RepoConfigLoader,
+        known_repos: Tuple[
+            Tuple[str, Dict[str, Any]],
+            Tuple[str, Dict[str, Any]],
+            Tuple[str, Dict[str, Any]],
+            Tuple[str, Dict[str, Any]],
+            Tuple[str, Dict[str, Any]],
+            Tuple[str, Dict[str, Any]],
+        ],
+        previous_repos: Tuple[Tuple[str, Dict[str, Any]], ...],
+    ) -> None:
         current_abs_path = os.path.abspath(currentPath)
         allow_directories = True
         allow_parent_colon = True
@@ -375,7 +395,7 @@ class LocationsManager:
 
         return parentPath
 
-    def set_root_override(self, root_overwrite=None):
+    def set_root_override(self, root_overwrite: Optional[Any] = None) -> None:
         # Allow ROOT setting to come from make.conf if it's not overridden
         # by the constructor argument (from the calling environment).
         if self.target_root is None and root_overwrite is not None:
@@ -411,7 +431,7 @@ class LocationsManager:
                 portage.const.EPREFIX, GLOBAL_CONFIG_PATH.lstrip(os.sep)
             )
 
-    def set_port_dirs(self, portdir, portdir_overlay):
+    def set_port_dirs(self, portdir: str, portdir_overlay: str) -> None:
         self.portdir = portdir
         self.portdir_overlay = portdir_overlay
         if self.portdir_overlay is None:

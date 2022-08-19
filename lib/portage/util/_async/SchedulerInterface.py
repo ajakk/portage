@@ -9,6 +9,9 @@ from portage import _unicode_encode
 from portage.util import writemsg_level
 from portage.util.futures._asyncio.streams import _writer
 from ..SlotObject import SlotObject
+from portage.util._eventloop.asyncio_event_loop import AsyncioEventLoop
+from typing import Any
+from typing import Callable
 
 
 class SchedulerInterface(SlotObject):
@@ -41,7 +44,12 @@ class SchedulerInterface(SlotObject):
 
     __slots__ = _event_loop_attrs + ("_event_loop", "_is_background")
 
-    def __init__(self, event_loop, is_background=None, **kwargs):
+    def __init__(
+        self,
+        event_loop: AsyncioEventLoop,
+        is_background: Callable = None,
+        **kwargs: Any
+    ) -> None:
         SlotObject.__init__(self, **kwargs)
         self._event_loop = event_loop
         if is_background is None:

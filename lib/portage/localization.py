@@ -10,7 +10,7 @@ from portage import _encodings, _unicode_decode
 # We define this to make the transition easier for us.
 
 
-def _(mystr):
+def _(mystr: str) -> str:
     """
     Always returns unicode, regardless of the input type. This is
     helpful for avoiding UnicodeDecodeError from __str__() with
@@ -31,7 +31,7 @@ def localization_example():
     print(_(f"A: {a_value} -- B: {b_value} -- C: {c_value}"))
 
 
-def localized_size(num_bytes):
+def localized_size(num_bytes: int) -> str:
     """
     Return pretty localized size string for num_bytes size
     (given in bytes). The output will be in kibibytes.

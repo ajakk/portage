@@ -4,10 +4,18 @@
 from portage import os
 from _emerge.AsynchronousTask import AsynchronousTask
 from _emerge.PollScheduler import PollScheduler
+from mypy_extensions import NoReturn
+from typing import Any
+from typing import Optional
 
 
 class AsyncScheduler(AsynchronousTask, PollScheduler):
-    def __init__(self, max_jobs=None, max_load=None, **kwargs):
+    def __init__(
+        self,
+        max_jobs: Optional[Any] = None,
+        max_load: Optional[Any] = None,
+        **kwargs: Any
+    ) -> None:
         AsynchronousTask.__init__(self)
         PollScheduler.__init__(self, **kwargs)
 
@@ -21,13 +29,13 @@ class AsyncScheduler(AsynchronousTask, PollScheduler):
         self._loadavg_check_id = None
 
     @property
-    def scheduler(self):
+    def scheduler(self) -> NoReturn:
         """
         Provides compatibility with the AsynchronousTask.scheduler attribute.
         """
         return self._event_loop
 
-    def _poll(self):
+    def _poll(self) -> int:
         if not (self._is_work_scheduled() or self._keep_scheduling()):
             if self._error_count > 0:
                 self.returncode = 1
@@ -47,13 +55,13 @@ class AsyncScheduler(AsynchronousTask, PollScheduler):
     def _next_task(self):
         raise NotImplementedError(self)
 
-    def _keep_scheduling(self):
+    def _keep_scheduling(self) -> bool:
         return self._remaining_tasks and not self._terminated.is_set()
 
-    def _running_job_count(self):
+    def _running_job_count(self) -> int:
         return len(self._running_tasks)
 
-    def _schedule_tasks(self):
+    def _schedule_tasks(self) -> None:
         while self._keep_scheduling() and self._can_add_job():
             try:
                 task = self._next_task()
@@ -80,7 +88,7 @@ class AsyncScheduler(AsynchronousTask, PollScheduler):
             self._error_count += 1
         self._schedule()
 
-    def _start(self):
+    def _start(self) -> None:
         if (
             self._max_load is not None
             and self._loadavg_latency is not None
@@ -93,13 +101,13 @@ class AsyncScheduler(AsynchronousTask, PollScheduler):
             )
         self._schedule()
 
-    def _cleanup(self):
+    def _cleanup(self) -> None:
         super(AsyncScheduler, self)._cleanup()
         if self._loadavg_check_id is not None:
             self._loadavg_check_id.cancel()
             self._loadavg_check_id = None
 
-    def _async_wait(self):
+    def _async_wait(self) -> None:
         """
         Override _async_wait to call self._cleanup().
         """

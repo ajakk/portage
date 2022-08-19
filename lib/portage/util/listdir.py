@@ -11,6 +11,8 @@ from portage import os
 from portage.const import VCS_DIRS
 from portage.exception import DirectoryNotFound, PermissionDenied, PortageException
 from portage.util import normalize_path
+from typing import List
+from typing import Tuple
 
 # The global dircache is no longer supported, since it could
 # be a memory leak for API consumers. Any cacheddir callers
@@ -22,8 +24,12 @@ dircache = {}
 
 
 def cacheddir(
-    my_original_path, ignorecvs, ignorelist, EmptyOnError, followSymlinks=True
-):
+    my_original_path: str,
+    ignorecvs: int,
+    ignorelist: List,
+    EmptyOnError: int,
+    followSymlinks: bool = True,
+) -> Tuple[List[str], List[int]]:
     mypath = normalize_path(my_original_path)
     try:
         pathstat = os.stat(mypath)

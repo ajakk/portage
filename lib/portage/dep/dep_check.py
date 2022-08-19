@@ -20,19 +20,27 @@ from portage.util import writemsg, writemsg_level
 from portage.util.digraph import digraph
 from portage.util.SlotObject import SlotObject
 from portage.versions import vercmp
+from portage.package.ebuild.config import config
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Set
+from typing import Union
+from typing import Iterator
 
 
 def _expand_new_virtuals(
-    mysplit,
-    edebug,
-    mydbapi,
-    mysettings,
-    myroot="/",
-    trees=None,
-    use_mask=None,
-    use_force=None,
-    **kwargs
-):
+    mysplit: Any,
+    edebug: bool,
+    mydbapi: Optional[Any],
+    mysettings: config,
+    myroot: str = "/",
+    trees: Dict[str, Dict[str, Any]] = None,
+    use_mask: Set = None,
+    use_force: Set = None,
+    **kwargs: Any
+) -> Union[List[List[Union[Atom, str]]], List[Atom]]:
     """
     In order to solve bug #141118, recursively expand new-style virtuals so
     as to collapse one or more levels of indirection, generating an expanded
@@ -298,7 +306,7 @@ def _expand_new_virtuals(
     return newsplit
 
 
-def dep_eval(deplist):
+def dep_eval(deplist: Any) -> int:
     if not deplist:
         return 1
     if deplist[0] == "||":
@@ -338,8 +346,13 @@ class _dep_choice(SlotObject):
 
 
 def dep_zapdeps(
-    unreduced, reduced, myroot, use_binaries=0, trees=None, minimize_slots=False
-):
+    unreduced: Any,
+    reduced: Any,
+    myroot: str,
+    use_binaries: int = 0,
+    trees: Dict[str, Dict[str, Any]] = None,
+    minimize_slots: bool = False,
+) -> List[Atom]:
     """
     Takes an unreduced and reduced deplist and removes satisfied dependencies.
     Returned deplist contains steps that must be taken to satisfy dependencies.
@@ -816,17 +829,17 @@ def dep_zapdeps(
 
 
 def dep_check(
-    depstring,
-    mydbapi,
-    mysettings,
-    use="yes",
-    mode=None,
-    myuse=None,
-    use_cache=1,
-    use_binaries=0,
-    myroot=None,
-    trees=None,
-):
+    depstring: Any,
+    mydbapi: Optional[Any],
+    mysettings: config,
+    use: str = "yes",
+    mode: Optional[Any] = None,
+    myuse: frozenset = None,
+    use_cache: int = 1,
+    use_binaries: int = 0,
+    myroot: str = None,
+    trees: Dict[str, Dict[str, Any]] = None,
+) -> Union[List[Union[List, int]], List[Union[List[Atom], int]]]:
     """
     Takes a depend string, parses it, and selects atoms.
     The myroot parameter is unused (use mysettings['EROOT'] instead).
@@ -959,7 +972,7 @@ def dep_check(
     return [1, selected_atoms]
 
 
-def _overlap_dnf(dep_struct):
+def _overlap_dnf(dep_struct: Any) -> Any:
     """
     Combine overlapping || groups using disjunctive normal form (DNF), in
     order to minimize the number of packages chosen to satisfy cases like
@@ -1031,7 +1044,9 @@ def _overlap_dnf(dep_struct):
     return result if overlap else dep_struct
 
 
-def _iter_flatten(dep_struct):
+def _iter_flatten(
+    dep_struct: Any,
+) -> Iterator[Union[Iterator, Iterator[Atom], Iterator[str]]]:
     """
     Yield nested elements of dep_struct.
     """
@@ -1043,7 +1058,13 @@ def _iter_flatten(dep_struct):
             yield x
 
 
-def dep_wordreduce(mydeplist, mysettings, mydbapi, mode, use_cache=1):
+def dep_wordreduce(
+    mydeplist: Any,
+    mysettings: config,
+    mydbapi: Optional[Any],
+    mode: Optional[Any],
+    use_cache: int = 1,
+) -> Union[List[Union[bool, str]], List[bool]]:
     "Reduces the deplist to ones and zeros"
     deplist = mydeplist[:]
     for mypos, token in enumerate(deplist):

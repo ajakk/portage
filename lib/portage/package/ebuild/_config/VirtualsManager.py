@@ -11,10 +11,19 @@ from portage.exception import InvalidAtom
 from portage.localization import _
 from portage.util import grabdict, stack_dictlist, writemsg
 from portage.versions import cpv_getkey
+from typing import Any
+from typing import Tuple
+from portage.package.ebuild._config.VirtualsManager import VirtualsManager
+from typing import Dict
+from _emerge.FakeVartree import FakeVartree
 
 
 class VirtualsManager:
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        *args: Tuple[str, str, str, str, str, str, str, str, str, str],
+        **kwargs: Any
+    ) -> None:
         if kwargs.get("_copy"):
             return
 
@@ -40,7 +49,9 @@ class VirtualsManager:
         # We could initialise _treeVirtuals here, but some consumers want to
         # pass their own vartree.
 
-    def _read_dirVirtuals(self, profiles):
+    def _read_dirVirtuals(
+        self, profiles: Tuple[str, str, str, str, str, str, str, str, str, str]
+    ) -> None:
         """
         Read the 'virtuals' file in all profiles.
         """
@@ -100,7 +111,7 @@ class VirtualsManager:
             # Preference for virtuals decreases from left to right.
             self._dirVirtuals[virt].reverse()
 
-    def __deepcopy__(self, memo=None):
+    def __deepcopy__(self, memo: Dict = None) -> VirtualsManager:
         if memo is None:
             memo = {}
         result = VirtualsManager(_copy=True)
@@ -122,7 +133,7 @@ class VirtualsManager:
 
         return result
 
-    def _compile_virtuals(self):
+    def _compile_virtuals(self) -> None:
         """Stack installed and profile virtuals.  Preference for virtuals
         decreases from left to right.
         Order of preference:
@@ -154,7 +165,7 @@ class VirtualsManager:
         self._virtuals = virtuals
         self._virts_p = None
 
-    def getvirtuals(self):
+    def getvirtuals(self) -> Dict:
         """
         Computes self._virtuals if necessary and returns it.
         self._virtuals is only computed on the first call.
@@ -164,7 +175,7 @@ class VirtualsManager:
 
         return self._virtuals
 
-    def _populate_treeVirtuals(self, vartree):
+    def _populate_treeVirtuals(self, vartree: FakeVartree) -> None:
         """
         Initialize _treeVirtuals from the given vartree.
         It must not have been initialized already, otherwise

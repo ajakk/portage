@@ -4,6 +4,9 @@
 __all__ = ["bindbapi", "binarytree"]
 
 import portage
+from portage.dbapi.bintree import binarytree
+from typing import Any
+from portage.package.ebuild.config import config
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -90,7 +93,7 @@ class bindbapi(fakedbapi):
         "_mtime_",
     )
 
-    def __init__(self, mybintree=None, **kwargs):
+    def __init__(self, mybintree: binarytree = None, **kwargs: Any) -> None:
         # Always enable multi_instance mode for bindbapi indexing. This
         # does not affect the local PKGDIR file layout, since that is
         # controlled independently by FEATURES=binpkg-multi-instance.
@@ -441,11 +444,11 @@ class binarytree:
 
     def __init__(
         self,
-        _unused=DeprecationWarning,
-        pkgdir=None,
-        virtual=DeprecationWarning,
-        settings=None,
-    ):
+        _unused: type = DeprecationWarning,
+        pkgdir: str = None,
+        virtual: type = DeprecationWarning,
+        settings: config = None,
+    ) -> None:
 
         if pkgdir is None:
             raise TypeError("pkgdir parameter is required")

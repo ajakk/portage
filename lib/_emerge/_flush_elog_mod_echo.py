@@ -4,7 +4,7 @@
 from portage.elog import mod_echo
 
 
-def _flush_elog_mod_echo():
+def _flush_elog_mod_echo() -> bool:
     """
     Dump the mod_echo output now so that our other
     notifications are shown last.

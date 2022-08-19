@@ -13,6 +13,15 @@ from portage import _encodings
 from portage import _unicode_decode
 from portage import _unicode_encode
 import portage
+from portage.dep import Atom
+from portage.versions import _pkg_str
+from typing import Any
+from typing import List
+from typing import Optional
+from typing import Union
+from typing import Dict
+from os import stat_result
+from typing import Tuple
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -31,7 +40,12 @@ from portage.localization import _
 ignored_dbentries = ("CONTENTS", "environment.bz2")
 
 
-def update_dbentry(update_cmd, mycontent, eapi=None, parent=None):
+def update_dbentry(
+    update_cmd: List[Union[Atom, str]],
+    mycontent: str,
+    eapi: Optional[Any] = None,
+    parent: _pkg_str = None,
+) -> str:
 
     if parent is not None:
         eapi = parent.eapi
@@ -115,7 +129,12 @@ def update_dbentry(update_cmd, mycontent, eapi=None, parent=None):
     return mycontent
 
 
-def update_dbentries(update_iter, mydata, eapi=None, parent=None):
+def update_dbentries(
+    update_iter: List[List[Union[Atom, str]]],
+    mydata: Dict[str, str],
+    eapi: Optional[Any] = None,
+    parent: _pkg_str = None,
+) -> Dict:
     """Performs update commands and returns a
     dict containing only the updated items."""
     updated_items = {}
@@ -171,7 +190,9 @@ def fixdbentries(update_iter, dbdir, eapi=None, parent=None):
     return len(updated_items) > 0
 
 
-def grab_updates(updpath, prev_mtimes=None):
+def grab_updates(
+    updpath: str, prev_mtimes: Optional[Any] = None
+) -> List[Tuple[str, stat_result, str]]:
     """Returns all the updates from the given directory as a sorted list of
     tuples, each containing (file_path, statobj, content).  If prev_mtimes is
     given then updates are only returned if one or more files have different
@@ -212,7 +233,7 @@ def grab_updates(updpath, prev_mtimes=None):
     return update_data
 
 
-def parse_updates(mycontent):
+def parse_updates(mycontent: str) -> Tuple[List[List[Union[Atom, str]]], List]:
     """Valid updates are returned as a list of split update commands."""
     eapi_attrs = _get_eapi_attrs(None)
     slot_re = _get_slot_re(eapi_attrs)

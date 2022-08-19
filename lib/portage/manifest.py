@@ -10,6 +10,13 @@ import stat
 import warnings
 
 import portage
+from typing import Any
+from typing import Callable
+from typing import Optional
+from typing import Dict
+from _io import TextIOWrapper
+from portage.manifest import Manifest2Entry
+from typing import Iterator
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -79,7 +86,7 @@ def guessThinManifestFileType(filename):
     return "DIST"
 
 
-def parseManifest2(line):
+def parseManifest2(line: str) -> Manifest2Entry:
     if not isinstance(line, str):
         line = " ".join(line)
     myentry = None
@@ -97,7 +104,7 @@ def parseManifest2(line):
 class ManifestEntry:
     __slots__ = ("type", "name", "hashes")
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -128,19 +135,19 @@ class Manifest:
 
     def __init__(
         self,
-        pkgdir,
-        distdir=None,
-        fetchlist_dict=None,
-        manifest1_compat=DeprecationWarning,
-        from_scratch=False,
-        thin=False,
-        allow_missing=False,
-        allow_create=True,
-        hashes=None,
-        required_hashes=None,
-        find_invalid_path_char=None,
-        strict_misc_digests=True,
-    ):
+        pkgdir: str,
+        distdir: str = None,
+        fetchlist_dict: Optional[Any] = None,
+        manifest1_compat: type = DeprecationWarning,
+        from_scratch: bool = False,
+        thin: bool = False,
+        allow_missing: bool = False,
+        allow_create: bool = True,
+        hashes: frozenset = None,
+        required_hashes: frozenset = None,
+        find_invalid_path_char: Callable = None,
+        strict_misc_digests: bool = True,
+    ) -> None:
         """Create new Manifest instance for package in pkgdir.
         Do not parse Manifest file if from_scratch == True (only for internal use)
             The fetchlist_dict parameter is required only for generation of
@@ -202,11 +209,11 @@ class Manifest:
         self.allow_create = allow_create
         self.strict_misc_digests = strict_misc_digests
 
-    def getFullname(self):
+    def getFullname(self) -> str:
         """Returns the absolute path to the Manifest file for this instance"""
         return os.path.join(self.pkgdir, "Manifest")
 
-    def getDigests(self):
+    def getDigests(self) -> Dict[str, Dict[str, Any]]:
         """Compability function for old digest/manifest code, returns dict of filename:{hashfunction:hashvalue}"""
         rval = {
             k: v for t in MANIFEST2_IDENTIFIERS for k, v in self.fhashdict[t].items()
@@ -217,7 +224,9 @@ class Manifest:
         """Similar to getDigests(), but restricted to files of the given type."""
         return self.fhashdict[ftype]
 
-    def _readManifest(self, file_path, myhashdict=None, **kwargs):
+    def _readManifest(
+        self, file_path: str, myhashdict: Dict[str, Dict] = None, **kwargs: Any
+    ) -> Dict[str, Dict[str, Dict[str, Any]]]:
         """Parse a manifest.  If myhashdict is given then data will be added too it.
         Otherwise, a new dict will be created and returned."""
         try:
@@ -237,7 +246,7 @@ class Manifest:
             else:
                 raise
 
-    def _parseManifestLines(self, mylines):
+    def _parseManifestLines(self, mylines: TextIOWrapper) -> Iterator[Manifest2Entry]:
         """Parse manifest lines and return a list of manifest entries."""
         for myline in mylines:
             myentry = None
@@ -247,7 +256,12 @@ class Manifest:
                     yield myentry
                     break  # go to the next line
 
-    def _parseDigests(self, mylines, myhashdict=None, mytype=None):
+    def _parseDigests(
+        self,
+        mylines: TextIOWrapper,
+        myhashdict: Dict[str, Dict] = None,
+        mytype: Optional[Any] = None,
+    ) -> Dict[str, Dict[str, Dict[str, Any]]]:
         """Parse manifest entries and store the data in myhashdict.  If mytype
         is specified, it will override the type for all parsed entries."""
         if myhashdict is None:
