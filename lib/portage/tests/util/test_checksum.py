@@ -1,10 +1,9 @@
 # Copyright 2011-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-from portage.tests import TestCase
-
 from portage.checksum import checksum_str
 from portage.exception import DigestException
+from portage.tests import TestCase
 
 
 class ChecksumTestCase(TestCase):

@@ -10,6 +10,7 @@ import time
 from portage import os
 from portage.package.ebuild.fetch import MirrorLayoutConfig
 from portage.util import grabdict, grablines
+
 from .ContentDB import ContentDB
 
 logger = logging.getLogger(__name__)

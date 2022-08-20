@@ -3,15 +3,17 @@
 
 import functools
 import logging
+
+from _emerge.CompositeTask import CompositeTask
+from _emerge.EbuildBuildDir import EbuildBuildDir
+from _emerge.emergelog import emergelog
+from _emerge.unmerge import _unmerge_display
+
 import portage
 from portage import os
 from portage.dbapi._MergeProcess import MergeProcess
 from portage.exception import UnsupportedAPIException
 from portage.util._async.AsyncTaskFuture import AsyncTaskFuture
-from _emerge.EbuildBuildDir import EbuildBuildDir
-from _emerge.emergelog import emergelog
-from _emerge.CompositeTask import CompositeTask
-from _emerge.unmerge import _unmerge_display
 
 
 class PackageUninstall(CompositeTask):

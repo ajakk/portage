@@ -2,9 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import copy
-from _emerge.resolver.backtracking import BacktrackParameter
 from typing import Dict
-from _emerge.resolver.backtracking import _BacktrackNode
+
+from _emerge.resolver.backtracking import BacktrackParameter, _BacktrackNode
 
 
 class BacktrackParameter:

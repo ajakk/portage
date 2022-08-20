@@ -6,6 +6,7 @@ import io
 import sys
 
 from _emerge.CompositeTask import CompositeTask
+
 import portage
 from portage import os
 from portage.checksum import (
@@ -14,8 +15,8 @@ from portage.checksum import (
     _hash_filter,
 )
 from portage.output import EOutput
-from portage.util._async.FileDigester import FileDigester
 from portage.package.ebuild.fetch import _checksum_failure_temp_file
+from portage.util._async.FileDigester import FileDigester
 
 
 class BinpkgVerifier(CompositeTask):

@@ -13,13 +13,11 @@ import logging
 import os
 import textwrap
 import traceback
+from typing import Any, Optional
 
 import portage
 from portage.util import _unicode_decode, writemsg_level
-from portage.util._ctypes import find_library, LoadLibrary
-from typing import Any
-from typing import Optional
-
+from portage.util._ctypes import LoadLibrary, find_library
 
 locale_categories = (
     "LC_COLLATE",

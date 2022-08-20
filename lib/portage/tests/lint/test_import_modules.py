@@ -3,11 +3,9 @@
 
 from itertools import chain
 
-from portage.const import PORTAGE_PYM_PATH, PORTAGE_PYM_PACKAGES
+from portage import _encodings, _unicode_decode, os
+from portage.const import PORTAGE_PYM_PACKAGES, PORTAGE_PYM_PATH
 from portage.tests import TestCase
-from portage import os
-from portage import _encodings
-from portage import _unicode_decode
 
 
 class ImportModulesTestCase(TestCase):

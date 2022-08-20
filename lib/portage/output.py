@@ -9,24 +9,18 @@ import itertools
 import re
 import subprocess
 import sys
+from typing import Any, Callable, Optional, Tuple
+
+from mypy_extensions import NoReturn
 
 import portage
-from mypy_extensions import NoReturn
-from typing import Callable
-from typing import Any
-from typing import Optional
-from typing import Tuple
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
     "portage.util:writemsg",
 )
 import portage.util.formatter as formatter
-
-from portage import os
-from portage import _encodings
-from portage import _unicode_encode
-from portage import _unicode_decode
+from portage import _encodings, _unicode_decode, _unicode_encode, os
 from portage.const import COLOR_MAP_FILE
 from portage.exception import (
     CommandNotFound,

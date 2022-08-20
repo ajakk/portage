@@ -8,8 +8,8 @@ import logging
 from portage.const import SUPPORTED_FEATURES
 from portage.localization import _
 from portage.output import colorize
-from portage.util import writemsg_level
 from portage.package.ebuild.config import config
+from portage.util import writemsg_level
 
 
 class features_set:

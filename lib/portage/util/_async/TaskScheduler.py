@@ -1,10 +1,11 @@
 # Copyright 2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-from .AsyncScheduler import AsyncScheduler
-from typing import Any
-from typing import Iterator
+from typing import Any, Iterator
+
 from mypy_extensions import NoReturn
+
+from .AsyncScheduler import AsyncScheduler
 
 
 class TaskScheduler(AsyncScheduler):

@@ -5,11 +5,11 @@ import io
 import tempfile
 
 import portage
-from portage import os, shutil, _encodings
+from portage import _encodings, os, shutil
 from portage.const import USER_CONFIG_PATH
 from portage.dep import Atom
-from portage.package.ebuild.config import config
 from portage.package.ebuild._config.LicenseManager import LicenseManager
+from portage.package.ebuild.config import config
 from portage.tests import TestCase
 from portage.tests.resolver.ResolverPlayground import (
     ResolverPlayground,

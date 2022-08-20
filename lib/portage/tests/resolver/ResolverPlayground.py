@@ -4,28 +4,7 @@
 import bz2
 import fnmatch
 import tempfile
-import portage
-
 from itertools import permutations
-from portage import os
-from portage import shutil
-from portage.const import (
-    GLOBAL_CONFIG_PATH,
-    PORTAGE_BIN_PATH,
-    USER_CONFIG_PATH,
-    SUPPORTED_GENTOO_BINPKG_FORMATS,
-)
-from portage.process import find_binary
-from portage.dep import Atom, _repo_separator
-from portage.package.ebuild.config import config
-from portage.package.ebuild.digestgen import digestgen
-from portage._sets import load_default_config
-from portage._sets.base import InternalPackageSet
-from portage.tests import cnf_path
-from portage.util import ensure_dirs, normalize_path
-from portage.versions import catsplit
-from portage.exception import InvalidBinaryPackageFormat
-from portage.gpg import GPG
 
 import _emerge
 from _emerge.actions import _calc_depclean
@@ -34,6 +13,26 @@ from _emerge.create_depgraph_params import create_depgraph_params
 from _emerge.DependencyArg import DependencyArg
 from _emerge.depgraph import backtrack_depgraph
 from _emerge.RootConfig import RootConfig
+
+import portage
+from portage import os, shutil
+from portage._sets import load_default_config
+from portage._sets.base import InternalPackageSet
+from portage.const import (
+    GLOBAL_CONFIG_PATH,
+    PORTAGE_BIN_PATH,
+    SUPPORTED_GENTOO_BINPKG_FORMATS,
+    USER_CONFIG_PATH,
+)
+from portage.dep import Atom, _repo_separator
+from portage.exception import InvalidBinaryPackageFormat
+from portage.gpg import GPG
+from portage.package.ebuild.config import config
+from portage.package.ebuild.digestgen import digestgen
+from portage.process import find_binary
+from portage.tests import cnf_path
+from portage.util import ensure_dirs, normalize_path
+from portage.versions import catsplit
 
 
 class ResolverPlayground:

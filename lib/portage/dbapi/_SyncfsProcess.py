@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 from portage import os
-from portage.util._ctypes import find_library, LoadLibrary
 from portage.util._async.ForkProcess import ForkProcess
+from portage.util._ctypes import LoadLibrary, find_library
 
 
 class SyncfsProcess(ForkProcess):

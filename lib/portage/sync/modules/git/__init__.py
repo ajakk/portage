@@ -6,9 +6,9 @@ Performs a git pull on repositories."""
 __doc__ = doc[:]
 
 from portage.localization import _
+from portage.repository.config import RepoConfig
 from portage.sync.config_checks import CheckSyncConfig
 from portage.util import writemsg_level
-from portage.repository.config import RepoConfig
 
 
 class CheckGitConfig(CheckSyncConfig):

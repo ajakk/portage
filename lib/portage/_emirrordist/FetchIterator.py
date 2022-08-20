@@ -3,6 +3,8 @@
 
 import threading
 
+from _emerge.CompositeTask import CompositeTask
+
 from portage import os
 from portage.checksum import (
     _apply_hash_filter,
@@ -15,8 +17,8 @@ from portage.package.ebuild.fetch import DistfileName
 from portage.util._async.AsyncTaskFuture import AsyncTaskFuture
 from portage.util._async.TaskScheduler import TaskScheduler
 from portage.util.futures.iter_completed import iter_gather
+
 from .FetchTask import FetchTask
-from _emerge.CompositeTask import CompositeTask
 
 
 class FetchIterator:

@@ -3,17 +3,13 @@
 
 __all__ = ["vardbapi", "vartree", "dblink"] + ["write_contents", "tar_contents"]
 
-import portage
-from portage.dbapi.vartree import vardbapi
-from typing import Any
-from typing import Dict
-from portage.dbapi.vartree import vartree
-from portage.package.ebuild.config import config
-from typing import Optional
-from portage.versions import _pkg_str
-from typing import List
-from typing import Iterator
 from os import stat_result
+from typing import Any, Dict, Iterator, List, Optional
+
+import portage
+from portage.dbapi.vartree import vardbapi, vartree
+from portage.package.ebuild.config import config
+from portage.versions import _pkg_str
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -58,49 +54,6 @@ portage.proxy.lazyimport.lazyimport(
     "tarfile",
 )
 
-from portage.const import (
-    CACHE_PATH,
-    CONFIG_MEMORY_FILE,
-    MERGING_IDENTIFIER,
-    PORTAGE_PACKAGE_ATOM,
-    PRIVATE_PATH,
-    VDB_PATH,
-    SUPPORTED_GENTOO_BINPKG_FORMATS,
-)
-from portage.dbapi import dbapi
-from portage.exception import (
-    CommandNotFound,
-    InvalidData,
-    InvalidLocation,
-    InvalidPackageName,
-    InvalidBinaryPackageFormat,
-    FileNotFound,
-    PermissionDenied,
-    UnsupportedAPIException,
-)
-from portage.localization import _
-from portage.util.futures import asyncio
-
-from portage import abssymlink, _movefile, bsd_chflags
-
-# This is a special version of the os module, wrapped for unicode support.
-from portage import os
-from portage import shutil
-from portage import _encodings
-from portage import _os_merge
-from portage import _selinux_merge
-from portage import _unicode_decode
-from portage import _unicode_encode
-from portage.util.futures.executor.fork import ForkExecutor
-from ._VdbMetadataDelta import VdbMetadataDelta
-
-from _emerge.EbuildBuildDir import EbuildBuildDir
-from _emerge.EbuildPhase import EbuildPhase
-from _emerge.emergelog import emergelog
-from _emerge.MiscFunctionsProcess import MiscFunctionsProcess
-from _emerge.SpawnProcess import SpawnProcess
-from ._ContentsCaseSensitivityManager import ContentsCaseSensitivityManager
-
 import argparse
 import errno
 import fnmatch
@@ -108,10 +61,9 @@ import functools
 import gc
 import grp
 import io
-from itertools import chain
 import logging
-import os as _os
 import operator
+import os as _os
 import pickle
 import platform
 import pwd
@@ -121,6 +73,53 @@ import tempfile
 import textwrap
 import time
 import warnings
+from itertools import chain
+
+from _emerge.EbuildBuildDir import EbuildBuildDir
+from _emerge.EbuildPhase import EbuildPhase
+from _emerge.emergelog import emergelog
+from _emerge.MiscFunctionsProcess import MiscFunctionsProcess
+from _emerge.SpawnProcess import SpawnProcess
+
+# This is a special version of the os module, wrapped for unicode support.
+from portage import (
+    _encodings,
+    _movefile,
+    _os_merge,
+    _selinux_merge,
+    _unicode_decode,
+    _unicode_encode,
+    abssymlink,
+    bsd_chflags,
+    os,
+    shutil,
+)
+from portage.const import (
+    CACHE_PATH,
+    CONFIG_MEMORY_FILE,
+    MERGING_IDENTIFIER,
+    PORTAGE_PACKAGE_ATOM,
+    PRIVATE_PATH,
+    SUPPORTED_GENTOO_BINPKG_FORMATS,
+    VDB_PATH,
+)
+from portage.dbapi import dbapi
+from portage.exception import (
+    CommandNotFound,
+    FileNotFound,
+    InvalidBinaryPackageFormat,
+    InvalidData,
+    InvalidLocation,
+    InvalidPackageName,
+    PermissionDenied,
+    UnsupportedAPIException,
+)
+from portage.localization import _
+from portage.util.futures import asyncio
+from portage.util.futures.executor.fork import ForkExecutor
+
+from ._ContentsCaseSensitivityManager import ContentsCaseSensitivityManager
+from ._VdbMetadataDelta import VdbMetadataDelta
 
 
 class vardbapi(dbapi):

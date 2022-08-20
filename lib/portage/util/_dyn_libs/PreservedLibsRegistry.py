@@ -7,18 +7,19 @@ import logging
 import pickle
 import stat
 
-from portage import abssymlink
-from portage import os
-from portage import _encodings
-from portage import _os_merge
-from portage import _unicode_decode
-from portage import _unicode_encode
+from portage import (
+    _encodings,
+    _os_merge,
+    _unicode_decode,
+    _unicode_encode,
+    abssymlink,
+    os,
+)
 from portage.exception import PermissionDenied
 from portage.localization import _
-from portage.util import atomic_ofstream
-from portage.util import writemsg_level
-from portage.versions import cpv_getkey
 from portage.locks import lockfile, unlockfile
+from portage.util import atomic_ofstream, writemsg_level
+from portage.versions import cpv_getkey
 
 
 class PreservedLibsRegistry:

@@ -5,10 +5,10 @@ import os as _os
 
 from portage import _encodings, _unicode_encode
 from portage.util import apply_stat_permissions
+from portage.util._async.AsyncTaskFuture import AsyncTaskFuture
 from portage.util.file_copy import copyfile
 from portage.util.futures import asyncio
 from portage.util.futures.executor.fork import ForkExecutor
-from portage.util._async.AsyncTaskFuture import AsyncTaskFuture
 
 
 class FileCopier(AsyncTaskFuture):

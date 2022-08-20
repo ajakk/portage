@@ -1,6 +1,7 @@
 # Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+import collections
 import errno
 import functools
 import io
@@ -8,35 +9,37 @@ import logging
 import stat
 import textwrap
 import warnings
-import collections
-from collections import deque, OrderedDict
+from collections import OrderedDict, deque
 from itertools import chain
+from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
+
+from _emerge.depgraph import _frozen_depgraph_config, depgraph
+from _emerge.stdout_spinner import stdout_spinner
 
 import portage
-from portage import os
-from portage import _unicode_decode, _unicode_encode, _encodings
+from portage import _encodings, _trees_dict, _unicode_decode, _unicode_encode, os
 from portage.const import (
     PORTAGE_PACKAGE_ATOM,
+    SUPPORTED_GPKG_EXTENSIONS,
     USER_CONFIG_PATH,
     VCS_DIRS,
-    SUPPORTED_GPKG_EXTENSIONS,
 )
 from portage.dbapi import dbapi
+from portage.dbapi._similar_name_search import similar_name_search
 from portage.dbapi.dep_expand import dep_expand
 from portage.dbapi.DummyTree import DummyTree
 from portage.dbapi.IndexedPortdb import IndexedPortdb
-from portage.dbapi._similar_name_search import similar_name_search
 from portage.dep import (
     Atom,
+    _repo_separator,
     best_match_to_list,
-    extract_affecting_use,
     check_required_use,
+    extract_affecting_use,
     human_readable_required_use,
     match_from_list,
-    _repo_separator,
 )
 from portage.dep._slot_operator import ignore_built_slot_operator_deps, strip_slots
-from portage.eapi import eapi_has_strong_blocks, eapi_has_required_use, _get_eapi_attrs
+from portage.eapi import _get_eapi_attrs, eapi_has_required_use, eapi_has_strong_blocks
 from portage.exception import (
     InvalidAtom,
     InvalidData,
@@ -46,42 +49,14 @@ from portage.exception import (
 )
 from portage.localization import _
 from portage.output import colorize, create_color_func, darkgreen, green
-from typing import Callable
-from typing import Set
-from typing import Tuple
-from typing import Optional
-from typing import Any
-from typing import List
-from _emerge.stdout_spinner import stdout_spinner
-from portage import _trees_dict
 from portage.package.ebuild.config import config
-from typing import Dict
-from _emerge.depgraph import _frozen_depgraph_config
-from _emerge.depgraph import depgraph
-from typing import Iterator
-from portage.dep import Atom
-from typing import Union
 
 bad = create_color_func("BAD")
-from portage.package.ebuild.config import _get_feature_flags
-from portage.package.ebuild.getmaskingstatus import _getmaskingstatus, _MaskReason
-from portage._sets import SETPREFIX
-from portage._sets.base import InternalPackageSet
-from portage.util import ConfigProtect, shlex_split, new_protect_filename
-from portage.util import cmp_sort_key, writemsg, writemsg_stdout
-from portage.util import ensure_dirs, normalize_path
-from portage.util import writemsg_level, write_atomic
-from portage.util.digraph import digraph
-from portage.util.futures import asyncio
-from portage.util._async.TaskScheduler import TaskScheduler
-from portage.versions import _pkg_str, catpkgsplit
-from portage.binpkg import get_binpkg_format
-
+from _emerge._find_deep_system_runtime_deps import _find_deep_system_runtime_deps
 from _emerge.AtomArg import AtomArg
 from _emerge.Blocker import Blocker
 from _emerge.BlockerCache import BlockerCache
 from _emerge.BlockerDepPriority import BlockerDepPriority
-from .chk_updated_cfg_files import chk_updated_cfg_files
 from _emerge.countdown import countdown
 from _emerge.create_world_atom import create_world_atom
 from _emerge.Dependency import Dependency
@@ -91,7 +66,6 @@ from _emerge.DepPriorityNormalRange import DepPriorityNormalRange
 from _emerge.DepPrioritySatisfiedRange import DepPrioritySatisfiedRange
 from _emerge.EbuildMetadataPhase import EbuildMetadataPhase
 from _emerge.FakeVartree import FakeVartree
-from _emerge._find_deep_system_runtime_deps import _find_deep_system_runtime_deps
 from _emerge.is_valid_package_atom import (
     insert_category_into_atom,
     is_valid_package_atom,
@@ -99,6 +73,12 @@ from _emerge.is_valid_package_atom import (
 from _emerge.Package import Package
 from _emerge.PackageArg import PackageArg
 from _emerge.PackageVirtualDbapi import PackageVirtualDbapi
+from _emerge.resolver.backtracking import Backtracker, BacktrackParameter
+from _emerge.resolver.circular_dependency import circular_dependency_handler
+from _emerge.resolver.DbapiProvidesIndex import DbapiProvidesIndex
+from _emerge.resolver.output import Display, format_unmatched_atom
+from _emerge.resolver.package_tracker import PackageTracker, PackageTrackerDbapiWrapper
+from _emerge.resolver.slot_collision import slot_conflict_handler
 from _emerge.RootConfig import RootConfig
 from _emerge.search import search
 from _emerge.SetArg import SetArg
@@ -107,12 +87,29 @@ from _emerge.UnmergeDepPriority import UnmergeDepPriority
 from _emerge.UseFlagDisplay import pkg_use_display
 from _emerge.UserQuery import UserQuery
 
-from _emerge.resolver.backtracking import Backtracker, BacktrackParameter
-from _emerge.resolver.DbapiProvidesIndex import DbapiProvidesIndex
-from _emerge.resolver.package_tracker import PackageTracker, PackageTrackerDbapiWrapper
-from _emerge.resolver.slot_collision import slot_conflict_handler
-from _emerge.resolver.circular_dependency import circular_dependency_handler
-from _emerge.resolver.output import Display, format_unmatched_atom
+from portage._sets import SETPREFIX
+from portage._sets.base import InternalPackageSet
+from portage.binpkg import get_binpkg_format
+from portage.package.ebuild.config import _get_feature_flags
+from portage.package.ebuild.getmaskingstatus import _getmaskingstatus, _MaskReason
+from portage.util import (
+    ConfigProtect,
+    cmp_sort_key,
+    ensure_dirs,
+    new_protect_filename,
+    normalize_path,
+    shlex_split,
+    write_atomic,
+    writemsg,
+    writemsg_level,
+    writemsg_stdout,
+)
+from portage.util._async.TaskScheduler import TaskScheduler
+from portage.util.digraph import digraph
+from portage.util.futures import asyncio
+from portage.versions import _pkg_str, catpkgsplit
+
+from .chk_updated_cfg_files import chk_updated_cfg_files
 
 # Exposes a depgraph interface to dep_check.
 _dep_check_graph_interface = collections.namedtuple(

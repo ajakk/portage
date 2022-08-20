@@ -5,8 +5,10 @@ import errno
 import re
 import subprocess
 
-from portage import os
-from portage import _unicode_encode, _encodings
+from _emerge.CompositeTask import CompositeTask
+from _emerge.PipeReader import PipeReader
+
+from portage import _encodings, _unicode_encode, os
 from portage.const import MANIFEST2_IDENTIFIERS
 from portage.dep import _repo_separator
 from portage.exception import InvalidDependString
@@ -15,8 +17,7 @@ from portage.util import atomic_ofstream, grablines, shlex_split, varexpand, wri
 from portage.util._async.AsyncTaskFuture import AsyncTaskFuture
 from portage.util._async.PipeLogger import PipeLogger
 from portage.util._async.PopenProcess import PopenProcess
-from _emerge.CompositeTask import CompositeTask
-from _emerge.PipeReader import PipeReader
+
 from .ManifestProcess import ManifestProcess
 
 

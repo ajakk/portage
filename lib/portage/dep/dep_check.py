@@ -7,27 +7,19 @@ import collections
 import itertools
 import logging
 import operator
+from typing import Any, Dict, Iterator, List, Optional, Set, Union
 
 import portage
 from portage.dep import Atom, match_from_list, use_reduce
-from portage.dep._dnf import (
-    dnf_convert as _dnf_convert,
-    contains_disjunction as _contains_disjunction,
-)
+from portage.dep._dnf import contains_disjunction as _contains_disjunction
+from portage.dep._dnf import dnf_convert as _dnf_convert
 from portage.exception import InvalidDependString, ParseError
 from portage.localization import _
+from portage.package.ebuild.config import config
 from portage.util import writemsg, writemsg_level
 from portage.util.digraph import digraph
 from portage.util.SlotObject import SlotObject
 from portage.versions import vercmp
-from portage.package.ebuild.config import config
-from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Set
-from typing import Union
-from typing import Iterator
 
 
 def _expand_new_virtuals(

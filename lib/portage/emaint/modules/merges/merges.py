@@ -1,15 +1,15 @@
 # Copyright 2005-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-import portage
-from portage import os, _unicode_encode
-from portage.const import MERGING_IDENTIFIER, EPREFIX, PRIVATE_PATH, VDB_PATH
-from portage.dep import isvalidatom
-
 import shutil
 import subprocess
 import sys
 import time
+
+import portage
+from portage import _unicode_encode, os
+from portage.const import EPREFIX, MERGING_IDENTIFIER, PRIVATE_PATH, VDB_PATH
+from portage.dep import isvalidatom
 
 
 class TrackingFile:

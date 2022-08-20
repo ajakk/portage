@@ -6,18 +6,17 @@
 import errno
 import functools
 import hashlib
-import portage
 import stat
 import subprocess
 import tempfile
-
-from portage import _encodings, _unicode_decode, _unicode_encode
-from portage import os
-from portage.const import HASHING_BLOCKSIZE, PRELINK_BINARY
-from portage.localization import _
 from typing import Tuple
+
 from _io import BufferedReader
 
+import portage
+from portage import _encodings, _unicode_decode, _unicode_encode, os
+from portage.const import HASHING_BLOCKSIZE, PRELINK_BINARY
+from portage.localization import _
 
 # Summary of all available hashes and their implementations,
 # most preferred first. Please keep this in sync with logic below.
@@ -163,6 +162,7 @@ if False:
     # if gcrypt_algos.difference(hashfunc_map):
     try:
         import binascii
+
         import pygcrypt.hashcontext
 
         class GCryptHashWrapper:

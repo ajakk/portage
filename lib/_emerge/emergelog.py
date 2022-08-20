@@ -3,15 +3,12 @@
 
 import io
 import time
+from typing import Any, Optional
+
 import portage
-from portage import os
-from portage import _encodings
-from portage import _unicode_decode
-from portage import _unicode_encode
+from portage import _encodings, _unicode_decode, _unicode_encode, os
 from portage.data import secpass
 from portage.output import xtermTitle
-from typing import Any
-from typing import Optional
 
 # We disable emergelog by default, since it's called from
 # dblink.merge() and we don't want that to trigger log writes

@@ -7,16 +7,12 @@ import sys
 import time
 import unittest
 from pathlib import Path
-
 from unittest.runner import TextTestResult as _TextTestResult
 
 import portage
-from portage import os
-from portage import _encodings
-from portage import _unicode_decode
+from portage import _encodings, _unicode_decode, os
 from portage.output import colorize
 from portage.proxy.objectproxy import ObjectProxy
-
 
 # This remains constant when the real value is a mock.
 EPREFIX_ORIG = portage.const.EPREFIX

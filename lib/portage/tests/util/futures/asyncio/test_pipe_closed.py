@@ -11,10 +11,7 @@ import tempfile
 from portage.tests import TestCase
 from portage.util._eventloop.global_event_loop import global_event_loop
 from portage.util.futures import asyncio
-from portage.util.futures.unix_events import (
-    DefaultEventLoopPolicy,
-    _set_nonblocking,
-)
+from portage.util.futures.unix_events import DefaultEventLoopPolicy, _set_nonblocking
 
 
 class _PipeClosedTestCase:

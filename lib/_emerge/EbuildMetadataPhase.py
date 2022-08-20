@@ -1,22 +1,21 @@
 # Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-from _emerge.SubProcess import SubProcess
 import sys
-from portage.cache.mappings import slot_dict_class
+
+from _emerge.SubProcess import SubProcess
+
 import portage
+from portage.cache.mappings import slot_dict_class
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
     "portage.package.ebuild._metadata_invalid:eapi_invalid",
 )
-from portage import os
-from portage import _encodings
-from portage import _unicode_decode
-from portage import _unicode_encode
-
 import fcntl
 import io
+
+from portage import _encodings, _unicode_decode, _unicode_encode, os
 
 
 class EbuildMetadataPhase(SubProcess):

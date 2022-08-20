@@ -7,9 +7,9 @@ import json
 import os
 
 from portage import _encodings
+from portage.dbapi.vartree import vardbapi
 from portage.util import atomic_ofstream
 from portage.versions import cpv_getkey
-from portage.dbapi.vartree import vardbapi
 
 
 class VdbMetadataDelta:

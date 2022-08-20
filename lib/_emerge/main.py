@@ -5,14 +5,10 @@ import argparse
 import locale
 import platform
 import sys
+from typing import Any, Dict, List, Optional, Tuple
 
 import portage
-from typing import List
-from typing import Any
-from typing import Dict
-from typing import Tuple
 from portage import _trees_dict
-from typing import Optional
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -26,7 +22,6 @@ portage.proxy.lazyimport.lazyimport(
 )
 from portage import os
 from portage.sync import _SUBMODULE_PATH_MAP
-
 
 options = [
     "--alphabetical",

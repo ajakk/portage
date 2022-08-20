@@ -7,10 +7,7 @@ import re
 import stat
 import time
 
-from portage import os
-from portage import _encodings
-from portage import _unicode_encode
-
+from portage import _encodings, _unicode_encode, os
 
 # [D]/Name/Version/Date/Flags/Tags
 

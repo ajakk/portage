@@ -1,15 +1,15 @@
 # Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-from portage import os
-from portage.dep import _repo_separator
-from portage.output import colorize
-
 from _emerge.AsynchronousTask import AsynchronousTask
 from _emerge.Binpkg import Binpkg
 from _emerge.CompositeTask import CompositeTask
 from _emerge.EbuildBuild import EbuildBuild
 from _emerge.PackageUninstall import PackageUninstall
+
+from portage import os
+from portage.dep import _repo_separator
+from portage.output import colorize
 
 
 class MergeListItem(CompositeTask):

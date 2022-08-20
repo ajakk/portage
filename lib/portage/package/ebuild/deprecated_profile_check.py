@@ -6,7 +6,7 @@ __all__ = ["deprecated_profile_check"]
 import io
 
 import portage
-from portage import os, _encodings, _unicode_encode
+from portage import _encodings, _unicode_encode, os
 from portage.const import DEPRECATED_PROFILE_FILE
 from portage.localization import _
 from portage.output import colorize

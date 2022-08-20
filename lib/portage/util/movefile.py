@@ -11,7 +11,6 @@ import textwrap
 
 import portage
 from portage import (
-    bsd_chflags,
     _encodings,
     _os_overrides,
     _selinux,
@@ -19,6 +18,7 @@ from portage import (
     _unicode_encode,
     _unicode_func_wrapper,
     _unicode_module_wrapper,
+    bsd_chflags,
 )
 from portage.const import MOVE_BINARY
 from portage.exception import OperationNotSupported

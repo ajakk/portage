@@ -38,11 +38,9 @@ __all__ = [
     "writemsg_stdout",
 ]
 
-from contextlib import AbstractContextManager
-from copy import deepcopy
 import errno
+import glob
 import io
-from itertools import chain, filterfalse
 import logging
 import re
 import shlex
@@ -50,28 +48,23 @@ import stat
 import string
 import sys
 import traceback
-import glob
+from contextlib import AbstractContextManager
+from copy import deepcopy
+from itertools import chain, filterfalse
+from os import stat_result
+from typing import Any, Callable, Dict, Iterator, List, Optional, Tuple, Union
+
+from _emerge.Package import Package
+from _io import TextIOWrapper
 
 import portage
-from _emerge.Package import Package
-from portage.versions import _pkg_str
-from typing import Callable
-from typing import Union
-from portage.util import cmp_sort_key
-from portage.proxy.lazyimport import _LazyImportFrom
-from typing import Any
-from typing import Dict
-from typing import Tuple
+from portage.data import _GlobalProxy
 from portage.dbapi.porttree import portagetree
 from portage.dbapi.vartree import vartree
-from portage.util import LazyItemsDict
-from typing import List
-from _io import TextIOWrapper
-from typing import Optional
 from portage.dep import Atom
-from typing import Iterator
-from os import stat_result
-from portage.data import _GlobalProxy
+from portage.proxy.lazyimport import _LazyImportFrom
+from portage.util import LazyItemsDict, cmp_sort_key
+from portage.versions import _pkg_str
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -80,26 +73,21 @@ portage.proxy.lazyimport.lazyimport(
     "subprocess",
 )
 
-from portage import os
-from portage import _encodings
-from portage import _os_merge
-from portage import _unicode_encode
-from portage import _unicode_decode
+from portage import _encodings, _os_merge, _unicode_decode, _unicode_encode, os
+from portage.cache.mappings import UserDict
 from portage.const import VCS_DIRS
 from portage.exception import (
-    InvalidAtom,
-    PortageException,
     FileNotFound,
+    InvalidAtom,
     IsADirectory,
     OperationNotPermitted,
     ParseError,
     PermissionDenied,
+    PortageException,
     ReadOnlyFileSystem,
 )
 from portage.localization import _
 from portage.proxy.objectproxy import ObjectProxy
-from portage.cache.mappings import UserDict
-
 
 noiselimit = 0
 

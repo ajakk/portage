@@ -6,8 +6,8 @@ __all__ = ["bin_entry_point"]
 import re
 import sys
 
-from portage.const import PORTAGE_BIN_PATH
 from portage import os
+from portage.const import PORTAGE_BIN_PATH
 
 
 def bin_entry_point():

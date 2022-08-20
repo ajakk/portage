@@ -1,16 +1,17 @@
 # Copyright 2008-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-import fcntl
 import errno
+import fcntl
 import gzip
 
+from _emerge.AbstractPollTask import AbstractPollTask
+
 import portage
-from portage import os, _encodings, _unicode_encode
+from portage import _encodings, _unicode_encode, os
 from portage.util.futures import asyncio
 from portage.util.futures._asyncio.streams import _writer
 from portage.util.futures.unix_events import _set_nonblocking
-from _emerge.AbstractPollTask import AbstractPollTask
 
 
 class PipeLogger(AbstractPollTask):

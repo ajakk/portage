@@ -7,16 +7,14 @@ __all__ = (
 )
 
 import asyncio as _real_asyncio
-from asyncio import events
-from asyncio.unix_events import AbstractChildWatcher
-
 import fcntl
 import os
+from asyncio import events
+from asyncio.unix_events import AbstractChildWatcher
 
 from portage.util._eventloop.global_event_loop import (
     global_event_loop as _global_event_loop,
 )
-
 
 if hasattr(os, "set_blocking"):
 

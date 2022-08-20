@@ -5,12 +5,10 @@
 import tempfile
 
 import portage
-from portage import os
-from portage import shutil
-from portage.const import PORTAGE_BIN_PATH
-from portage.const import PORTAGE_PYM_PATH
-from portage.tests import TestCase
+from portage import os, shutil
+from portage.const import PORTAGE_BIN_PATH, PORTAGE_PYM_PATH
 from portage.process import spawn
+from portage.tests import TestCase
 
 bindir = PORTAGE_BIN_PATH
 basedir = None

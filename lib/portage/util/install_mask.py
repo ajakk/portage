@@ -8,7 +8,9 @@ import errno
 import fnmatch
 import operator
 
-from portage import os, _unicode_decode
+from mypy_extensions import NoReturn
+
+from portage import _unicode_decode, os
 from portage.exception import (
     FileNotFound,
     IsADirectory,
@@ -17,7 +19,6 @@ from portage.exception import (
     ReadOnlyFileSystem,
 )
 from portage.util import normalize_path
-from mypy_extensions import NoReturn
 
 
 def _defaultdict_tree():

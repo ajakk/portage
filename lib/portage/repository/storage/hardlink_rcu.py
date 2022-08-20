@@ -3,6 +3,8 @@
 
 import datetime
 
+from _emerge.SpawnProcess import SpawnProcess
+
 import portage
 from portage import os
 from portage.repository.storage.interface import (
@@ -10,8 +12,6 @@ from portage.repository.storage.interface import (
     RepoStorageInterface,
 )
 from portage.util.futures import asyncio
-
-from _emerge.SpawnProcess import SpawnProcess
 
 
 class HardlinkRcuRepoStorage(RepoStorageInterface):

@@ -9,14 +9,18 @@ __all__ = (
     "format_unmatched_atom",
 )
 
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
+
+from _emerge.depgraph import depgraph
+from _emerge.Package import Package
+from _emerge.resolver.output_helpers import PkgInfo
+
 from portage import os
 from portage.dbapi.dep_expand import dep_expand
-from portage.dep import Atom, cpvequal, _repo_separator, _slot_separator
+from portage.dep import Atom, _repo_separator, _slot_separator, cpvequal
 from portage.eapi import _get_eapi_attrs
 from portage.exception import InvalidDependString, SignatureException
 from portage.localization import localized_size
-from portage.package.ebuild.config import _get_feature_flags
-from portage.package.ebuild._spawn_nofetch import spawn_nofetch
 from portage.output import (
     blue,
     colorize,
@@ -27,34 +31,25 @@ from portage.output import (
     nc_len,
     teal,
 )
-from _emerge.resolver.output_helpers import PkgInfo
-from _emerge.Package import Package
-from typing import Dict
-from typing import List
-from typing import Set
-from typing import Tuple
-from typing import Union
-from typing import Any
-from typing import Optional
+from portage.package.ebuild._spawn_nofetch import spawn_nofetch
+from portage.package.ebuild.config import _get_feature_flags
 from portage.versions import _pkg_str
-from _emerge.depgraph import depgraph
-from typing import Callable
 
 bad = create_color_func("BAD")
-from portage._sets.base import InternalPackageSet
-from portage.util import writemsg_stdout
-from portage.versions import best, cpv_getversion
-
 from _emerge.Blocker import Blocker
 from _emerge.create_world_atom import create_world_atom
 from _emerge.resolver.output_helpers import (
-    _DisplayConfig,
-    _tree_display,
-    _PackageCounters,
-    _create_use_string,
     PkgInfo,
+    _create_use_string,
+    _DisplayConfig,
+    _PackageCounters,
+    _tree_display,
 )
 from _emerge.show_invalid_depstring_notice import show_invalid_depstring_notice
+
+from portage._sets.base import InternalPackageSet
+from portage.util import writemsg_stdout
+from portage.versions import best, cpv_getversion
 
 
 class Display:

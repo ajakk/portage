@@ -5,7 +5,7 @@ import re
 import subprocess
 import sys
 
-from portage import _unicode_encode, _unicode_decode
+from portage import _unicode_decode, _unicode_encode
 from portage.util import writemsg
 from portage.util.configparser import RawConfigParser, read_configs
 

@@ -2,11 +2,12 @@
 # Distributed under the terms of the GNU General Public License v2
 
 
+from _emerge.DependencyArg import DependencyArg
+from _emerge.UseFlagDisplay import UseFlagDisplay
+
 from portage import _encodings, _unicode_encode
 from portage.exception import PortageException
 from portage.tests import TestCase
-from _emerge.DependencyArg import DependencyArg
-from _emerge.UseFlagDisplay import UseFlagDisplay
 
 
 class StringFormatTestCase(TestCase):

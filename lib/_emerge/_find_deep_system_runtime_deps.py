@@ -1,10 +1,12 @@
 # Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
+from typing import Set
+
 from _emerge.DepPriority import DepPriority
 from _emerge.Package import Package
+
 from portage.util.digraph import digraph
-from typing import Set
 
 
 def _find_deep_system_runtime_deps(graph: digraph) -> Set[Package]:

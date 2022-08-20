@@ -3,19 +3,15 @@
 
 __all__ = ("LicenseManager",)
 
+from typing import List, Optional, Set, Tuple, Union
+
 from portage import os
 from portage.dep import ExtendedAtomDict, use_reduce
 from portage.exception import InvalidDependString
 from portage.localization import _
-from portage.util import grabdict, grabdict_package, writemsg
-from portage.versions import cpv_getkey, _pkg_str
-
 from portage.package.ebuild._config.helper import ordered_by_atom_specificity
-from typing import Tuple
-from typing import List
-from typing import Optional
-from typing import Set
-from typing import Union
+from portage.util import grabdict, grabdict_package, writemsg
+from portage.versions import _pkg_str, cpv_getkey
 
 
 class LicenseManager:

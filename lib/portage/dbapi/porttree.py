@@ -3,21 +3,17 @@
 
 __all__ = ["close_portdbapi_caches", "FetchlistDict", "portagetree", "portdbapi"]
 
-import portage
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 from _asyncio import Future
-from portage.util._eventloop.asyncio_event_loop import AsyncioEventLoop
-from portage.repository.config import RepoConfigLoader
-from portage.repository.config import RepoConfig
-from typing import List
-from portage.package.ebuild.config import config
-from typing import Tuple
+
+import portage
 from portage.cache.flat_hash import md5_database
-from portage.versions import _pkg_str
-from typing import Any
-from typing import Optional
-from typing import Union
 from portage.eclass_cache import hashed_path
-from typing import Dict
+from portage.package.ebuild.config import config
+from portage.repository.config import RepoConfig, RepoConfigLoader
+from portage.util._eventloop.asyncio_event_loop import AsyncioEventLoop
+from portage.versions import _pkg_str
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -32,38 +28,41 @@ portage.proxy.lazyimport.lazyimport(
     "portage.versions:best,catsplit,catpkgsplit,_pkgsplit@pkgsplit,ver_regexp,_pkg_str",
 )
 
+import collections
+import errno
+import functools
+import os as _os
+import traceback
+import warnings
+from collections import OrderedDict
+from urllib.parse import urlparse
+
+from _emerge.EbuildMetadataPhase import EbuildMetadataPhase
+
+from portage import (
+    _eapi_is_deprecated,
+    _encodings,
+    _unicode_encode,
+    eapi_is_supported,
+    eclass_cache,
+    os,
+)
 from portage.cache import volatile
 from portage.cache.cache_errors import CacheError
 from portage.cache.mappings import Mapping
 from portage.dbapi import dbapi
 from portage.exception import (
-    PortageException,
-    PortageKeyError,
     FileNotFound,
     InvalidAtom,
     InvalidData,
     InvalidDependString,
     InvalidPackageName,
+    PortageException,
+    PortageKeyError,
 )
 from portage.localization import _
-
-from portage import eclass_cache, eapi_is_supported, _eapi_is_deprecated
-from portage import os
-from portage import _encodings
-from portage import _unicode_encode
 from portage.util.futures import asyncio
 from portage.util.futures.iter_completed import iter_gather
-from _emerge.EbuildMetadataPhase import EbuildMetadataPhase
-
-import os as _os
-import traceback
-import warnings
-import errno
-import functools
-
-import collections
-from collections import OrderedDict
-from urllib.parse import urlparse
 
 
 def close_portdbapi_caches():

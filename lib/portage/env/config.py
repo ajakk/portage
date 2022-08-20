@@ -13,9 +13,9 @@ __all__ = [
 
 from portage.cache.mappings import UserDict
 from portage.env.loaders import (
+    ItemFileLoader,
     KeyListFileLoader,
     KeyValuePairFileLoader,
-    ItemFileLoader,
 )
 
 

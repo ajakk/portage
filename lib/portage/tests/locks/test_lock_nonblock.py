@@ -5,8 +5,7 @@ import tempfile
 import traceback
 
 import portage
-from portage import os
-from portage import shutil
+from portage import os, shutil
 from portage.exception import TryAgain
 from portage.tests import TestCase
 

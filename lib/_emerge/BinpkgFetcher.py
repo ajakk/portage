@@ -2,13 +2,14 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import functools
+import stat
+import sys
+from urllib.parse import urlparse as urllib_parse_urlparse
 
 from _emerge.AsynchronousLock import AsynchronousLock
 from _emerge.CompositeTask import CompositeTask
 from _emerge.SpawnProcess import SpawnProcess
-from urllib.parse import urlparse as urllib_parse_urlparse
-import stat
-import sys
+
 import portage
 from portage import os
 from portage.const import SUPPORTED_GENTOO_BINPKG_FORMATS

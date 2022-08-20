@@ -10,12 +10,14 @@ try:
 except ImportError:
     import dummy_threading as threading
 
+from _emerge.CompositeTask import CompositeTask
+
 import portage
 from portage import os
 from portage.util._async.TaskScheduler import TaskScheduler
-from _emerge.CompositeTask import CompositeTask
-from .FetchIterator import FetchIterator
+
 from .DeletionIterator import DeletionIterator
+from .FetchIterator import FetchIterator
 
 logger = logging.getLogger(__name__)
 

@@ -17,8 +17,8 @@ from portage.const import MANIFEST2_HASH_DEFAULTS
 from portage.dbapi.porttree import FetchlistDict
 from portage.dep import use_reduce
 from portage.exception import (
-    InvalidDependString,
     FileNotFound,
+    InvalidDependString,
     PermissionDenied,
     PortagePackageException,
 )

@@ -7,21 +7,13 @@ import re
 import stat
 import sys
 import warnings
+from os import stat_result
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-from portage import os
-from portage import _encodings
-from portage import _unicode_decode
-from portage import _unicode_encode
 import portage
+from portage import _encodings, _unicode_decode, _unicode_encode, os
 from portage.dep import Atom
 from portage.versions import _pkg_str
-from typing import Any
-from typing import List
-from typing import Optional
-from typing import Union
-from typing import Dict
-from os import stat_result
-from typing import Tuple
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -35,7 +27,6 @@ from portage.const import USER_CONFIG_PATH, VCS_DIRS
 from portage.eapi import _get_eapi_attrs
 from portage.exception import DirectoryNotFound, InvalidAtom, PortageException
 from portage.localization import _
-
 
 ignored_dbentries = ("CONTENTS", "environment.bz2")
 

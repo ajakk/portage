@@ -15,13 +15,10 @@ import io
 import json
 
 import portage
-from portage import _encodings
-from portage import _unicode_decode
-from portage import _unicode_encode
+from portage import _encodings, _unicode_decode, _unicode_encode
 from portage.data import portage_gid, uid
 from portage.localization import _
 from portage.util import apply_secpass_permissions, atomic_ofstream, writemsg
-
 
 _MTIMEDBKEYS = {
     "info",

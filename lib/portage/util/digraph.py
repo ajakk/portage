@@ -5,22 +5,17 @@ __all__ = ["digraph"]
 
 import bisect
 from collections import deque
+from typing import Any, Callable, List, Optional, Set, Tuple, Union
 
-from portage.util import writemsg
+from _emerge.Blocker import Blocker
 from _emerge.BlockerDepPriority import BlockerDepPriority
 from _emerge.DepPriority import DepPriority
-from typing import Any
-from typing import Union
 from _emerge.Package import Package
-from _emerge.Blocker import Blocker
-from portage.util.digraph import digraph
 from _emerge.SetArg import SetArg
-from typing import List
-from typing import Set
+
 from portage.dep import Atom
-from typing import Optional
-from typing import Tuple
-from typing import Callable
+from portage.util import writemsg
+from portage.util.digraph import digraph
 
 
 class digraph:

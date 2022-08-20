@@ -10,11 +10,11 @@ subclass it adding and/or overriding classes as needed.
 """
 
 import logging
+from typing import List
 
 from portage.localization import _
-from portage.util import writemsg_level
 from portage.repository.config import RepoConfig
-from typing import List
+from portage.util import writemsg_level
 
 
 def check_type(repo: RepoConfig, logger: module, module_names: List[str]) -> bool:

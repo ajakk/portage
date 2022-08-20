@@ -1,11 +1,11 @@
 # Copyright 2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
+from typing import List, Tuple
+
 from portage import os
 from portage.process import find_binary
 from portage.util import shlex_split
-from typing import List
-from typing import Tuple
 
 
 def validate_cmd_var(v: str) -> Tuple[bool, List[str]]:

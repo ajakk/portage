@@ -2,10 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import itertools
+from typing import Any, List, Union
+
 from portage.dep import Atom
-from typing import Any
-from typing import List
-from typing import Union
 
 
 def dnf_convert(

@@ -8,9 +8,9 @@ import subprocess
 
 import portage
 from portage import os
-from portage.util import writemsg_level, shlex_split
+from portage.output import EOutput, create_color_func
+from portage.util import shlex_split, writemsg_level
 from portage.util.futures import asyncio
-from portage.output import create_color_func, EOutput
 
 good = create_color_func("GOOD")
 bad = create_color_func("BAD")
@@ -18,8 +18,8 @@ warn = create_color_func("WARN")
 from portage.sync.syncbase import NewBase
 
 try:
-    from gemato.exceptions import GematoException
     import gemato.openpgp
+    from gemato.exceptions import GematoException
 except ImportError:
     gemato = None
 

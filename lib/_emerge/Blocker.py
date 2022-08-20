@@ -1,8 +1,9 @@
 # Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-from _emerge.Task import Task
 from typing import Any
+
+from _emerge.Task import Task
 
 
 class Blocker(Task):

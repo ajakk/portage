@@ -4,9 +4,10 @@
 import pickle
 import traceback
 
+from _emerge.PipeReader import PipeReader
+
 from portage import os
 from portage.util._async.ForkProcess import ForkProcess
-from _emerge.PipeReader import PipeReader
 
 
 class AsyncFunction(ForkProcess):

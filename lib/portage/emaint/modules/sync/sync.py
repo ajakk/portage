@@ -7,16 +7,15 @@ import portage
 
 portage._internal_caller = True
 portage._sync_mode = True
-from portage.output import bold, red, create_color_func
-from portage._global_updates import _global_updates
-from portage.sync.controller import SyncManager
-from portage.util.digraph import digraph
-from portage.util.futures import asyncio
-from portage.util._async.AsyncScheduler import AsyncScheduler
-
 import _emerge
 from _emerge.emergelog import emergelog
 
+from portage._global_updates import _global_updates
+from portage.output import bold, create_color_func, red
+from portage.sync.controller import SyncManager
+from portage.util._async.AsyncScheduler import AsyncScheduler
+from portage.util.digraph import digraph
+from portage.util.futures import asyncio
 
 portage.proxy.lazyimport.lazyimport(
     globals(),

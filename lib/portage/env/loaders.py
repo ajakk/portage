@@ -5,23 +5,15 @@
 import errno
 import io
 import stat
+from typing import Any, Callable, Dict, Iterator, Optional, Tuple, Union
+
 import portage
-from typing import Any
-from typing import Optional
-from typing import Dict
-from typing import Tuple
-from typing import Callable
-from typing import Iterator
-from typing import Union
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
     "portage.util:writemsg",
 )
-from portage import os
-from portage import _encodings
-from portage import _unicode_decode
-from portage import _unicode_encode
+from portage import _encodings, _unicode_decode, _unicode_encode, os
 from portage.localization import _
 
 

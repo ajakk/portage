@@ -4,8 +4,7 @@
 import tempfile
 
 import portage
-from portage import os
-from portage import shutil
+from portage import os, shutil
 from portage.dbapi.virtual import fakedbapi
 from portage.package.ebuild.config import config
 from portage.tests import TestCase

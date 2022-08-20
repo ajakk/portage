@@ -7,13 +7,12 @@ import tarfile
 import tempfile
 from os import urandom
 
-from portage import os
-from portage import shutil
+from portage import os, shutil
+from portage.exception import InvalidSignature, MissingSignature
+from portage.gpg import GPG
+from portage.gpkg import gpkg
 from portage.tests import TestCase
 from portage.tests.resolver.ResolverPlayground import ResolverPlayground
-from portage.gpkg import gpkg
-from portage.gpg import GPG
-from portage.exception import MissingSignature, InvalidSignature
 
 
 class test_gpkg_gpg_case(TestCase):

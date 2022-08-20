@@ -6,10 +6,10 @@ import grp
 import os
 import platform
 import pwd
+from os import stat_result
 
 import portage
 from portage.localization import _
-from os import stat_result
 from portage.package.ebuild.config import config
 
 portage.proxy.lazyimport.lazyimport(

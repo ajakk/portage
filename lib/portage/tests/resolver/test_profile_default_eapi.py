@@ -3,11 +3,11 @@
 
 import io
 
-from portage import os, _encodings
+from portage import _encodings, os
 from portage.const import USER_CONFIG_PATH
+from portage.dep import ExtendedAtomDict
 from portage.tests import TestCase
 from portage.tests.resolver.ResolverPlayground import ResolverPlayground
-from portage.dep import ExtendedAtomDict
 from portage.util import ensure_dirs
 
 

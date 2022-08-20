@@ -2,10 +2,11 @@
 # Copyright 2007-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+from tempfile import mkstemp
+
 from portage import os
 from portage.env.config import PackageMaskFile
 from portage.tests import TestCase, test_cps
-from tempfile import mkstemp
 
 
 class PackageMaskFileTestCase(TestCase):

@@ -4,15 +4,11 @@
 import collections
 import fnmatch
 import functools
-from itertools import chain
 import os
 import re
+from itertools import chain
 
-from portage.util import shlex_split
-from portage.util import (
-    normalize_path,
-    varexpand,
-)
+from portage.util import normalize_path, shlex_split, varexpand
 
 
 class SonameDepsProcessor:

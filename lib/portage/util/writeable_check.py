@@ -14,9 +14,9 @@ import logging
 import os
 
 from portage import _encodings
-from portage.util import writemsg_level
-from portage.localization import _
 from portage.data import ostype
+from portage.localization import _
+from portage.util import writemsg_level
 
 
 def get_ro_checker():

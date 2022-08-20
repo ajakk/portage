@@ -5,11 +5,9 @@
 import errno
 import io
 import time
+
 import portage
-from portage import os
-from portage import _encodings
-from portage import _unicode_decode
-from portage import _unicode_encode
+from portage import _encodings, _unicode_decode, _unicode_encode, os
 from portage.data import portage_gid, portage_uid
 from portage.localization import _
 from portage.package.ebuild.prepare_build_dirs import _ensure_log_subdirs

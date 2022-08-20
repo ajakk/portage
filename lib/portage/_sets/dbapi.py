@@ -3,20 +3,20 @@
 
 import glob
 import time
+from typing import Any
 
+import portage
 from portage import os
-from portage.exception import PortageKeyError
-from portage.versions import best, catsplit, vercmp
+from portage._sets import SetConfigError, get_boolean
+from portage._sets.base import PackageSet
+from portage.dbapi.bintree import bindbapi
+from portage.dbapi.porttree import portdbapi
+from portage.dbapi.vartree import vardbapi
 from portage.dep import Atom, use_reduce
 from portage.dep._slot_operator import strip_slots
+from portage.exception import PortageKeyError
 from portage.localization import _
-from portage._sets.base import PackageSet
-from portage._sets import SetConfigError, get_boolean
-import portage
-from portage.dbapi.vartree import vardbapi
-from typing import Any
-from portage.dbapi.porttree import portdbapi
-from portage.dbapi.bintree import bindbapi
+from portage.versions import best, catsplit, vercmp
 
 __all__ = [
     "CategorySet",

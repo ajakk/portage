@@ -6,22 +6,22 @@ import io
 
 import _emerge.emergelog
 from _emerge.AsynchronousTask import AsynchronousTask
-from _emerge.EbuildExecuter import EbuildExecuter
-from _emerge.EbuildPhase import EbuildPhase
-from _emerge.EbuildBinpkg import EbuildBinpkg
-from _emerge.EbuildFetcher import EbuildFetcher
 from _emerge.CompositeTask import CompositeTask
-from _emerge.EbuildMerge import EbuildMerge
-from _emerge.EbuildFetchonly import EbuildFetchonly
+from _emerge.EbuildBinpkg import EbuildBinpkg
 from _emerge.EbuildBuildDir import EbuildBuildDir
+from _emerge.EbuildExecuter import EbuildExecuter
+from _emerge.EbuildFetcher import EbuildFetcher
+from _emerge.EbuildFetchonly import EbuildFetchonly
+from _emerge.EbuildMerge import EbuildMerge
+from _emerge.EbuildPhase import EbuildPhase
 from _emerge.MiscFunctionsProcess import MiscFunctionsProcess
 from _emerge.TaskSequence import TaskSequence
 
 import portage
 from portage import _encodings, _unicode_encode, os
+from portage.package.ebuild._spawn_nofetch import SpawnNofetchWithoutBuilddir
 from portage.package.ebuild.digestcheck import digestcheck
 from portage.package.ebuild.doebuild import _check_temp_dir
-from portage.package.ebuild._spawn_nofetch import SpawnNofetchWithoutBuilddir
 from portage.util._async.AsyncTaskFuture import AsyncTaskFuture
 from portage.util.path import first_existing
 

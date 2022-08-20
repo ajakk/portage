@@ -5,20 +5,22 @@ import errno
 import re
 from itertools import chain
 
-from portage import os
-from portage import _encodings
-from portage import _unicode_decode
-from portage import _unicode_encode
-from portage.util import grabfile, write_atomic, ensure_dirs, normalize_path
+from portage import (
+    _encodings,
+    _unicode_decode,
+    _unicode_encode,
+    cpv_getkey,
+    os,
+    portage_gid,
+)
+from portage._sets import SETPREFIX, SetConfigError, get_boolean
+from portage._sets.base import EditablePackageSet, PackageSet
 from portage.const import USER_CONFIG_PATH, VCS_DIRS, WORLD_FILE, WORLD_SETS_FILE
-from portage.localization import _
-from portage.locks import lockfile, unlockfile
-from portage import portage_gid
-from portage._sets.base import PackageSet, EditablePackageSet
-from portage._sets import SetConfigError, SETPREFIX, get_boolean
 from portage.env.loaders import ItemFileLoader, KeyListFileLoader
 from portage.env.validators import ValidAtomValidator
-from portage import cpv_getkey
+from portage.localization import _
+from portage.locks import lockfile, unlockfile
+from portage.util import ensure_dirs, grabfile, normalize_path, write_atomic
 
 __all__ = [
     "StaticFileSet",

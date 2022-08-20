@@ -5,12 +5,12 @@ import locale
 import logging
 import time
 
-from portage import os, _unicode_decode
+from portage import _unicode_decode, os
 from portage.exception import PortageException
 from portage.localization import _
 from portage.output import EOutput
-from portage.util import grabfile, writemsg_level
 from portage.package.ebuild.config import config
+from portage.util import grabfile, writemsg_level
 
 
 def have_english_locale():

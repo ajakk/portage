@@ -5,8 +5,7 @@ __all__ = ["lazyimport"]
 
 import sys
 import types
-from typing import Any
-from typing import Dict
+from typing import Any, Dict
 
 try:
     import threading
@@ -14,7 +13,6 @@ except ImportError:
     import dummy_threading as threading
 
 from portage.proxy.objectproxy import ObjectProxy
-
 
 _module_proxies = {}
 _module_proxies_lock = threading.RLock()

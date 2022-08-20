@@ -1,14 +1,15 @@
 # Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+from _emerge.CompositeTask import CompositeTask
 from _emerge.EbuildPhase import EbuildPhase
 from _emerge.TaskSequence import TaskSequence
-from _emerge.CompositeTask import CompositeTask
+
 import portage
 from portage import os
 from portage.eapi import (
-    eapi_has_src_prepare_and_src_configure,
     eapi_exports_replace_vars,
+    eapi_has_src_prepare_and_src_configure,
 )
 
 

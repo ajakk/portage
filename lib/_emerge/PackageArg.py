@@ -3,6 +3,7 @@
 
 from _emerge.DependencyArg import DependencyArg
 from _emerge.Package import Package
+
 import portage
 from portage._sets.base import InternalPackageSet
 from portage.dep import _repo_separator

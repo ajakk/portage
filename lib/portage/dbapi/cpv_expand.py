@@ -3,11 +3,12 @@
 
 __all__ = ["cpv_expand"]
 
+from _emerge.PackageVirtualDbapi import PackageVirtualDbapi
+
 import portage
 from portage.exception import AmbiguousPackageName
-from portage.versions import _pkgsplit
-from _emerge.PackageVirtualDbapi import PackageVirtualDbapi
 from portage.package.ebuild.config import config
+from portage.versions import _pkgsplit
 
 
 def cpv_expand(

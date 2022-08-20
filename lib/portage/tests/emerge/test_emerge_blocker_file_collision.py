@@ -5,8 +5,7 @@ import subprocess
 import sys
 
 import portage
-from portage import os
-from portage import _unicode_decode
+from portage import _unicode_decode, os
 from portage.const import PORTAGE_PYM_PATH, USER_CONFIG_PATH
 from portage.process import find_binary
 from portage.tests import TestCase

@@ -1,29 +1,30 @@
 # Copyright 2014-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-import sys
-import logging
 import grp
+import logging
 import pwd
+import sys
 import warnings
 
 import portage
 from portage import os
+from portage.output import create_color_func
 from portage.progress import ProgressBar
 
 # from portage.emaint.defaults import DEFAULT_OPTIONS
 from portage.util import writemsg, writemsg_level
-from portage.output import create_color_func
 
 good = create_color_func("GOOD")
 bad = create_color_func("BAD")
 warn = create_color_func("WARN")
-from portage.package.ebuild.doebuild import _check_temp_dir
-from portage.metadata import action_metadata
-from portage.util.hooks import get_hooks_from_dir
-from portage.util._async.AsyncFunction import AsyncFunction
-from portage import _unicode_decode
 from _emerge.CompositeTask import CompositeTask
+
+from portage import _unicode_decode
+from portage.metadata import action_metadata
+from portage.package.ebuild.doebuild import _check_temp_dir
+from portage.util._async.AsyncFunction import AsyncFunction
+from portage.util.hooks import get_hooks_from_dir
 
 
 class TaskHandler:

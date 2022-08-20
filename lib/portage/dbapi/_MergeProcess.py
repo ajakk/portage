@@ -1,16 +1,16 @@
 # Copyright 2010-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+import fcntl
 import io
 import multiprocessing
 import platform
 
-import fcntl
 import portage
-from portage import os, _unicode_decode
-from portage.util._ctypes import find_library
 import portage.elog.messages
+from portage import _unicode_decode, os
 from portage.util._async.ForkProcess import ForkProcess
+from portage.util._ctypes import find_library
 
 
 class MergeProcess(ForkProcess):

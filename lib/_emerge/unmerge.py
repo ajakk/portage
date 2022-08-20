@@ -5,20 +5,21 @@ import logging
 import signal
 import sys
 import textwrap
+
+from _emerge.countdown import countdown
+from _emerge.emergelog import emergelog
+from _emerge.Package import Package
+from _emerge.UninstallFailure import UninstallFailure
+from _emerge.UserQuery import UserQuery
+
 import portage
 from portage import os
+from portage._sets import SETPREFIX
+from portage._sets.base import EditablePackageSet
 from portage.dbapi._expand_new_virt import expand_new_virt
 from portage.localization import _
 from portage.output import bold, colorize, darkgreen, green
-from portage._sets import SETPREFIX
-from portage._sets.base import EditablePackageSet
-from portage.versions import cpv_sort_key, _pkg_str
-
-from _emerge.emergelog import emergelog
-from _emerge.Package import Package
-from _emerge.UserQuery import UserQuery
-from _emerge.UninstallFailure import UninstallFailure
-from _emerge.countdown import countdown
+from portage.versions import _pkg_str, cpv_sort_key
 
 
 def _unmerge_display(

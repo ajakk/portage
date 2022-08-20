@@ -8,14 +8,11 @@ import stat
 from operator import attrgetter
 
 import portage
-from portage import os
-from portage import _encodings
-from portage import _unicode_encode
-from portage.cache import cache_errors, flat_hash
 import portage.eclass_cache
-from portage.cache.template import reconstruct_eclasses
+from portage import _encodings, _unicode_encode, os
+from portage.cache import cache_errors, flat_hash
 from portage.cache.mappings import ProtectedDict
-
+from portage.cache.template import reconstruct_eclasses
 
 # this is the old cache format, flat_list.  count maintained here.
 magic_line_count = 22

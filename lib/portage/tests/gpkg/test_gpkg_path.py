@@ -2,18 +2,17 @@
 # Copright Gentoo Foundation 2006
 # Portage Unit Testing Functionality
 
-import tempfile
-import tarfile
 import io
 import sys
+import tarfile
+import tempfile
 from os import urandom
 
-from portage import os
-from portage import shutil
-from portage.util._compare_files import compare_files
+from portage import os, shutil
+from portage.gpkg import gpkg
 from portage.tests import TestCase
 from portage.tests.resolver.ResolverPlayground import ResolverPlayground
-from portage.gpkg import gpkg
+from portage.util._compare_files import compare_files
 
 
 class test_gpkg_path_case(TestCase):

@@ -14,18 +14,14 @@ import textwrap
 import time
 import warnings
 from itertools import chain
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 
-import portage
-from typing import Any
-from typing import Iterator
 from _emerge.actions import _emerge_config
 from _emerge.stdout_spinner import stdout_spinner
-from typing import Optional
+
+import portage
 from portage import _trees_dict
-from typing import Dict
 from portage.package.ebuild.config import config
-from typing import List
-from typing import Tuple
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -41,17 +37,15 @@ portage.proxy.lazyimport.lazyimport(
     "_emerge.stdout_spinner:stdout_spinner",
 )
 
-from portage import os
-from portage import shutil
-from portage import _encodings, _unicode_decode
+from portage import _encodings, _unicode_decode, os, shutil
 from portage.binrepo.config import BinRepoConfigLoader
-from portage.const import BINREPOS_CONF_FILE, _DEPCLEAN_LIB_CHECK_DEFAULT
-from portage.dbapi.dep_expand import dep_expand
+from portage.const import _DEPCLEAN_LIB_CHECK_DEFAULT, BINREPOS_CONF_FILE
 from portage.dbapi._expand_new_virt import expand_new_virt
+from portage.dbapi.dep_expand import dep_expand
 from portage.dbapi.IndexedPortdb import IndexedPortdb
 from portage.dbapi.IndexedVardb import IndexedVardb
 from portage.dep import Atom, _repo_separator, _slot_separator
-from portage.exception import InvalidAtom, InvalidData, ParseError, GPGException
+from portage.exception import GPGException, InvalidAtom, InvalidData, ParseError
 from portage.output import (
     colorize,
     create_color_func,
@@ -64,32 +58,6 @@ from portage.output import (
 good = create_color_func("GOOD")
 bad = create_color_func("BAD")
 warn = create_color_func("WARN")
-from portage.package.ebuild._ipc.QueryCommand import QueryCommand
-from portage.package.ebuild.fetch import _hide_url_passwd
-from portage._sets import load_default_config, SETPREFIX
-from portage._sets.base import InternalPackageSet
-from portage.util import (
-    cmp_sort_key,
-    normalize_path,
-    writemsg,
-    varexpand,
-    writemsg_level,
-    writemsg_stdout,
-)
-from portage.util.digraph import digraph
-from portage.util.path import first_existing
-from portage.util.SlotObject import SlotObject
-from portage.util._async.run_main_scheduler import run_main_scheduler
-from portage.util._async.SchedulerInterface import SchedulerInterface
-from portage.util._eventloop.global_event_loop import global_event_loop
-from portage._global_updates import _global_updates
-from portage.sync.old_tree_timestamp import old_tree_timestamp_warn
-from portage.localization import _
-from portage.metadata import action_metadata
-from portage.emaint.main import print_results
-from portage.gpg import GPG
-from portage.binpkg import get_binpkg_format
-
 from _emerge.clear_caches import clear_caches
 from _emerge.create_depgraph_params import create_depgraph_params
 from _emerge.Dependency import Dependency
@@ -108,6 +76,32 @@ from _emerge.unmerge import unmerge
 from _emerge.UnmergeDepPriority import UnmergeDepPriority
 from _emerge.UseFlagDisplay import pkg_use_display
 from _emerge.UserQuery import UserQuery
+
+from portage._global_updates import _global_updates
+from portage._sets import SETPREFIX, load_default_config
+from portage._sets.base import InternalPackageSet
+from portage.binpkg import get_binpkg_format
+from portage.emaint.main import print_results
+from portage.gpg import GPG
+from portage.localization import _
+from portage.metadata import action_metadata
+from portage.package.ebuild._ipc.QueryCommand import QueryCommand
+from portage.package.ebuild.fetch import _hide_url_passwd
+from portage.sync.old_tree_timestamp import old_tree_timestamp_warn
+from portage.util import (
+    cmp_sort_key,
+    normalize_path,
+    varexpand,
+    writemsg,
+    writemsg_level,
+    writemsg_stdout,
+)
+from portage.util._async.run_main_scheduler import run_main_scheduler
+from portage.util._async.SchedulerInterface import SchedulerInterface
+from portage.util._eventloop.global_event_loop import global_event_loop
+from portage.util.digraph import digraph
+from portage.util.path import first_existing
+from portage.util.SlotObject import SlotObject
 
 
 def action_build(

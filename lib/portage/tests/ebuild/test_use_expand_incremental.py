@@ -3,7 +3,7 @@
 
 import io
 
-from portage import os, _encodings
+from portage import _encodings, os
 from portage.dep import Atom
 from portage.package.ebuild.config import config
 from portage.tests import TestCase

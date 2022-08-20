@@ -4,14 +4,14 @@
 import errno
 import io
 import tempfile
+
+from _emerge.SpawnProcess import SpawnProcess
+
 import portage
-from portage import os
-from portage import _encodings
-from portage import _unicode_encode
+from portage import _encodings, _unicode_encode, os
 from portage.const import BASH_BINARY
 from portage.tests import TestCase
 from portage.util._eventloop.global_event_loop import global_event_loop
-from _emerge.SpawnProcess import SpawnProcess
 
 
 class SpawnTestCase(TestCase):

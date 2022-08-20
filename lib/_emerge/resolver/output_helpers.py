@@ -8,6 +8,10 @@ in output.py
 __all__ = ()
 
 import re
+from typing import Any, Iterator, List, Optional, Set, Tuple, Union
+
+from _emerge.depgraph import depgraph
+from _emerge.resolver.output_helpers import _DisplayConfig
 
 from portage import os
 from portage._sets.base import InternalPackageSet
@@ -23,22 +27,13 @@ from portage.output import (
     turquoise,
     yellow,
 )
-from _emerge.depgraph import depgraph
-from typing import Any
-from typing import List
-from typing import Optional
-from typing import Tuple
-from typing import Iterator
-from typing import Union
-from _emerge.resolver.output_helpers import _DisplayConfig
-from typing import Set
 
 bad = create_color_func("BAD")
-from portage.util import writemsg
-from portage.util.SlotObject import SlotObject
-
 from _emerge.Blocker import Blocker
 from _emerge.Package import Package
+
+from portage.util import writemsg
+from portage.util.SlotObject import SlotObject
 
 
 class _RepoDisplay:

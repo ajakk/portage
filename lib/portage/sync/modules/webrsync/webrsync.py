@@ -5,9 +5,9 @@ import logging
 
 import portage
 from portage import os
+from portage.output import create_color_func
 from portage.util import writemsg_level
 from portage.util.futures import asyncio
-from portage.output import create_color_func
 
 good = create_color_func("GOOD")
 bad = create_color_func("BAD")
@@ -15,8 +15,8 @@ warn = create_color_func("WARN")
 from portage.sync.syncbase import SyncBase
 
 try:
-    from gemato.exceptions import GematoException
     import gemato.openpgp
+    from gemato.exceptions import GematoException
 except ImportError:
     gemato = None
 

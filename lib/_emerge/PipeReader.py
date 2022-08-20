@@ -3,8 +3,9 @@
 
 import fcntl
 
-from portage import os
 from _emerge.AbstractPollTask import AbstractPollTask
+
+from portage import os
 
 
 class PipeReader(AbstractPollTask):

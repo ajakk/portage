@@ -11,10 +11,8 @@ except ImportError:
 
 import pickle
 
-from portage import _unicode_encode
-from portage import os
-from portage.cache import fs_template
-from portage.cache import cache_errors
+from portage import _unicode_encode, os
+from portage.cache import cache_errors, fs_template
 
 
 class database(fs_template.FsBased):

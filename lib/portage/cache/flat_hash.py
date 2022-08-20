@@ -2,22 +2,17 @@
 # Distributed under the terms of the GNU General Public License v2
 # Author(s): Brian Harring (ferringb@gentoo.org)
 
-from portage.cache import fs_template
-from portage.cache import cache_errors
 import errno
 import io
+import os as _os
 import stat
 import tempfile
-import os as _os
-from portage import os
-from portage import _encodings
-from portage import _unicode_encode
+from typing import Any, Dict, List, Union
+
+from portage import _encodings, _unicode_encode, os
+from portage.cache import cache_errors, fs_template
 from portage.exception import InvalidData
 from portage.versions import _pkg_str
-from typing import Any
-from typing import Dict
-from typing import Union
-from typing import List
 
 
 class database(fs_template.FsBased):

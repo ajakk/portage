@@ -4,8 +4,7 @@
 import array
 import tempfile
 
-from portage import _unicode_decode
-from portage import _unicode_encode
+from portage import _unicode_decode, _unicode_encode
 from portage.tests import TestCase
 
 

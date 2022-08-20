@@ -1,13 +1,10 @@
 # Copyright 2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-from portage.util.futures import asyncio
-from portage.util.futures.compat_coroutine import (
-    coroutine,
-    coroutine_return,
-)
-from portage.util.futures._sync_decorator import _sync_decorator, _sync_methods
 from portage.tests import TestCase
+from portage.util.futures import asyncio
+from portage.util.futures._sync_decorator import _sync_decorator, _sync_methods
+from portage.util.futures.compat_coroutine import coroutine, coroutine_return
 
 
 class CompatCoroutineTestCase(TestCase):

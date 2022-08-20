@@ -1,17 +1,16 @@
 # Copyright 2012-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-import gzip
 import errno
+import gzip
+from typing import Any, Callable
 
-from portage import _encodings
-from portage import _unicode_encode
+from portage import _encodings, _unicode_encode
 from portage.util import writemsg_level
-from portage.util.futures._asyncio.streams import _writer
-from ..SlotObject import SlotObject
 from portage.util._eventloop.asyncio_event_loop import AsyncioEventLoop
-from typing import Any
-from typing import Callable
+from portage.util.futures._asyncio.streams import _writer
+
+from ..SlotObject import SlotObject
 
 
 class SchedulerInterface(SlotObject):

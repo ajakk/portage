@@ -37,12 +37,14 @@ import array
 import errno
 
 import portage
-from portage import os
-from portage import shutil
-from portage import normalize_path
-from portage import _encodings
-from portage import _unicode_decode
-from portage import _unicode_encode
+from portage import (
+    _encodings,
+    _unicode_decode,
+    _unicode_encode,
+    normalize_path,
+    os,
+    shutil,
+)
 from portage.util.file_copy import copyfile
 
 

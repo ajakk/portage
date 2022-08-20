@@ -2,15 +2,14 @@
 # Distributed under the terms of the GNU General Public License v2
 
 
-import portage
-from portage import os
-from portage import digraph
-from portage._sets.base import InternalPackageSet
-from portage.dep import Atom
-
 from _emerge.BlockerCache import BlockerCache
 from _emerge.Package import Package
 from _emerge.show_invalid_depstring_notice import show_invalid_depstring_notice
+
+import portage
+from portage import digraph, os
+from portage._sets.base import InternalPackageSet
+from portage.dep import Atom
 
 
 class BlockerDB:

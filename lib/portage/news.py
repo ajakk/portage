@@ -13,18 +13,26 @@ __all__ = [
     "display_news_notifications",
 ]
 
-from collections import OrderedDict
-
 import fnmatch
 import io
 import logging
 import os as _os
 import re
-from portage import os
-from portage import _encodings
-from portage import _unicode_decode
-from portage import _unicode_encode
+from collections import OrderedDict
+
+from portage import _encodings, _unicode_decode, _unicode_encode, os
 from portage.const import NEWS_LIB_PATH
+from portage.data import portage_gid
+from portage.dep import isvalidatom
+from portage.exception import (
+    InvalidLocation,
+    OperationNotPermitted,
+    PermissionDenied,
+    ReadOnlyFileSystem,
+)
+from portage.localization import _
+from portage.locks import lockfile, unlockfile
+from portage.output import colorize
 from portage.util import (
     apply_secpass_permissions,
     ensure_dirs,
@@ -32,17 +40,6 @@ from portage.util import (
     normalize_path,
     write_atomic,
     writemsg_level,
-)
-from portage.data import portage_gid
-from portage.dep import isvalidatom
-from portage.localization import _
-from portage.locks import lockfile, unlockfile
-from portage.output import colorize
-from portage.exception import (
-    InvalidLocation,
-    OperationNotPermitted,
-    PermissionDenied,
-    ReadOnlyFileSystem,
 )
 
 

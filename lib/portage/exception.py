@@ -2,12 +2,11 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import signal
+from typing import Any, Optional, Union
+
 from portage import _encodings, _unicode_decode
-from portage.localization import _
 from portage.dep import Atom
-from typing import Union
-from typing import Any
-from typing import Optional
+from portage.localization import _
 
 
 class PortageException(Exception):

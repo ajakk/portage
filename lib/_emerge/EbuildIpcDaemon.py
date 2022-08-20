@@ -4,12 +4,14 @@
 import errno
 import logging
 import pickle
+
+from _emerge.FifoIpcDaemon import FifoIpcDaemon
+
 from portage import os
 from portage.exception import TryAgain
 from portage.localization import _
 from portage.locks import lockfile, unlockfile
 from portage.util import writemsg_level
-from _emerge.FifoIpcDaemon import FifoIpcDaemon
 
 
 class EbuildIpcDaemon(FifoIpcDaemon):

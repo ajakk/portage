@@ -3,17 +3,17 @@
 
 import tempfile
 
-from portage import os
-from portage import shutil
+from _emerge.CompositeTask import CompositeTask
+from _emerge.EbuildPhase import EbuildPhase
+
+from portage import os, shutil
 from portage.const import EBUILD_PHASES
 from portage.elog import elog_process
 from portage.package.ebuild.config import config
 from portage.package.ebuild.doebuild import doebuild_environment
 from portage.package.ebuild.prepare_build_dirs import prepare_build_dirs
-from portage.util.futures import asyncio
 from portage.util._async.SchedulerInterface import SchedulerInterface
-from _emerge.CompositeTask import CompositeTask
-from _emerge.EbuildPhase import EbuildPhase
+from portage.util.futures import asyncio
 
 
 class SpawnNofetchWithoutBuilddir(CompositeTask):

@@ -6,22 +6,22 @@ import subprocess
 import sys
 
 import portage
-from portage import shutil, os
+from portage import os, shutil
+from portage.cache.mappings import Mapping
 from portage.const import (
     BASH_BINARY,
     BINREPOS_CONF_FILE,
     PORTAGE_PYM_PATH,
-    USER_CONFIG_PATH,
     SUPPORTED_GENTOO_BINPKG_FORMATS,
+    USER_CONFIG_PATH,
 )
-from portage.cache.mappings import Mapping
+from portage.output import colorize
 from portage.process import find_binary
 from portage.tests import TestCase
 from portage.tests.resolver.ResolverPlayground import ResolverPlayground
 from portage.tests.util.test_socks5 import AsyncHTTPServer
 from portage.util import ensure_dirs, find_updated_config_files, shlex_split
 from portage.util.futures import asyncio
-from portage.output import colorize
 
 
 class BinhostContentMap(Mapping):

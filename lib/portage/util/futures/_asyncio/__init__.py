@@ -20,25 +20,24 @@ __all__ = (
     "wait",
 )
 
+import asyncio as _real_asyncio
 import subprocess
 import types
 import weakref
 
-import asyncio as _real_asyncio
-
 # pylint: disable=redefined-builtin
 from asyncio import (
     ALL_COMPLETED,
-    CancelledError,
     FIRST_COMPLETED,
     FIRST_EXCEPTION,
+    CancelledError,
     Future,
     InvalidStateError,
     TimeoutError,
 )
+from typing import Any, Optional
+
 from portage.util._eventloop.asyncio_event_loop import AsyncioEventLoop
-from typing import Any
-from typing import Optional
 
 try:
     import threading
@@ -55,7 +54,6 @@ portage.proxy.lazyimport.lazyimport(
 from portage.util._eventloop.asyncio_event_loop import (
     AsyncioEventLoop as _AsyncioEventLoop,
 )
-
 
 _lock = threading.Lock()
 _policy = None

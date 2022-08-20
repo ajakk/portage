@@ -3,9 +3,10 @@
 
 from collections import deque
 
-from portage import os
-from _emerge.CompositeTask import CompositeTask
 from _emerge.AsynchronousTask import AsynchronousTask
+from _emerge.CompositeTask import CompositeTask
+
+from portage import os
 
 
 class TaskSequence(CompositeTask):

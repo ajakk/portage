@@ -2,10 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import errno
+from typing import Iterator, Union
 
 from portage import os
-from typing import Iterator
-from typing import Union
 
 
 def first_existing(path: str) -> str:

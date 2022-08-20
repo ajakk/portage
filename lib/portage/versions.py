@@ -18,18 +18,13 @@ __all__ = [
 import re
 import warnings
 from functools import lru_cache
-
+from re import Pattern
+from typing import Any, List, Optional, Tuple, Union
 
 import portage
-from typing import Any
-from typing import Optional
 from portage.dbapi.vartree import vardbapi
-from portage.versions import _pkg_str
-from typing import Tuple
-from typing import Union
 from portage.eapi import _eapi_attrs
-from re import Pattern
-from typing import List
+from portage.versions import _pkg_str
 
 portage.proxy.lazyimport.lazyimport(
     globals(),

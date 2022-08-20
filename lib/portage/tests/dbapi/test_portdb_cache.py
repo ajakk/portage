@@ -6,8 +6,7 @@ import sys
 import textwrap
 
 import portage
-from portage import os
-from portage import _unicode_decode
+from portage import _unicode_decode, os
 from portage.const import BASH_BINARY, PORTAGE_PYM_PATH, USER_CONFIG_PATH
 from portage.tests import TestCase
 from portage.tests.resolver.ResolverPlayground import ResolverPlayground

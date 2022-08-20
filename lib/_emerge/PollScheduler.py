@@ -6,12 +6,12 @@ try:
 except ImportError:
     import dummy_threading as threading
 
-from portage.util.futures import asyncio
-from portage.util._async.SchedulerInterface import SchedulerInterface
-from portage.util._eventloop.global_event_loop import global_event_loop
-
 from _emerge.getloadavg import getloadavg
+
+from portage.util._async.SchedulerInterface import SchedulerInterface
 from portage.util._eventloop.asyncio_event_loop import AsyncioEventLoop
+from portage.util._eventloop.global_event_loop import global_event_loop
+from portage.util.futures import asyncio
 
 
 class PollScheduler:

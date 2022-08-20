@@ -4,21 +4,16 @@
 
 __all__ = ["cache"]
 
-import stat
-import operator
-import warnings
-from portage.util import normalize_path
 import errno
+import operator
+import stat
+import warnings
+from typing import Any, Dict, Optional, Union
+
+from portage import _shell_quote, checksum, os
+from portage.eclass_cache import cache, hashed_path
 from portage.exception import FileNotFound, PermissionDenied
-from portage import os
-from portage import checksum
-from portage import _shell_quote
-from typing import Union
-from typing import Any
-from typing import Optional
-from portage.eclass_cache import cache
-from portage.eclass_cache import hashed_path
-from typing import Dict
+from portage.util import normalize_path
 
 
 class hashed_path:

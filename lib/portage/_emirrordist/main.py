@@ -8,13 +8,13 @@ import sys
 import portage
 from portage import os
 from portage.package.ebuild.fetch import ContentHashLayout
-from portage.util import normalize_path, _recursive_file_list
+from portage.util import _recursive_file_list, normalize_path
 from portage.util._async.run_main_scheduler import run_main_scheduler
 from portage.util._async.SchedulerInterface import SchedulerInterface
 from portage.util._eventloop.global_event_loop import global_event_loop
+
 from .Config import Config
 from .MirrorDistTask import MirrorDistTask
-
 
 seconds_per_day = 24 * 60 * 60
 

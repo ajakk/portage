@@ -3,25 +3,22 @@
 
 import logging
 import textwrap
+from typing import Any, Dict, List, Optional
+
+from _emerge.RootConfig import RootConfig
 
 import portage
-from portage import os
+from portage import _trees_dict, os
 from portage.emaint.modules.logs.logs import CleanLogs
 from portage.news import count_unread_news, display_news_notifications
 from portage.output import colorize
 from portage.util._dyn_libs.display_preserved_libs import display_preserved_libs
 from portage.util._info_files import chk_updated_info_files
+from portage.util.mtimedb import MtimeDB
 
+from ._flush_elog_mod_echo import _flush_elog_mod_echo
 from .chk_updated_cfg_files import chk_updated_cfg_files
 from .emergelog import emergelog
-from ._flush_elog_mod_echo import _flush_elog_mod_echo
-from _emerge.RootConfig import RootConfig
-from typing import Any
-from typing import Dict
-from portage import _trees_dict
-from portage.util.mtimedb import MtimeDB
-from typing import List
-from typing import Optional
 
 
 def clean_logs(settings):

@@ -7,8 +7,7 @@ import sys
 import textwrap
 
 import portage
-from portage import os, shutil, _shell_quote
-from portage import _unicode_decode
+from portage import _shell_quote, _unicode_decode, os, shutil
 from portage.const import PORTAGE_PYM_PATH, TIMESTAMP_FORMAT
 from portage.process import find_binary
 from portage.tests import TestCase

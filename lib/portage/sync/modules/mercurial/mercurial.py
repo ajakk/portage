@@ -6,9 +6,8 @@ import subprocess
 
 import portage
 from portage import os
-from portage.util import writemsg_level, shlex_split
-
 from portage.sync.syncbase import NewBase
+from portage.util import shlex_split, writemsg_level
 
 
 class MercurialSync(NewBase):

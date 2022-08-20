@@ -2,11 +2,12 @@
 # Copyright 2007-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-from portage import os
-from portage.tests import TestCase
-from portage.news import NewsItem
-from portage.dbapi.virtual import testdbapi
 from tempfile import mkstemp
+
+from portage import os
+from portage.dbapi.virtual import testdbapi
+from portage.news import NewsItem
+from portage.tests import TestCase
 
 # TODO(antarus) Make newsitem use a loader so we can load using a string instead of a tempfile
 

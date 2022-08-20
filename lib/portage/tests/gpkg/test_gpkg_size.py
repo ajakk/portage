@@ -1,14 +1,14 @@
 # Copright Gentoo Foundation 2006-2020
 # Portage Unit Testing Functionality
 
-import tempfile
-import tarfile
 import sys
+import tarfile
+import tempfile
 
 from portage import os, shutil
+from portage.gpkg import gpkg
 from portage.tests import TestCase
 from portage.tests.resolver.ResolverPlayground import ResolverPlayground
-from portage.gpkg import gpkg
 
 
 class test_gpkg_large_size_case(TestCase):

@@ -13,9 +13,4 @@ __all__ = (
 )
 
 # pylint: disable=redefined-builtin
-from asyncio import (
-    CancelledError,
-    Future,
-    InvalidStateError,
-    TimeoutError,
-)
+from asyncio import CancelledError, Future, InvalidStateError, TimeoutError

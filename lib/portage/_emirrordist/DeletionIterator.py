@@ -7,6 +7,7 @@ import stat
 
 from portage import os
 from portage.package.ebuild.fetch import DistfileName
+
 from .DeletionTask import DeletionTask
 
 logger = logging.getLogger(__name__)

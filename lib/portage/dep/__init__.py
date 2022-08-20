@@ -31,32 +31,23 @@ __all__ = [
 import re
 import sys
 import warnings
-
 from functools import lru_cache
+from re import Pattern
+from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
+
+from _emerge.Package import Package
 
 import portage
-from typing import List
-from typing import Union
-from portage.versions import _pkg_str
-from typing import Iterator
-from typing import Tuple
-from portage.dep import Atom
+from portage.dep import Atom, _RequiredUseBranch, _use_dep
 from portage.eapi import _eapi_attrs
-from typing import Any
-from typing import Optional
-from typing import Set
-from portage.dep import _use_dep
-from typing import Callable
-from typing import Dict
-from _emerge.Package import Package
-from portage.dep import _RequiredUseBranch
-from re import Pattern
+from portage.versions import _pkg_str
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
     "portage.util:cmp_sort_key,writemsg",
 )
 
+import portage.cache.mappings
 from portage import _encodings, _unicode_decode, _unicode_encode
 from portage.eapi import _get_eapi_attrs
 from portage.exception import InvalidAtom, InvalidData, InvalidDependString
@@ -72,8 +63,6 @@ from portage.versions import (
     vercmp,
     ververify,
 )
-import portage.cache.mappings
-
 
 # \w is [a-zA-Z0-9_]
 

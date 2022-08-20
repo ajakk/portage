@@ -3,11 +3,7 @@
 
 import io
 
-from portage import (
-    _encodings,
-    _unicode_encode,
-    os,
-)
+from portage import _encodings, _unicode_encode, os
 from portage.dep.soname.parse import parse_soname_deps
 from portage.util._dyn_libs.NeededEntry import NeededEntry
 

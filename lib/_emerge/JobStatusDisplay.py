@@ -5,14 +5,12 @@ import io
 import sys
 import time
 
+from _emerge.getloadavg import getloadavg
+
 import portage
 import portage.util.formatter as formatter
-from portage import os
-from portage import _encodings
-from portage import _unicode_encode
+from portage import _encodings, _unicode_encode, os
 from portage.output import xtermTitle
-
-from _emerge.getloadavg import getloadavg
 
 
 class JobStatusDisplay:

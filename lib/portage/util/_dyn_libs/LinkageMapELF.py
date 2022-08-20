@@ -8,25 +8,23 @@ import logging
 import subprocess
 
 import portage
-from portage import _encodings
-from portage import _os_merge
-from portage import _unicode_decode
-from portage import _unicode_encode
+from portage import _encodings, _os_merge, _unicode_decode, _unicode_encode
 from portage.cache.mappings import slot_dict_class
 from portage.const import EPREFIX
+from portage.dbapi.vartree import vardbapi
 from portage.dep.soname.multilib_category import compute_multilib_category
 from portage.dep.soname.SonameAtom import SonameAtom
 from portage.exception import CommandNotFound, InvalidData
 from portage.localization import _
-from portage.util import getlibpaths
-from portage.util import grabfile
-from portage.util import normalize_path
-from portage.util import varexpand
-from portage.util import writemsg_level
+from portage.util import (
+    getlibpaths,
+    grabfile,
+    normalize_path,
+    varexpand,
+    writemsg_level,
+)
 from portage.util._dyn_libs.NeededEntry import NeededEntry
 from portage.util.elf.header import ELFHeader
-from portage.dbapi.vartree import vardbapi
-
 
 # Map ELF e_machine values from NEEDED.ELF.2 to approximate multilib
 # categories. This approximation will produce incorrect results on x32

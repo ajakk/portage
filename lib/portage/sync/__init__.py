@@ -2,15 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import os
-
 from collections import OrderedDict
+from typing import Any, Optional
 
 from portage.module import Modules
-from portage.sync.controller import SyncManager
-from portage.sync.config_checks import check_type
 from portage.repository.config import RepoConfig
-from typing import Any
-from typing import Optional
+from portage.sync.config_checks import check_type
+from portage.sync.controller import SyncManager
 
 _SUBMODULE_PATH_MAP = OrderedDict(
     [

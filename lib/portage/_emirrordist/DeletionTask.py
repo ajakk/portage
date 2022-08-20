@@ -4,10 +4,11 @@
 import errno
 import logging
 
+from _emerge.CompositeTask import CompositeTask
+
 from portage import os
 from portage.package.ebuild.fetch import ContentHashLayout
 from portage.util._async.FileCopier import FileCopier
-from _emerge.CompositeTask import CompositeTask
 
 logger = logging.getLogger(__name__)
 

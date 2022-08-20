@@ -1,9 +1,11 @@
 # Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-from portage.util.SlotObject import SlotObject
-from _emerge.DepPriority import DepPriority
 from typing import Any
+
+from _emerge.DepPriority import DepPriority
+
+from portage.util.SlotObject import SlotObject
 
 
 class Dependency(SlotObject):

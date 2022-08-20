@@ -1,17 +1,16 @@
 # Copright Gentoo Foundation 2006-2020
 # Portage Unit Testing Functionality
 
-import sys
-import tempfile
 import io
+import sys
 import tarfile
+import tempfile
 from os import urandom
 
 import portage.gpkg
-from portage import os
-from portage import shutil
-from portage.tests import TestCase
+from portage import os, shutil
 from portage.exception import CompressorOperationFailed
+from portage.tests import TestCase
 
 
 class test_gpkg_stream_case(TestCase):

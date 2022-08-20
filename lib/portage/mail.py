@@ -13,10 +13,9 @@
 import socket
 import sys
 
-from portage import os
-from portage import _unicode_decode, _unicode_encode
-from portage.localization import _
 import portage
+from portage import _unicode_decode, _unicode_encode, os
+from portage.localization import _
 
 
 def _force_ascii_if_necessary(s):

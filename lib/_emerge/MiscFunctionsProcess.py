@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 from _emerge.AbstractEbuildProcess import AbstractEbuildProcess
+
 import portage
 
 portage.proxy.lazyimport.lazyimport(globals(), "portage.package.ebuild.doebuild:spawn")

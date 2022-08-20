@@ -1,10 +1,11 @@
 # Copyright 2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
+from _emerge.PipeReader import PipeReader
+
 from portage import os
 from portage.checksum import perform_multiple_checksums
 from portage.util._async.ForkProcess import ForkProcess
-from _emerge.PipeReader import PipeReader
 
 
 class FileDigester(ForkProcess):

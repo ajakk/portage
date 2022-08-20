@@ -4,7 +4,7 @@
 import io
 
 import portage
-from portage import os, _encodings
+from portage import _encodings, os
 from portage.tests import TestCase
 from portage.tests.resolver.ResolverPlayground import (
     ResolverPlayground,

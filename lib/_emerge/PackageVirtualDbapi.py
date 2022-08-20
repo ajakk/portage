@@ -1,18 +1,15 @@
 # Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+from typing import Any, Dict, List, Optional, Tuple, Union
+
+from _emerge.Package import Package
+
 from portage.dbapi import dbapi
 from portage.dbapi.dep_expand import dep_expand
-from portage.package.ebuild.config import config
-from typing import Any
-from typing import Optional
-from typing import Tuple
-from _emerge.Package import Package
 from portage.dep import Atom
-from typing import List
+from portage.package.ebuild.config import config
 from portage.versions import _pkg_str
-from typing import Union
-from typing import Dict
 
 
 class PackageVirtualDbapi(dbapi):

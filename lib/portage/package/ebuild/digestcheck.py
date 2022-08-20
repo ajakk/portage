@@ -5,7 +5,7 @@ __all__ = ["digestcheck"]
 
 import warnings
 
-from portage import os, _encodings, _unicode_decode
+from portage import _encodings, _unicode_decode, os
 from portage.checksum import _hash_filter
 from portage.exception import DigestException, FileNotFound
 from portage.localization import _

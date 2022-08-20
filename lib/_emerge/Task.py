@@ -1,12 +1,13 @@
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-from portage.util.SlotObject import SlotObject
+from typing import Tuple, Union
+
 from _emerge.Blocker import Blocker
 from _emerge.Package import Package
-from typing import Tuple
-from typing import Union
 from _emerge.SetArg import SetArg
+
+from portage.util.SlotObject import SlotObject
 
 
 class Task(SlotObject):

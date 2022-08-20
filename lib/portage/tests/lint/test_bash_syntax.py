@@ -1,15 +1,13 @@
 # Copyright 2010-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-from itertools import chain
 import stat
 import subprocess
+from itertools import chain
 
+from portage import _encodings, _unicode_decode, _unicode_encode, os
 from portage.const import BASH_BINARY, PORTAGE_BASE_PATH, PORTAGE_BIN_PATH
 from portage.tests import TestCase
-from portage import os
-from portage import _encodings
-from portage import _unicode_decode, _unicode_encode
 
 
 class BashSyntaxTestCase(TestCase):

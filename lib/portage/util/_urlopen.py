@@ -2,13 +2,12 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import io
-from datetime import datetime
-from time import mktime
-from email.utils import formatdate, parsedate
-from urllib.request import urlopen as _urlopen
 import urllib.parse as urllib_parse
 import urllib.request as urllib_request
-
+from datetime import datetime
+from email.utils import formatdate, parsedate
+from time import mktime
+from urllib.request import urlopen as _urlopen
 
 # to account for the difference between TIMESTAMP of the index' contents
 #  and the file-'mtime'

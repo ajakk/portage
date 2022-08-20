@@ -1,12 +1,12 @@
 # Copyright 2014-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-from portage import os
-from portage.repository.config import allow_profile_repo_deps
-from portage.util import grabfile_package, stack_lists
-from portage._sets.base import PackageSet
-from portage.repository.config import _profile_node
 from typing import Tuple
+
+from portage import os
+from portage._sets.base import PackageSet
+from portage.repository.config import _profile_node, allow_profile_repo_deps
+from portage.util import grabfile_package, stack_lists
 
 
 class ProfilePackageSet(PackageSet):

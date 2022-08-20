@@ -3,9 +3,10 @@
 
 __all__ = ["bindbapi", "binarytree"]
 
+from typing import Any
+
 import portage
 from portage.dbapi.bintree import binarytree
-from typing import Any
 from portage.package.ebuild.config import config
 
 portage.proxy.lazyimport.lazyimport(
@@ -27,39 +28,6 @@ portage.proxy.lazyimport.lazyimport(
     "portage.versions:best,catpkgsplit,catsplit,_pkg_str",
 )
 
-from portage.binrepo.config import BinRepoConfigLoader
-from portage.cache.mappings import slot_dict_class
-from portage.const import (
-    BINREPOS_CONF_FILE,
-    CACHE_PATH,
-    SUPPORTED_XPAK_EXTENSIONS,
-    SUPPORTED_GPKG_EXTENSIONS,
-    SUPPORTED_GENTOO_BINPKG_FORMATS,
-)
-from portage.dbapi.virtual import fakedbapi
-from portage.dep import Atom, use_reduce, paren_enclose
-from portage.exception import (
-    AlarmSignal,
-    InvalidPackageName,
-    InvalidBinaryPackageFormat,
-    ParseError,
-    PortageException,
-    PortagePackageException,
-    SignatureException,
-)
-from portage.localization import _
-from portage.output import colorize
-from portage.package.ebuild.profile_iuse import iter_iuse_vars
-from portage.util.file_copy import copyfile
-from portage.util.futures import asyncio
-from portage.util.futures.executor.fork import ForkExecutor
-from portage.binpkg import get_binpkg_format
-from portage import _movefile
-from portage import os
-from portage import _encodings
-from portage import _unicode_decode
-from portage import _unicode_encode
-
 import codecs
 import errno
 import io
@@ -74,6 +42,35 @@ import warnings
 from gzip import GzipFile
 from itertools import chain
 from urllib.parse import urlparse
+
+from portage import _encodings, _movefile, _unicode_decode, _unicode_encode, os
+from portage.binpkg import get_binpkg_format
+from portage.binrepo.config import BinRepoConfigLoader
+from portage.cache.mappings import slot_dict_class
+from portage.const import (
+    BINREPOS_CONF_FILE,
+    CACHE_PATH,
+    SUPPORTED_GENTOO_BINPKG_FORMATS,
+    SUPPORTED_GPKG_EXTENSIONS,
+    SUPPORTED_XPAK_EXTENSIONS,
+)
+from portage.dbapi.virtual import fakedbapi
+from portage.dep import Atom, paren_enclose, use_reduce
+from portage.exception import (
+    AlarmSignal,
+    InvalidBinaryPackageFormat,
+    InvalidPackageName,
+    ParseError,
+    PortageException,
+    PortagePackageException,
+    SignatureException,
+)
+from portage.localization import _
+from portage.output import colorize
+from portage.package.ebuild.profile_iuse import iter_iuse_vars
+from portage.util.file_copy import copyfile
+from portage.util.futures import asyncio
+from portage.util.futures.executor.fork import ForkExecutor
 
 
 class UseCachedCopyOfRemoteIndex(Exception):

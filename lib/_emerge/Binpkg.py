@@ -2,29 +2,27 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import functools
+import io
+import logging
+
 import _emerge.emergelog
-from _emerge.EbuildPhase import EbuildPhase
-from _emerge.BinpkgFetcher import BinpkgFetcher
 from _emerge.BinpkgEnvExtractor import BinpkgEnvExtractor
-from _emerge.CompositeTask import CompositeTask
+from _emerge.BinpkgFetcher import BinpkgFetcher
 from _emerge.BinpkgVerifier import BinpkgVerifier
-from _emerge.EbuildMerge import EbuildMerge
+from _emerge.CompositeTask import CompositeTask
 from _emerge.EbuildBuildDir import EbuildBuildDir
+from _emerge.EbuildMerge import EbuildMerge
+from _emerge.EbuildPhase import EbuildPhase
 from _emerge.SpawnProcess import SpawnProcess
+
+import portage
+from portage import _encodings, _unicode_decode, _unicode_encode, os, shutil
 from portage.eapi import eapi_exports_replace_vars
 from portage.exception import PortageException
 from portage.output import colorize
 from portage.util import ensure_dirs
 from portage.util._async.AsyncTaskFuture import AsyncTaskFuture
 from portage.util._dyn_libs.dyn_libs import check_dyn_libs_inconsistent
-import portage
-from portage import os
-from portage import shutil
-from portage import _encodings
-from portage import _unicode_decode
-from portage import _unicode_encode
-import io
-import logging
 
 
 class Binpkg(CompositeTask):

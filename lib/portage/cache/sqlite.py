@@ -5,12 +5,10 @@ import collections
 import re
 
 import portage
-from portage.cache import fs_template
-from portage.cache import cache_errors
-from portage import os
-from portage import _unicode_decode
-from portage.util import writemsg
+from portage import _unicode_decode, os
+from portage.cache import cache_errors, fs_template
 from portage.localization import _
+from portage.util import writemsg
 
 
 class database(fs_template.FsBased):

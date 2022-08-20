@@ -2,10 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import logging
+from typing import Any, Dict, Optional
+
 from portage.util import writemsg_level
-from typing import Any
-from typing import Dict
-from typing import Optional
 
 
 def create_depgraph_params(

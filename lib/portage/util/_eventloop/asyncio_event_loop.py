@@ -1,20 +1,21 @@
 # Copyright 2018-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+import asyncio as _real_asyncio
 import os
 import signal
-
-import asyncio as _real_asyncio
 from asyncio.events import AbstractEventLoop as _AbstractEventLoop
 from asyncio.unix_events import AbstractChildWatcher as _AbstractChildWatcher
+from asyncio.unix_events import ThreadedChildWatcher, _UnixSelectorEventLoop
+from typing import List
+
+from _asyncio import Future
 
 import portage
-from portage.util._eventloop.asyncio_event_loop import _ChildWatcherThreadSafetyWrapper
-from portage.util._eventloop.asyncio_event_loop import AsyncioEventLoop
-from asyncio.unix_events import _UnixSelectorEventLoop
-from _asyncio import Future
-from typing import List
-from asyncio.unix_events import ThreadedChildWatcher
+from portage.util._eventloop.asyncio_event_loop import (
+    AsyncioEventLoop,
+    _ChildWatcherThreadSafetyWrapper,
+)
 
 
 class AsyncioEventLoop(_AbstractEventLoop):

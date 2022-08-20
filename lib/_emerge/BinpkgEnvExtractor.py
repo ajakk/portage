@@ -5,7 +5,8 @@ import errno
 
 from _emerge.CompositeTask import CompositeTask
 from _emerge.SpawnProcess import SpawnProcess
-from portage import os, _shell_quote, _unicode_encode
+
+from portage import _shell_quote, _unicode_encode, os
 from portage.const import BASH_BINARY
 
 

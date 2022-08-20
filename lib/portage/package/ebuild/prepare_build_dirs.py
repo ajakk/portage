@@ -9,7 +9,7 @@ import stat
 import time
 
 import portage
-from portage import os, shutil, _encodings, _unicode_encode, _unicode_decode
+from portage import _encodings, _unicode_decode, _unicode_encode, os, shutil
 from portage.data import portage_gid, portage_uid, secpass
 from portage.exception import (
     DirectoryNotFound,

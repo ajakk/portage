@@ -3,15 +3,13 @@
 
 import bisect
 import collections
+from typing import Any, Iterator, List, Optional
+
+from _emerge.Package import Package
+from _emerge.resolver.package_tracker import PackageTracker
 
 import portage
-from _emerge.Package import Package
 from portage.dep import Atom
-from typing import Iterator
-from _emerge.resolver.package_tracker import PackageTracker
-from typing import List
-from typing import Any
-from typing import Optional
 
 portage.proxy.lazyimport.lazyimport(
     globals(),

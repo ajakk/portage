@@ -2,8 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import stat
+from typing import Dict
 
-from portage import best, os
+from portage import _trees_dict, best, os
 from portage.const import WORLD_FILE
 from portage.data import secpass
 from portage.exception import DirectoryNotFound
@@ -15,9 +16,7 @@ from portage.update import (
     update_config_files,
     update_dbentry,
 )
-from portage.util import grabfile, shlex_split, writemsg, writemsg_stdout, write_atomic
-from portage import _trees_dict
-from typing import Dict
+from portage.util import grabfile, shlex_split, write_atomic, writemsg, writemsg_stdout
 
 
 def _global_updates(

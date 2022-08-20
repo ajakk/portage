@@ -3,12 +3,11 @@
 
 __all__ = ["doebuild", "doebuild_environment", "spawn", "spawnebuild"]
 
-import grp
-import gzip
 import errno
 import fnmatch
+import grp
+import gzip
 import io
-from itertools import chain
 import logging
 import os as _os
 import platform
@@ -18,10 +17,11 @@ import signal
 import stat
 import sys
 import tempfile
-from textwrap import wrap
 import time
 import warnings
 import zlib
+from itertools import chain
+from textwrap import wrap
 
 import portage
 
@@ -45,7 +45,19 @@ portage.proxy.lazyimport.lazyimport(
     "portage.util.ExtractKernelVersion:ExtractKernelVersion",
 )
 
+from _emerge.BinpkgEnvExtractor import BinpkgEnvExtractor
+from _emerge.EbuildBuildDir import EbuildBuildDir
+from _emerge.EbuildPhase import EbuildPhase
+from _emerge.EbuildSpawnProcess import EbuildSpawnProcess
+from _emerge.Package import Package
+from _emerge.RootConfig import RootConfig
+
 from portage import (
+    _encodings,
+    _os_merge,
+    _shell_quote,
+    _unicode_decode,
+    _unicode_encode,
     bsd_chflags,
     eapi_is_supported,
     merge,
@@ -53,16 +65,11 @@ from portage import (
     selinux,
     shutil,
     unmerge,
-    _encodings,
-    _os_merge,
-    _shell_quote,
-    _unicode_decode,
-    _unicode_encode,
 )
 from portage.const import (
-    EBUILD_SH_ENV_FILE,
-    EBUILD_SH_ENV_DIR,
     EBUILD_SH_BINARY,
+    EBUILD_SH_ENV_DIR,
+    EBUILD_SH_ENV_FILE,
     INVALID_ENV_FILE,
     MISC_SH_BINARY,
     PORTAGE_PYM_PACKAGES,
@@ -78,15 +85,15 @@ from portage.dep import (
     use_reduce,
 )
 from portage.eapi import (
+    _get_eapi_attrs,
     eapi_exports_KV,
     eapi_exports_merge_type,
     eapi_exports_replace_vars,
+    eapi_has_pkg_pretend,
     eapi_has_required_use,
     eapi_has_src_prepare_and_src_configure,
-    eapi_has_pkg_pretend,
-    _get_eapi_attrs,
 )
-from portage.elog import elog_process, _preload_elog_modules
+from portage.elog import _preload_elog_modules, elog_process
 from portage.elog.messages import eerror, eqawarn
 from portage.exception import (
     DigestException,
@@ -107,25 +114,19 @@ from portage.util import (
     noiselimit,
     shlex_split,
     varexpand,
+    write_atomic,
     writemsg,
     writemsg_stdout,
-    write_atomic,
 )
-from portage.util.cpuinfo import get_cpu_count
-from portage.util.lafilefixer import rewrite_lafile
+from portage.util._dyn_libs.dyn_libs import check_dyn_libs_inconsistent
 from portage.util.compression_probe import _compressors
+from portage.util.cpuinfo import get_cpu_count
 from portage.util.futures import asyncio
 from portage.util.futures.executor.fork import ForkExecutor
+from portage.util.lafilefixer import rewrite_lafile
 from portage.util.path import first_existing
 from portage.util.socks5 import get_socks5_proxy
-from portage.util._dyn_libs.dyn_libs import check_dyn_libs_inconsistent
 from portage.versions import _pkgsplit
-from _emerge.BinpkgEnvExtractor import BinpkgEnvExtractor
-from _emerge.EbuildBuildDir import EbuildBuildDir
-from _emerge.EbuildPhase import EbuildPhase
-from _emerge.EbuildSpawnProcess import EbuildSpawnProcess
-from _emerge.Package import Package
-from _emerge.RootConfig import RootConfig
 
 _unsandboxed_phases = frozenset(
     [

@@ -5,7 +5,6 @@ import ctypes
 import errno
 import re
 
-
 from portage import _encodings, _unicode_encode
 from portage.exception import FileNotFound, PermissionDenied
 

@@ -1,7 +1,8 @@
-from _emerge.RootConfig import RootConfig
-from _emerge.Package import Package
-from _emerge.SetArg import SetArg
 from typing import Union
+
+from _emerge.Package import Package
+from _emerge.RootConfig import RootConfig
+from _emerge.SetArg import SetArg
 
 # Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2

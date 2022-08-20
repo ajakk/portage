@@ -3,40 +3,35 @@
 
 __all__ = ("UseManager",)
 
+from typing import Any, Callable, Dict, Optional, Tuple, Union
+
 from _emerge.Package import Package
+
 from portage import os
 from portage.dep import (
+    Atom,
+    ExtendedAtomDict,
+    _get_useflag_re,
     dep_getrepo,
     dep_getslot,
-    ExtendedAtomDict,
     remove_slot,
-    _get_useflag_re,
 )
-from portage.eapi import (
-    eapi_supports_stable_use_forcing_and_masking,
-)
+from portage.eapi import eapi_supports_stable_use_forcing_and_masking
 from portage.localization import _
-from portage.repository.config import allow_profile_repo_deps
+from portage.package.ebuild._config.helper import ordered_by_atom_specificity
+from portage.repository.config import (
+    RepoConfigLoader,
+    _profile_node,
+    allow_profile_repo_deps,
+)
 from portage.util import (
-    grabfile,
     grabdict_package,
+    grabfile,
     read_corresponding_eapi_file,
     stack_lists,
     writemsg,
 )
 from portage.versions import _pkg_str
-
-from portage.package.ebuild._config.helper import ordered_by_atom_specificity
-from portage.repository.config import RepoConfigLoader
-from portage.repository.config import _profile_node
-from typing import Callable
-from typing import Tuple
-from typing import Any
-from typing import Optional
-from portage.dep import Atom
-from typing import Dict
-from portage.dep import ExtendedAtomDict
-from typing import Union
 
 
 class UseManager:

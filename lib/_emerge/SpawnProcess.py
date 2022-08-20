@@ -8,6 +8,7 @@ import signal
 import sys
 
 from _emerge.SubProcess import SubProcess
+
 import portage
 from portage import os
 from portage.const import BASH_BINARY

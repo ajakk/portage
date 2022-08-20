@@ -2,16 +2,15 @@
 # Distributed under the terms of the GNU General Public License v2
 # Author(s): Brian Harring (ferringb@gentoo.org)
 
+import operator
+import warnings
+from typing import Dict, Union
+
 from portage.cache import cache_errors
 from portage.cache.cache_errors import InvalidRestriction
 from portage.cache.mappings import ProtectedDict
-import warnings
-import operator
+from portage.eclass_cache import cache, hashed_path
 from portage.versions import _pkg_str
-from typing import Dict
-from typing import Union
-from portage.eclass_cache import cache
-from portage.eclass_cache import hashed_path
 
 
 class database:

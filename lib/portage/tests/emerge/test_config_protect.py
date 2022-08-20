@@ -2,16 +2,15 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import io
-from functools import partial
 import shutil
 import stat
 import subprocess
 import sys
 import time
+from functools import partial
 
 import portage
-from portage import os
-from portage import _encodings, _unicode_decode
+from portage import _encodings, _unicode_decode, os
 from portage.const import BASH_BINARY, PORTAGE_PYM_PATH
 from portage.process import find_binary
 from portage.tests import TestCase

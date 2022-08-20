@@ -9,13 +9,12 @@ import tempfile
 from functools import partial
 from os import urandom
 
-from portage.gpkg import gpkg
-from portage import os
-from portage import shutil
-from portage.tests import TestCase
-from portage.tests.resolver.ResolverPlayground import ResolverPlayground
+from portage import os, shutil
 from portage.exception import InvalidSignature
 from portage.gpg import GPG
+from portage.gpkg import gpkg
+from portage.tests import TestCase
+from portage.tests.resolver.ResolverPlayground import ResolverPlayground
 
 
 class test_gpkg_metadata_url_case(TestCase):

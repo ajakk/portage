@@ -3,13 +3,12 @@
 
 import collections
 from itertools import chain
+from typing import Any, Dict
 
-from portage.output import red
-from portage.util import cmp_sort_key
-from portage.output import blue
 from _emerge.Package import Package
-from typing import Any
-from typing import Dict
+
+from portage.output import blue, red
+from portage.util import cmp_sort_key
 
 
 class UseFlagDisplay:

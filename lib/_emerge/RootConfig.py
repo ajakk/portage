@@ -1,8 +1,8 @@
+from typing import Dict, Union
+
 from portage._sets import SetConfig
 from portage.package.ebuild.config import config
 from portage.util import LazyItemsDict
-from typing import Dict
-from typing import Union
 
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2

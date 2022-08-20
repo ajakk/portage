@@ -5,11 +5,10 @@ import copy
 import io
 import sys
 
+from _emerge.CompositeTask import CompositeTask
+
 import portage
-from portage import os
-from portage import _encodings
-from portage import _unicode_encode
-from portage import _unicode_decode
+from portage import _encodings, _unicode_decode, _unicode_encode, os
 from portage.checksum import _hash_filter
 from portage.elog.messages import eerror
 from portage.package.ebuild.fetch import (
@@ -21,7 +20,6 @@ from portage.package.ebuild.fetch import (
 from portage.util._async.AsyncTaskFuture import AsyncTaskFuture
 from portage.util._async.ForkProcess import ForkProcess
 from portage.util._pty import _create_pty_or_pipe
-from _emerge.CompositeTask import CompositeTask
 
 
 class EbuildFetcher(CompositeTask):

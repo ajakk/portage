@@ -8,10 +8,10 @@ import os
 import os.path as osp
 import platform
 import pwd
-import signal
-import tempfile
 import shutil
+import signal
 import sys
+import tempfile
 from distutils.dir_util import copy_tree
 
 
@@ -50,8 +50,8 @@ if os.environ.get("NOCOLOR") in ("yes", "true"):
     portage.output.nocolor()
 
 import portage.tests as tests
-from portage.util._eventloop.global_event_loop import global_event_loop
 from portage.const import PORTAGE_BIN_PATH
+from portage.util._eventloop.global_event_loop import global_event_loop
 
 path = os.environ.get("PATH", "").split(":")
 path = [x for x in path if x]

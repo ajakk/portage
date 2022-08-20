@@ -8,11 +8,9 @@ from _emerge.EbuildProcess import EbuildProcess
 from _emerge.SpawnProcess import SpawnProcess
 
 import portage
-from portage import os
-from portage import _encodings
-from portage import _unicode_encode
+from portage import _encodings, _unicode_encode, os
 from portage.util._async.AsyncFunction import AsyncFunction
-from portage.util.install_mask import install_mask_dir, InstallMask
+from portage.util.install_mask import InstallMask, install_mask_dir
 
 
 class PackagePhase(CompositeTask):

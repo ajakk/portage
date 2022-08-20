@@ -10,15 +10,12 @@ portage.proxy.lazyimport.lazyimport(
     "portage.util:writemsg",
 )
 
-from portage.const import EBUILD_PHASES
-from portage.localization import _
-from portage import os
-from portage import _encodings
-from portage import _unicode_encode
-from portage import _unicode_decode
-
 import io
 import sys
+
+from portage import _encodings, _unicode_decode, _unicode_encode, os
+from portage.const import EBUILD_PHASES
+from portage.localization import _
 
 _log_levels = frozenset(
     [

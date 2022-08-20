@@ -3,17 +3,18 @@
 
 import difflib
 import re
+
+from _emerge.Package import Package
+
 import portage
 from portage import os
-from portage.dbapi.porttree import _parse_uri_map
 from portage.dbapi.IndexedPortdb import IndexedPortdb
 from portage.dbapi.IndexedVardb import IndexedVardb
+from portage.dbapi.porttree import _parse_uri_map
 from portage.localization import localized_size
 from portage.output import bold, darkgreen, green, red
 from portage.util import writemsg_stdout
 from portage.util.iterators.MultiIterGroupBy import MultiIterGroupBy
-
-from _emerge.Package import Package
 
 
 class search:

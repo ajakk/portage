@@ -5,9 +5,10 @@ __all__ = ("LocationsManager",)
 
 import io
 import warnings
+from typing import Any, Dict, Optional, Tuple
 
 import portage
-from portage import os, eapi_is_supported, _encodings, _unicode_encode
+from portage import _encodings, _unicode_encode, eapi_is_supported, os
 from portage.const import (
     CUSTOM_PROFILE_PATH,
     GLOBAL_CONFIG_PATH,
@@ -17,6 +18,12 @@ from portage.const import (
 from portage.eapi import eapi_allows_directories_on_profile_level_and_repository_level
 from portage.exception import DirectoryNotFound, InvalidLocation, ParseError
 from portage.localization import _
+from portage.repository.config import (
+    RepoConfigLoader,
+    _portage1_profiles_allow_directories,
+    _profile_node,
+    parse_layout_conf,
+)
 from portage.util import (
     ensure_dirs,
     grabfile,
@@ -26,17 +33,6 @@ from portage.util import (
     writemsg,
 )
 from portage.util._path import exists_raise_eaccess, isdir_raise_eaccess
-from portage.repository.config import (
-    parse_layout_conf,
-    _portage1_profiles_allow_directories,
-    _profile_node,
-)
-from typing import Any
-from typing import Optional
-from portage.repository.config import RepoConfigLoader
-from typing import Dict
-from typing import Tuple
-
 
 _PORTAGE1_DIRECTORIES = frozenset(
     [

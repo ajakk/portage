@@ -1,45 +1,46 @@
 # Copyright 2001-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-import tarfile
-import io
-import threading
-import subprocess
 import errno
-import pwd
 import grp
+import io
+import pwd
 import stat
+import subprocess
 import sys
+import tarfile
 import tempfile
+import threading
 from copy import copy
 from datetime import datetime
 
-from portage import checksum
-from portage import os
-from portage import shutil
-from portage import normalize_path
-from portage import _encodings
-from portage import _unicode_decode
-from portage import _unicode_encode
+from portage import (
+    _encodings,
+    _unicode_decode,
+    _unicode_encode,
+    checksum,
+    normalize_path,
+    os,
+    shutil,
+)
+from portage.const import HASHING_BLOCKSIZE, MANIFEST2_HASH_DEFAULTS
 from portage.exception import (
-    FileNotFound,
-    InvalidBinaryPackageFormat,
-    InvalidCompressionMethod,
+    CommandNotFound,
     CompressorNotFound,
     CompressorOperationFailed,
-    CommandNotFound,
-    GPGException,
     DigestException,
-    MissingSignature,
+    FileNotFound,
+    GPGException,
+    InvalidBinaryPackageFormat,
+    InvalidCompressionMethod,
     InvalidSignature,
+    MissingSignature,
 )
 from portage.output import colorize
-from portage.util._urlopen import urlopen
-from portage.util import writemsg
-from portage.util import shlex_split, varexpand
-from portage.util.compression_probe import _compressors
 from portage.process import find_binary
-from portage.const import MANIFEST2_HASH_DEFAULTS, HASHING_BLOCKSIZE
+from portage.util import shlex_split, varexpand, writemsg
+from portage.util._urlopen import urlopen
+from portage.util.compression_probe import _compressors
 
 
 class tar_stream_writer:

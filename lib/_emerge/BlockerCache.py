@@ -2,14 +2,16 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import errno
-from portage.util import writemsg
-from portage.data import secpass
-import portage
-from portage import os
 import pickle
 from typing import Tuple
-from _emerge.PackageVirtualDbapi import PackageVirtualDbapi
+
 from _emerge.BlockerCache import BlockerCache
+from _emerge.PackageVirtualDbapi import PackageVirtualDbapi
+
+import portage
+from portage import os
+from portage.data import secpass
+from portage.util import writemsg
 from portage.versions import _pkg_str
 
 

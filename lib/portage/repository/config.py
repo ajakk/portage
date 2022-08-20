@@ -4,12 +4,22 @@
 import collections
 import io
 import logging
-import warnings
 import re
 import typing
+import warnings
+from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
 
 import portage
-from portage import eclass_cache, os
+import portage.sync
+from portage import (
+    _encodings,
+    _unicode_decode,
+    _unicode_encode,
+    eclass_cache,
+    manifest,
+    os,
+)
+from portage.cache.flat_hash import md5_database
 from portage.checksum import get_valid_checksum_keys
 from portage.const import PORTAGE_BASE_PATH, REPO_NAME_LOC, USER_CONFIG_PATH
 from portage.eapi import (
@@ -17,36 +27,22 @@ from portage.eapi import (
     eapi_has_repo_deps,
 )
 from portage.env.loaders import KeyValuePairFileLoader
+from portage.localization import _
+from portage.manifest import Manifest
+from portage.package.ebuild.config import config
+from portage.repository.config import RepoConfig, RepoConfigLoader
 from portage.util import (
+    _recursive_file_list,
     normalize_path,
     read_corresponding_eapi_file,
     shlex_split,
     stack_lists,
     writemsg,
     writemsg_level,
-    _recursive_file_list,
 )
-from portage.util.configparser import SafeConfigParser, ConfigParserError, read_configs
 from portage.util._path import isdir_raise_eaccess
+from portage.util.configparser import ConfigParserError, SafeConfigParser, read_configs
 from portage.util.path import first_existing
-from portage.localization import _
-from portage import _unicode_decode
-from portage import _unicode_encode
-from portage import _encodings
-from portage import manifest
-import portage.sync
-from typing import Tuple
-from portage.repository.config import RepoConfig
-from typing import Dict
-from typing import List
-from portage.cache.flat_hash import md5_database
-from typing import Iterator
-from typing import Union
-from portage.manifest import Manifest
-from typing import Any
-from portage.package.ebuild.config import config
-from typing import Optional
-from portage.repository.config import RepoConfigLoader
 
 _profile_node = collections.namedtuple(
     "_profile_node",

@@ -3,12 +3,10 @@
 
 import tempfile
 
-from portage import os
-from portage import shutil
-from portage import _unicode_encode
+from portage import _unicode_encode, os, shutil
+from portage.exception import ParseError
 from portage.tests import TestCase
 from portage.util import getconfig
-from portage.exception import ParseError
 
 
 class GetConfigTestCase(TestCase):

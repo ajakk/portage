@@ -8,15 +8,12 @@ import logging
 import re
 import stat
 import warnings
+from typing import Any, Callable, Dict, Iterator, Optional
+
+from _io import TextIOWrapper
 
 import portage
-from typing import Any
-from typing import Callable
-from typing import Optional
-from typing import Dict
-from _io import TextIOWrapper
 from portage.manifest import Manifest2Entry
-from typing import Iterator
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -26,10 +23,8 @@ portage.proxy.lazyimport.lazyimport(
     "portage.util:write_atomic,writemsg_level",
 )
 
-from portage import os
-from portage import _encodings
-from portage import _unicode_decode
-from portage import _unicode_encode
+from portage import _encodings, _unicode_decode, _unicode_encode, os
+from portage.const import MANIFEST2_HASH_DEFAULTS, MANIFEST2_IDENTIFIERS
 from portage.exception import (
     DigestException,
     FileNotFound,
@@ -39,7 +34,6 @@ from portage.exception import (
     PortageException,
     PortagePackageException,
 )
-from portage.const import MANIFEST2_HASH_DEFAULTS, MANIFEST2_IDENTIFIERS
 from portage.localization import _
 
 _manifest_re = re.compile(

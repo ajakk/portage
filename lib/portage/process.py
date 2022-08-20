@@ -7,33 +7,27 @@ import atexit
 import errno
 import fcntl
 import multiprocessing
+import os as _os
 import platform
 import signal
 import socket
 import subprocess
 import sys
 import traceback
-import os as _os
-
-from portage import os
-from portage import _encodings
-from portage import _unicode_encode
-import portage
-from typing import Any
-from typing import Optional
-from typing import Callable
 from os import _Environ
-from typing import Dict
-from typing import List
+from typing import Any, Callable, Dict, List, Optional
+
+import portage
+from portage import _encodings, _unicode_encode, os
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
     "portage.util:dump_traceback,writemsg",
 )
 
-from portage.const import BASH_BINARY, SANDBOX_BINARY, FAKEROOT_BINARY
+from portage.const import BASH_BINARY, FAKEROOT_BINARY, SANDBOX_BINARY
 from portage.exception import CommandNotFound
-from portage.util._ctypes import find_library, LoadLibrary, ctypes
+from portage.util._ctypes import LoadLibrary, ctypes, find_library
 
 try:
     from portage.util.netlink import RtNetlink

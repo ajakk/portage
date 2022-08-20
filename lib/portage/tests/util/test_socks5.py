@@ -7,15 +7,14 @@ import socket
 import struct
 import tempfile
 import time
-
-import portage
-from portage.tests import TestCase
-from portage.util._eventloop.global_event_loop import global_event_loop
-from portage.util import socks5
-from portage.const import PORTAGE_BIN_PATH
-
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.request import urlopen
+
+import portage
+from portage.const import PORTAGE_BIN_PATH
+from portage.tests import TestCase
+from portage.util import socks5
+from portage.util._eventloop.global_event_loop import global_event_loop
 
 
 class _Handler(BaseHTTPRequestHandler):

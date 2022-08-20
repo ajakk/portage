@@ -2,13 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import logging
+from typing import List
 
 import portage
 from portage import os
 from portage.localization import _
 from portage.output import bold, colorize, yellow
 from portage.util import writemsg_level
-from typing import List
 
 
 def chk_updated_cfg_files(eroot: str, config_protect: List[str]) -> None:

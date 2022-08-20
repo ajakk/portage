@@ -5,8 +5,8 @@
 import tempfile
 
 from portage import os
-from portage.tests import TestCase, test_cps
 from portage._sets.files import ConfigFileSet
+from portage.tests import TestCase, test_cps
 
 
 class ConfigFileSetTestCase(TestCase):

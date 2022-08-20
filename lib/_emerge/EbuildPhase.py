@@ -9,28 +9,29 @@ import tempfile
 
 from _emerge.AsynchronousLock import AsynchronousLock
 from _emerge.BinpkgEnvExtractor import BinpkgEnvExtractor
-from _emerge.MiscFunctionsProcess import MiscFunctionsProcess
-from _emerge.EbuildProcess import EbuildProcess
 from _emerge.CompositeTask import CompositeTask
+from _emerge.EbuildProcess import EbuildProcess
+from _emerge.MiscFunctionsProcess import MiscFunctionsProcess
 from _emerge.PackagePhase import PackagePhase
 from _emerge.TaskSequence import TaskSequence
+
+from portage.const import SUPPORTED_GENTOO_BINPKG_FORMATS
+from portage.exception import InvalidBinaryPackageFormat
 from portage.package.ebuild._ipc.QueryCommand import QueryCommand
+from portage.package.ebuild.prepare_build_dirs import (
+    _prepare_fake_distdir,
+    _prepare_fake_filesdir,
+    _prepare_workdir,
+)
+from portage.util import ensure_dirs, writemsg
+from portage.util._async.AsyncTaskFuture import AsyncTaskFuture
+from portage.util._async.BuildLogger import BuildLogger
 from portage.util._dyn_libs.soname_deps_qa import (
     _get_all_provides,
     _get_unresolved_soname_deps,
 )
-from portage.package.ebuild.prepare_build_dirs import (
-    _prepare_workdir,
-    _prepare_fake_distdir,
-    _prepare_fake_filesdir,
-)
-from portage.util import writemsg, ensure_dirs
-from portage.util._async.AsyncTaskFuture import AsyncTaskFuture
-from portage.util._async.BuildLogger import BuildLogger
 from portage.util.futures import asyncio
 from portage.util.futures.executor.fork import ForkExecutor
-from portage.exception import InvalidBinaryPackageFormat
-from portage.const import SUPPORTED_GENTOO_BINPKG_FORMATS
 
 try:
     from portage.xml.metadata import MetaDataXML
@@ -55,9 +56,7 @@ portage.proxy.lazyimport.lazyimport(
     + "_preinst_bsdflags",
     "portage.util.futures.unix_events:_set_nonblocking",
 )
-from portage import os
-from portage import _encodings
-from portage import _unicode_encode
+from portage import _encodings, _unicode_encode, os
 
 
 class EbuildPhase(CompositeTask):

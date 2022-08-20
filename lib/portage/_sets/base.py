@@ -1,18 +1,14 @@
 # Copyright 2007-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+from itertools import chain
+from typing import Iterator, List, Optional, Set, Tuple, Union
+
+from _emerge.Package import Package
+
 from portage.dep import Atom, ExtendedAtomDict, best_match_to_list, match_from_list
 from portage.exception import InvalidAtom
 from portage.versions import cpv_getkey
-from typing import Iterator
-from typing import Union
-from typing import Set
-from itertools import chain
-from typing import List
-from typing import Optional
-from _emerge.Package import Package
-from typing import Tuple
-
 
 OPERATIONS = ["merge", "unmerge"]
 

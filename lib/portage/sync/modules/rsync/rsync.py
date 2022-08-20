@@ -15,10 +15,9 @@ import time
 from _emerge.UserQuery import UserQuery
 
 import portage
-from portage import _unicode_decode
-from portage import os
-from portage.const import VCS_DIRS, TIMESTAMP_FORMAT, RSYNC_PACKAGE_ATOM
-from portage.output import create_color_func, yellow, blue, bold
+from portage import _unicode_decode, os
+from portage.const import RSYNC_PACKAGE_ATOM, TIMESTAMP_FORMAT, VCS_DIRS
+from portage.output import blue, bold, create_color_func, yellow
 from portage.sync.getaddrinfo_validate import getaddrinfo_validate
 from portage.sync.syncbase import NewBase
 from portage.util import writemsg, writemsg_level, writemsg_stdout
@@ -29,9 +28,9 @@ bad = create_color_func("BAD")
 warn = create_color_func("WARN")
 
 try:
-    from gemato.exceptions import GematoException
     import gemato.openpgp
     import gemato.recursiveloader
+    from gemato.exceptions import GematoException
 except ImportError:
     gemato = None
 

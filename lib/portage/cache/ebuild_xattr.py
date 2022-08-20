@@ -7,13 +7,10 @@ __all__ = ["database"]
 
 import errno
 
+from portage import _encodings, _unicode_decode, cpv_getkey, os
 from portage.cache import fs_template
-from portage.versions import catsplit
-from portage import cpv_getkey
-from portage import os
-from portage import _encodings
-from portage import _unicode_decode
 from portage.util._xattr import xattr
+from portage.versions import catsplit
 
 
 class NoValueException(Exception):

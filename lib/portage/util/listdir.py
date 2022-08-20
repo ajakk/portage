@@ -5,14 +5,12 @@ __all__ = ["cacheddir", "listdir"]
 
 import errno
 import stat
-
+from typing import List, Tuple
 
 from portage import os
 from portage.const import VCS_DIRS
 from portage.exception import DirectoryNotFound, PermissionDenied, PortageException
 from portage.util import normalize_path
-from typing import List
-from typing import Tuple
 
 # The global dircache is no longer supported, since it could
 # be a memory leak for API consumers. Any cacheddir callers

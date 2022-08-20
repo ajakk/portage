@@ -7,8 +7,7 @@ import io
 import os
 import stat
 
-from portage import _encodings
-from portage import _unicode_encode
+from portage import _encodings, _unicode_encode
 from portage.util._xattr import XATTRS_WORKS, xattr
 
 

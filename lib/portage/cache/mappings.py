@@ -12,15 +12,10 @@ __all__ = [
 ]
 
 import weakref
-from typing import Any
-from typing import Iterator
-from typing import Tuple
-from typing import Union
-from typing import Optional
-from typing import Dict
+from typing import Any, Dict, Iterator, Optional, Set, Tuple, Union
+
 from portage.dbapi.porttree import portagetree
 from portage.dbapi.vartree import vartree
-from typing import Set
 
 
 class Mapping:

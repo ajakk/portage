@@ -10,11 +10,13 @@ import stat
 import time
 
 import portage
-from portage import os, _encodings, _unicode_decode, _unicode_encode
+from portage import _encodings, _unicode_decode, _unicode_encode, os
 from portage.checksum import prelink_capable
 from portage.data import ostype
+from portage.dbapi.vartree import vartree
 from portage.exception import ParseError
 from portage.localization import _
+from portage.package.ebuild.config import config
 from portage.process import find_binary
 from portage.util import (
     atomic_ofstream,
@@ -24,8 +26,6 @@ from portage.util import (
     writemsg,
 )
 from portage.util.listdir import listdir
-from portage.dbapi.vartree import vartree
-from portage.package.ebuild.config import config
 
 
 def env_update(

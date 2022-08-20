@@ -9,7 +9,6 @@ __all__ = [
 ]
 
 import copy
-from itertools import chain
 import grp
 import logging
 import platform
@@ -18,22 +17,18 @@ import re
 import sys
 import traceback
 import warnings
-
-from _emerge.Package import Package
-import portage
-from portage.package.ebuild.config import config
-from typing import Any
-from typing import Optional
-from typing import Dict
-from typing import Set
+from itertools import chain
 from os import _Environ
-from portage.util import LazyItemsDict
-from typing import List
-from _emerge.Package import _PackageMetadataWrapper
-from portage.dep import Atom
+from typing import Any, Dict, List, Optional, Set, Tuple
+
 from _emerge.FakeVartree import FakeVartree
+from _emerge.Package import Package, _PackageMetadataWrapper
+
+import portage
+from portage.dep import Atom
 from portage.eapi import _eapi_attrs
-from typing import Tuple
+from portage.package.ebuild.config import config
+from portage.util import LazyItemsDict
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -44,7 +39,7 @@ portage.proxy.lazyimport.lazyimport(
     "portage.util.compression_probe:_compressors",
     "portage.util.locale:check_locale,split_LC_ALL",
 )
-from portage import bsd_chflags, load_mod, os, selinux, _unicode_decode
+from portage import _unicode_decode, bsd_chflags, load_mod, os, selinux
 from portage.const import (
     CACHE_PATH,
     DEPCACHE_PATH,
@@ -61,36 +56,47 @@ from portage.const import (
 from portage.dbapi import dbapi
 from portage.dep import (
     Atom,
+    _repo_separator,
+    _slot_separator,
     isvalidatom,
     match_from_list,
     use_reduce,
-    _repo_separator,
-    _slot_separator,
 )
 from portage.eapi import (
+    _get_eapi_attrs,
     eapi_exports_AA,
     eapi_exports_merge_type,
-    eapi_supports_prefix,
     eapi_exports_replace_vars,
-    _get_eapi_attrs,
+    eapi_supports_prefix,
 )
 from portage.env.loaders import KeyValuePairFileLoader
 from portage.exception import InvalidDependString, PortageException
 from portage.localization import _
 from portage.output import colorize
-from portage.process import fakeroot_capable, sandbox_capable
-from portage.repository.config import (
-    allow_profile_repo_deps,
-    load_repository_config,
+from portage.package.ebuild._config import special_env_vars
+from portage.package.ebuild._config.env_var_validation import validate_cmd_var
+from portage.package.ebuild._config.features_set import features_set
+from portage.package.ebuild._config.helper import (
+    ordered_by_atom_specificity,
+    prune_incremental,
 )
+from portage.package.ebuild._config.KeywordsManager import KeywordsManager
+from portage.package.ebuild._config.LicenseManager import LicenseManager
+from portage.package.ebuild._config.LocationsManager import LocationsManager
+from portage.package.ebuild._config.MaskManager import MaskManager
+from portage.package.ebuild._config.UseManager import UseManager
+from portage.package.ebuild._config.VirtualsManager import VirtualsManager
+from portage.process import fakeroot_capable, sandbox_capable
+from portage.repository.config import allow_profile_repo_deps, load_repository_config
 from portage.util import (
+    LazyItemsDict,
+    _eapi_cache,
     ensure_dirs,
     getconfig,
     grabdict,
     grabdict_package,
     grabfile,
     grabfile_package,
-    LazyItemsDict,
     normalize_path,
     shlex_split,
     stack_dictlist,
@@ -98,27 +104,11 @@ from portage.util import (
     stack_lists,
     writemsg,
     writemsg_level,
-    _eapi_cache,
 )
+from portage.util._path import exists_raise_eaccess, isdir_raise_eaccess
 from portage.util.install_mask import _raise_exc
 from portage.util.path import first_existing
-from portage.util._path import exists_raise_eaccess, isdir_raise_eaccess
-from portage.versions import catpkgsplit, catsplit, cpv_getkey, _pkg_str
-
-from portage.package.ebuild._config import special_env_vars
-from portage.package.ebuild._config.env_var_validation import validate_cmd_var
-from portage.package.ebuild._config.features_set import features_set
-from portage.package.ebuild._config.KeywordsManager import KeywordsManager
-from portage.package.ebuild._config.LicenseManager import LicenseManager
-from portage.package.ebuild._config.UseManager import UseManager
-from portage.package.ebuild._config.LocationsManager import LocationsManager
-from portage.package.ebuild._config.MaskManager import MaskManager
-from portage.package.ebuild._config.VirtualsManager import VirtualsManager
-from portage.package.ebuild._config.helper import (
-    ordered_by_atom_specificity,
-    prune_incremental,
-)
-
+from portage.versions import _pkg_str, catpkgsplit, catsplit, cpv_getkey
 
 _feature_flags_cache = {}
 

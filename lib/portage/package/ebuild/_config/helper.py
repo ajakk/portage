@@ -6,11 +6,11 @@ __all__ = (
     "prune_incremental",
 )
 
+from typing import Any, List, Optional
+
 from _emerge.Package import Package
-from portage.dep import best_match_to_list, _repo_separator
-from typing import Any
-from typing import Optional
-from typing import List
+
+from portage.dep import _repo_separator, best_match_to_list
 
 
 def ordered_by_atom_specificity(

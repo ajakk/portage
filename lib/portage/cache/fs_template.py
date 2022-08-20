@@ -3,11 +3,11 @@
 # Author(s): Brian Harring (ferringb@gentoo.org)
 
 import os as _os
-from portage.cache import template
-from portage import os
-
-from portage.proxy.lazyimport import lazyimport
 from typing import Any
+
+from portage import os
+from portage.cache import template
+from portage.proxy.lazyimport import lazyimport
 
 lazyimport(
     globals(),

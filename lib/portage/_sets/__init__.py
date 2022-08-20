@@ -12,33 +12,28 @@ __all__ = [
 import io
 import logging
 import sys
+from typing import Any, Dict, Iterator, Optional, Set
+
 import portage
-from portage import os
-from portage import load_mod
-from portage import _unicode_decode
-from portage import _unicode_encode
-from portage import _encodings
-from portage.const import USER_CONFIG_PATH, GLOBAL_CONFIG_PATH
-from portage.const import VCS_DIRS
-from portage.const import _ENABLE_SET_CONFIG
+from portage import _encodings, _unicode_decode, _unicode_encode, load_mod, os
+from portage._sets import SetConfig
+from portage.const import (
+    _ENABLE_SET_CONFIG,
+    GLOBAL_CONFIG_PATH,
+    USER_CONFIG_PATH,
+    VCS_DIRS,
+)
+from portage.dep import Atom
 from portage.exception import PackageSetNotFound
 from portage.localization import _
-from portage.util import writemsg_level
+from portage.package.ebuild.config import config
+from portage.util import LazyItemsDict, writemsg_level
 from portage.util.configparser import (
-    SafeConfigParser,
     NoOptionError,
     ParsingError,
+    SafeConfigParser,
     read_configs,
 )
-from portage.package.ebuild.config import config
-from portage.util import LazyItemsDict
-from typing import Iterator
-from typing import Any
-from typing import Dict
-from portage.dep import Atom
-from typing import Optional
-from typing import Set
-from portage._sets import SetConfig
 
 SETPREFIX = "@"
 

@@ -15,15 +15,16 @@ try:
 except ImportError:
     threading = dummy_threading
 
+from _emerge.AbstractPollTask import AbstractPollTask
+from _emerge.AsynchronousTask import AsynchronousTask
+from _emerge.SpawnProcess import SpawnProcess
+
 import portage
 from portage import os
 from portage.exception import TryAgain
 from portage.localization import _
 from portage.locks import lockfile, unlockfile
 from portage.util import writemsg_level
-from _emerge.AbstractPollTask import AbstractPollTask
-from _emerge.AsynchronousTask import AsynchronousTask
-from _emerge.SpawnProcess import SpawnProcess
 
 
 class AsynchronousLock(AsynchronousTask):

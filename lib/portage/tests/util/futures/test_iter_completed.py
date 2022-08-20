@@ -2,14 +2,12 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import time
+
 from portage.tests import TestCase
 from portage.util._async.ForkProcess import ForkProcess
 from portage.util._eventloop.global_event_loop import global_event_loop
 from portage.util.futures import asyncio
-from portage.util.futures.iter_completed import (
-    iter_completed,
-    async_iter_completed,
-)
+from portage.util.futures.iter_completed import async_iter_completed, iter_completed
 
 
 class SleepProcess(ForkProcess):

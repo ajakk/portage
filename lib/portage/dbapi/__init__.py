@@ -5,18 +5,13 @@ __all__ = ["dbapi"]
 
 import functools
 import re
+from typing import Any, Callable, Dict, Iterator, List, Optional, Union
+
+from _emerge.Package import _PackageMetadataWrapper
 
 import portage
-from portage.versions import _pkg_str
-from typing import List
 from portage.dep import Atom
-from typing import Iterator
-from typing import Union
-from typing import Any
-from typing import Optional
-from _emerge.Package import _PackageMetadataWrapper
-from typing import Callable
-from typing import Dict
+from portage.versions import _pkg_str
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
@@ -27,14 +22,13 @@ portage.proxy.lazyimport.lazyimport(
     "portage.versions:catsplit,catpkgsplit,vercmp,_pkg_str",
 )
 
-from portage.const import MERGING_IDENTIFIER
+from _emerge.Package import Package
 
-from portage import os
-from portage import auxdbkeys
+from portage import auxdbkeys, os
+from portage.const import MERGING_IDENTIFIER
 from portage.eapi import _get_eapi_attrs
 from portage.exception import InvalidData
 from portage.localization import _
-from _emerge.Package import Package
 
 
 class dbapi:

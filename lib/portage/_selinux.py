@@ -13,8 +13,7 @@ except ImportError:
     selinux = None
 
 import portage
-from portage import _encodings
-from portage import _native_string, _unicode_encode
+from portage import _encodings, _native_string, _unicode_encode
 from portage.localization import _
 
 

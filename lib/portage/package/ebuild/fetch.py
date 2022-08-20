@@ -16,10 +16,9 @@ import stat
 import sys
 import tempfile
 import time
-
 from collections import OrderedDict
-from urllib.parse import urlparse
 from urllib.parse import quote as urlquote
+from urllib.parse import urlparse
 
 import portage
 
@@ -35,22 +34,22 @@ portage.proxy.lazyimport.lazyimport(
 )
 
 from portage import (
-    os,
-    selinux,
-    shutil,
     _encodings,
     _movefile,
     _shell_quote,
     _unicode_encode,
+    os,
+    selinux,
+    shutil,
 )
 from portage.checksum import (
+    _apply_hash_filter,
+    _filter_unaccelarated_hashes,
+    _hash_filter,
+    checksum_str,
     get_valid_checksum_keys,
     perform_md5,
     verify_all,
-    _filter_unaccelarated_hashes,
-    _hash_filter,
-    _apply_hash_filter,
-    checksum_str,
 )
 from portage.const import BASH_BINARY, CUSTOM_MIRRORS_FILE, GLOBAL_CONFIG_PATH
 from portage.data import portage_gid, portage_uid, userpriv_groups
@@ -62,7 +61,8 @@ from portage.exception import (
 )
 from portage.localization import _
 from portage.locks import lockfile, unlockfile
-from portage.output import colorize, EOutput
+from portage.output import EOutput, colorize
+from portage.process import spawn
 from portage.util import (
     apply_recursive_permissions,
     apply_secpass_permissions,
@@ -74,7 +74,6 @@ from portage.util import (
     writemsg_level,
     writemsg_stdout,
 )
-from portage.process import spawn
 
 _download_suffix = ".__download__"
 

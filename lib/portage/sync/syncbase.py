@@ -16,8 +16,9 @@ from portage.util import writemsg_level
 from portage.util._eventloop.global_event_loop import global_event_loop
 from portage.util.backoff import RandomExponentialBackoff
 from portage.util.futures._sync_decorator import _sync_methods
-from portage.util.futures.retry import retry
 from portage.util.futures.executor.fork import ForkExecutor
+from portage.util.futures.retry import retry
+
 from . import _SUBMODULE_PATH_MAP
 
 try:

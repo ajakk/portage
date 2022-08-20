@@ -7,15 +7,15 @@ import logging
 import random
 import subprocess
 
+from _emerge.CompositeTask import CompositeTask
+
 import portage
-from portage import _encodings, _unicode_encode
-from portage import os
+from portage import _encodings, _unicode_encode, os
 from portage.util import ensure_dirs
 from portage.util._async.FileCopier import FileCopier
 from portage.util._async.FileDigester import FileDigester
 from portage.util._async.PipeLogger import PipeLogger
 from portage.util._async.PopenProcess import PopenProcess
-from _emerge.CompositeTask import CompositeTask
 
 logger = logging.getLogger(__name__)
 

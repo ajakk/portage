@@ -7,11 +7,12 @@ import shutil
 import socket
 import tempfile
 
+from _emerge.PipeReader import PipeReader
+
 from portage import os
 from portage.tests import TestCase
 from portage.util._eventloop.global_event_loop import global_event_loop
 from portage.util.futures import asyncio
-from _emerge.PipeReader import PipeReader
 
 
 class PipeReaderTestCase(TestCase):

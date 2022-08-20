@@ -2,15 +2,16 @@
 # Distributed under the terms of the GNU General Public License v2
 
 from __future__ import print_function
+
 import sys
 
 from portage.const import SUPPORTED_GENTOO_BINPKG_FORMATS
+from portage.output import colorize
 from portage.tests import TestCase
 from portage.tests.resolver.ResolverPlayground import (
     ResolverPlayground,
     ResolverPlaygroundTestCase,
 )
-from portage.output import colorize
 
 
 class SonameAutoUnmaskTestCase(TestCase):

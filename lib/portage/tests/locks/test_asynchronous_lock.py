@@ -9,11 +9,11 @@ try:
 except ImportError:
     dummy_threading = None
 
-from portage import os
-from portage import shutil
+from _emerge.AsynchronousLock import AsynchronousLock
+
+from portage import os, shutil
 from portage.tests import TestCase
 from portage.util._eventloop.global_event_loop import global_event_loop
-from _emerge.AsynchronousLock import AsynchronousLock
 
 
 class AsynchronousLockTestCase(TestCase):

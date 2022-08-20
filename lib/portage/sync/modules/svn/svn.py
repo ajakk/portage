@@ -5,8 +5,8 @@ import logging
 
 import portage
 from portage import os
-from portage.util import writemsg_level
 from portage.sync.syncbase import NewBase
+from portage.util import writemsg_level
 
 
 class SVNSync(NewBase):

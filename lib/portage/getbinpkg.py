@@ -2,27 +2,24 @@
 # Copyright 2003-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-from portage.output import colorize
-from portage.cache.mappings import slot_dict_class
-from portage.localization import _
-import portage
-from portage import os
-from portage import _encodings
-from portage import _unicode_decode
-from portage import _unicode_encode
-from portage.package.ebuild.fetch import _hide_url_passwd
-from _emerge.Package import _all_metadata_keys
-
-import pickle
-import sys
-import socket
-import time
-import tempfile
 import base64
+import pickle
+import socket
+import sys
+import tempfile
+import time
 import warnings
-
 from html.parser import HTMLParser as html_parser_HTMLParser
 from urllib.parse import unquote as urllib_parse_unquote
+
+from _emerge.Package import _all_metadata_keys
+
+import portage
+from portage import _encodings, _unicode_decode, _unicode_encode, os
+from portage.cache.mappings import slot_dict_class
+from portage.localization import _
+from portage.output import colorize
+from portage.package.ebuild.fetch import _hide_url_passwd
 
 _all_errors = [NotImplementedError, ValueError, socket.error]
 
@@ -34,8 +31,8 @@ else:
     _all_errors.extend(ftplib.all_errors)
 
 try:
-    from http.client import HTTPConnection as http_client_HTTPConnection
     from http.client import BadStatusLine as http_client_BadStatusLine
+    from http.client import HTTPConnection as http_client_HTTPConnection
     from http.client import ResponseNotReady as http_client_ResponseNotReady
     from http.client import error as http_client_error
 except ImportError as e:
@@ -526,8 +523,8 @@ def file_get(
             filename = os.path.basename(variables["URI"])
         variables["FILE"] = filename
 
-    from portage.util import varexpand
     from portage.process import spawn
+    from portage.util import varexpand
 
     myfetch = (varexpand(x, mydict=variables) for x in portage.util.shlex_split(fcmd))
     fd_pipes = {

@@ -1,37 +1,31 @@
 # Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-from itertools import chain
 import warnings
+from itertools import chain
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+
+from _emerge.Package import Package
+from _emerge.RootConfig import RootConfig
+from _emerge.Task import Task
 
 import portage
 from portage.cache.mappings import slot_dict_class
 from portage.const import EBUILD_PHASES
 from portage.dep import (
     Atom,
-    check_required_use,
-    use_reduce,
-    paren_enclose,
-    _slot_separator,
     _repo_separator,
+    _slot_separator,
+    check_required_use,
+    paren_enclose,
+    use_reduce,
 )
 from portage.dep.soname.parse import parse_soname_deps
-from portage.versions import _pkg_str, _unknown_repo
 from portage.eapi import _get_eapi_attrs
 from portage.exception import InvalidData, InvalidDependString
 from portage.localization import _
-from _emerge.Task import Task
-from _emerge.Package import Package
-from typing import List
-from typing import Callable
-from typing import Optional
-from typing import Tuple
-from portage.dep import Atom
-from typing import Dict
-from typing import Union
-from typing import Any
-from _emerge.RootConfig import RootConfig
 from portage.package.ebuild.config import config
+from portage.versions import _pkg_str, _unknown_repo
 
 
 class Package(Task):
@@ -491,7 +485,9 @@ class Package(Task):
 
         return masks
 
-    def _eval_visiblity(self, masks: Union[Dict[str, List[str]], Dict[str, Atom], bool]) -> bool:
+    def _eval_visiblity(
+        self, masks: Union[Dict[str, List[str]], Dict[str, Atom], bool]
+    ) -> bool:
 
         if masks is not False:
 
@@ -748,7 +744,13 @@ class Package(Task):
             "tokens",
         )
 
-        def __init__(self, pkg: Optional[Package], tokens: List[str], iuse_implicit_match: Callable, eapi: str) -> None:
+        def __init__(
+            self,
+            pkg: Optional[Package],
+            tokens: List[str],
+            iuse_implicit_match: Callable,
+            eapi: str,
+        ) -> None:
             self._pkg = pkg
             self.tokens = tuple(tokens)
             self._iuse_implicit_match = iuse_implicit_match

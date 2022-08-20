@@ -2,8 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 from _emerge.BinpkgFetcher import BinpkgFetcher
-from _emerge.CompositeTask import CompositeTask
 from _emerge.BinpkgVerifier import BinpkgVerifier
+from _emerge.CompositeTask import CompositeTask
+
 from portage import os
 
 

@@ -4,21 +4,16 @@
 __all__ = ("KeywordsManager",)
 
 import warnings
+from typing import List, Optional, Set, Tuple, Union
 
 import portage
 from portage import os
 from portage.dep import ExtendedAtomDict
 from portage.localization import _
 from portage.package.ebuild._config.helper import ordered_by_atom_specificity
-from portage.repository.config import allow_profile_repo_deps
+from portage.repository.config import _profile_node, allow_profile_repo_deps
 from portage.util import grabdict_package, stack_lists
 from portage.versions import _pkg_str
-from typing import List
-from typing import Set
-from typing import Union
-from portage.repository.config import _profile_node
-from typing import Tuple
-from typing import Optional
 
 
 class KeywordsManager:

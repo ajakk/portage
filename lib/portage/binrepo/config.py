@@ -7,7 +7,7 @@ from hashlib import md5
 
 from portage.localization import _
 from portage.util import _recursive_file_list, writemsg
-from portage.util.configparser import SafeConfigParser, ConfigParserError, read_configs
+from portage.util.configparser import ConfigParserError, SafeConfigParser, read_configs
 
 
 class BinRepoConfig:

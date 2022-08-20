@@ -7,8 +7,9 @@ except ImportError:
     # dummy_threading will not suffice
     threading = None
 
-from portage import os
 from _emerge.AbstractPollTask import AbstractPollTask
+
+from portage import os
 
 
 class PipeReaderBlockingIO(AbstractPollTask):

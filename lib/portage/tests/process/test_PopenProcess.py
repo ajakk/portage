@@ -4,12 +4,13 @@
 import subprocess
 import tempfile
 
+from _emerge.PipeReader import PipeReader
+
 from portage import os
 from portage.tests import TestCase
 from portage.util._async.PipeLogger import PipeLogger
 from portage.util._async.PopenProcess import PopenProcess
 from portage.util._eventloop.global_event_loop import global_event_loop
-from _emerge.PipeReader import PipeReader
 
 
 class PopenPipeTestCase(TestCase):

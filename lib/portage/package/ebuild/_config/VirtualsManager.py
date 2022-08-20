@@ -4,18 +4,17 @@
 __all__ = ("VirtualsManager",)
 
 from copy import deepcopy
+from typing import Any, Dict, Tuple
+
+from _emerge.FakeVartree import FakeVartree
 
 from portage import os
 from portage.dep import Atom
 from portage.exception import InvalidAtom
 from portage.localization import _
+from portage.package.ebuild._config.VirtualsManager import VirtualsManager
 from portage.util import grabdict, stack_dictlist, writemsg
 from portage.versions import cpv_getkey
-from typing import Any
-from typing import Tuple
-from portage.package.ebuild._config.VirtualsManager import VirtualsManager
-from typing import Dict
-from _emerge.FakeVartree import FakeVartree
 
 
 class VirtualsManager:

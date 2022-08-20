@@ -6,12 +6,10 @@ import itertools
 import stat
 import sys
 
-from portage.const import PORTAGE_BIN_PATH, PORTAGE_PYM_PATH, PORTAGE_PYM_PACKAGES
+from portage import _encodings, _unicode_decode, _unicode_encode, os
+from portage.const import PORTAGE_BIN_PATH, PORTAGE_PYM_PACKAGES, PORTAGE_PYM_PATH
 from portage.tests import TestCase
 from portage.tests.lint.metadata import module_metadata, script_metadata
-from portage import os
-from portage import _encodings
-from portage import _unicode_decode, _unicode_encode
 
 
 class CompileModulesTestCase(TestCase):

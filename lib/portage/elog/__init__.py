@@ -11,13 +11,13 @@ portage.proxy.lazyimport.lazyimport(
     "portage.util:writemsg",
 )
 
-from portage.const import EBUILD_PHASES
-from portage.exception import AlarmSignal, PortageException
-from portage.process import atexit_register
-from portage.elog.messages import collect_ebuild_messages, collect_messages
-from portage.elog.filtering import filter_loglevels
-from portage.localization import _
 from portage import os
+from portage.const import EBUILD_PHASES
+from portage.elog.filtering import filter_loglevels
+from portage.elog.messages import collect_ebuild_messages, collect_messages
+from portage.exception import AlarmSignal, PortageException
+from portage.localization import _
+from portage.process import atexit_register
 
 
 def _preload_elog_modules(settings):

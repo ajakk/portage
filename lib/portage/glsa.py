@@ -2,26 +2,22 @@
 # Distributed under the terms of the GNU General Public License v2
 
 import codecs
+import io
 import operator
-import portage
 import re
 import sys
 import xml.dom.minidom
-
 from functools import reduce
-
-import io
 from io import StringIO
+from urllib.request import urlopen as urllib_request_urlopen
 
-from portage import _encodings, _unicode_decode, _unicode_encode
-from portage import os
+import portage
+from portage import _encodings, _unicode_decode, _unicode_encode, os
 from portage.const import PRIVATE_PATH
 from portage.dep import _slot_separator
 from portage.localization import _
 from portage.util import grabfile
 from portage.versions import pkgsplit, vercmp
-
-from urllib.request import urlopen as urllib_request_urlopen
 
 # Note: the space for rgt and rlt is important !!
 # FIXME: use slot deps instead, requires GLSA format versioning

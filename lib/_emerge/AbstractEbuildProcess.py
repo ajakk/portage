@@ -8,18 +8,20 @@ import stat
 import subprocess
 import tempfile
 import textwrap
-from _emerge.SpawnProcess import SpawnProcess
+
 from _emerge.EbuildBuildDir import EbuildBuildDir
 from _emerge.EbuildIpcDaemon import EbuildIpcDaemon
+from _emerge.SpawnProcess import SpawnProcess
+
 import portage
+from portage import os
 from portage.elog import messages as elog_messages
 from portage.localization import _
 from portage.package.ebuild._ipc.ExitCommand import ExitCommand
 from portage.package.ebuild._ipc.QueryCommand import QueryCommand
-from portage import os
-from portage.util.futures import asyncio
-from portage.util._pty import _create_pty_or_pipe
 from portage.util import apply_secpass_permissions
+from portage.util._pty import _create_pty_or_pipe
+from portage.util.futures import asyncio
 
 portage.proxy.lazyimport.lazyimport(
     globals(),

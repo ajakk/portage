@@ -4,21 +4,19 @@
 __all__ = ("MaskManager",)
 
 import warnings
+from typing import Any, List, Optional, Tuple
 
 from portage import os
-from portage.dep import ExtendedAtomDict, match_from_list
+from portage.dep import Atom, ExtendedAtomDict, match_from_list
 from portage.localization import _
-from portage.repository.config import allow_profile_repo_deps
+from portage.repository.config import (
+    RepoConfig,
+    RepoConfigLoader,
+    _profile_node,
+    allow_profile_repo_deps,
+)
 from portage.util import append_repo, grabfile_package, stack_lists, writemsg
 from portage.versions import _pkg_str
-from portage.dep import Atom
-from portage.repository.config import RepoConfig
-from typing import List
-from typing import Tuple
-from portage.repository.config import RepoConfigLoader
-from portage.repository.config import _profile_node
-from typing import Optional
-from typing import Any
 
 
 class MaskManager:

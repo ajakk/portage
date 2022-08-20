@@ -1,14 +1,15 @@
 # Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+import errno
 import logging
+import signal
+
+from _emerge.AbstractPollTask import AbstractPollTask
 
 from portage import os
 from portage.util import writemsg_level
 from portage.util.futures import asyncio
-from _emerge.AbstractPollTask import AbstractPollTask
-import signal
-import errno
 
 
 class SubProcess(AbstractPollTask):

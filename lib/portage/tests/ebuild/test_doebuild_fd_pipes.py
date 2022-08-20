@@ -1,15 +1,16 @@
 # Copyright 2013-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-import portage
-from portage import os
-from portage.tests import TestCase
-from portage.tests.resolver.ResolverPlayground import ResolverPlayground
-from portage.package.ebuild._ipc.QueryCommand import QueryCommand
-from portage.util._async.ForkProcess import ForkProcess
-from portage.util._async.TaskScheduler import TaskScheduler
 from _emerge.Package import Package
 from _emerge.PipeReader import PipeReader
+
+import portage
+from portage import os
+from portage.package.ebuild._ipc.QueryCommand import QueryCommand
+from portage.tests import TestCase
+from portage.tests.resolver.ResolverPlayground import ResolverPlayground
+from portage.util._async.ForkProcess import ForkProcess
+from portage.util._async.TaskScheduler import TaskScheduler
 
 
 class DoebuildProcess(ForkProcess):
