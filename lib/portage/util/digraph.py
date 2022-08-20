@@ -15,7 +15,6 @@ from _emerge.SetArg import SetArg
 
 from portage.dep import Atom
 from portage.util import writemsg
-from portage.util.digraph import digraph
 
 
 class digraph:

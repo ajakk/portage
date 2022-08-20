@@ -7,9 +7,9 @@ import collections
 import errno
 import fnmatch
 import operator
+from typing import NoReturn
 
-from mypy_extensions import NoReturn
-
+import portage
 from portage import _unicode_decode, os
 from portage.exception import (
     FileNotFound,
@@ -18,7 +18,10 @@ from portage.exception import (
     PermissionDenied,
     ReadOnlyFileSystem,
 )
-from portage.util import normalize_path
+
+portage.proxy.lazyimport.lazyimport(
+    "portage.util:normalize_path",
+)
 
 
 def _defaultdict_tree():

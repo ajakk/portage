@@ -11,7 +11,6 @@ import re
 from typing import Any, Iterator, List, Optional, Set, Tuple, Union
 
 from _emerge.depgraph import depgraph
-from _emerge.resolver.output_helpers import _DisplayConfig
 
 from portage import os
 from portage._sets.base import InternalPackageSet

@@ -10,11 +10,11 @@ from os import stat_result
 
 import portage
 from portage.localization import _
-from portage.package.ebuild.config import config
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
     "portage.output:colorize",
+    "portage.package.ebuild.config:config",
     "portage.util:writemsg",
     "portage.util.path:first_existing",
     "subprocess",

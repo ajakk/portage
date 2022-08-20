@@ -18,6 +18,16 @@ from portage import _encodings, _unicode_encode, os
 from portage.cache.mappings import slot_dict_class
 from portage.elog.messages import eerror
 from portage.output import colorize, create_color_func, red
+from portage._sets import SETPREFIX
+from portage._sets.base import InternalPackageSet
+from portage.package.ebuild.digestcheck import digestcheck
+from portage.package.ebuild.digestgen import digestgen
+from portage.package.ebuild.doebuild import _check_temp_dir, _prepare_self_update
+from portage.package.ebuild.prepare_build_dirs import prepare_build_dirs
+from portage.util import ensure_dirs, writemsg, writemsg_level
+from portage.util._async.SchedulerInterface import SchedulerInterface
+from portage.util.futures import asyncio
+from portage.util.SlotObject import SlotObject
 
 bad = create_color_func("BAD")
 import _emerge
@@ -45,17 +55,6 @@ from _emerge.Package import Package
 from _emerge.PackageMerge import PackageMerge
 from _emerge.PollScheduler import PollScheduler
 from _emerge.SequentialTaskQueue import SequentialTaskQueue
-
-from portage._sets import SETPREFIX
-from portage._sets.base import InternalPackageSet
-from portage.package.ebuild.digestcheck import digestcheck
-from portage.package.ebuild.digestgen import digestgen
-from portage.package.ebuild.doebuild import _check_temp_dir, _prepare_self_update
-from portage.package.ebuild.prepare_build_dirs import prepare_build_dirs
-from portage.util import ensure_dirs, writemsg, writemsg_level
-from portage.util._async.SchedulerInterface import SchedulerInterface
-from portage.util.futures import asyncio
-from portage.util.SlotObject import SlotObject
 
 # enums
 FAILURE = 1

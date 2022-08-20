@@ -14,9 +14,6 @@ __all__ = [
 import weakref
 from typing import Any, Dict, Iterator, Optional, Set, Tuple, Union
 
-from portage.dbapi.porttree import portagetree
-from portage.dbapi.vartree import vartree
-
 
 class Mapping:
     """
@@ -170,13 +167,13 @@ class UserDict(MutableMapping):
     def __contains__(self, key: str) -> bool:
         return key in self.data
 
-    def __iter__(self) -> dict_keyiterator:
+    def __iter__(self) -> Iterator:
         return iter(self.data)
 
     def __len__(self):
         return len(self.data)
 
-    def __getitem__(self, key: str) -> Union[portagetree, vartree, str]:
+    def __getitem__(self, key: str):
         return self.data[key]
 
     def __setitem__(self, key: str, item: Optional[str]) -> None:

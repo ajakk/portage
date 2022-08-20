@@ -30,7 +30,6 @@ from portage.env.loaders import KeyValuePairFileLoader
 from portage.localization import _
 from portage.manifest import Manifest
 from portage.package.ebuild.config import config
-from portage.repository.config import RepoConfig, RepoConfigLoader
 from portage.util import (
     _recursive_file_list,
     normalize_path,
@@ -465,7 +464,7 @@ class RepoConfig:
 
                 name = "metadata/cache"
             elif fmt == "md5-dict":
-                from portage.cache.flat_hash import md5_database as database
+                database = md5_database
 
                 name = "metadata/md5-cache"
 

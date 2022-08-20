@@ -5,13 +5,17 @@ import io
 
 import portage
 from portage import os
-from portage.dep import Atom, _repo_name_re
+from portage.dep.atom import Atom
 from portage.eapi import eapi_has_repo_deps
 from portage.elog import messages as elog_messages
 from portage.exception import InvalidAtom
 from portage.package.ebuild._ipc.IpcCommand import IpcCommand
-from portage.util import normalize_path
-from portage.versions import best
+
+portage.proxy.lazyimport.lazyimport(
+    "portage.dep:_repo_name_re",
+    "portage.util:normalize_path",
+    "portage.versions:best",
+)
 
 
 class QueryCommand(IpcCommand):

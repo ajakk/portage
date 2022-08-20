@@ -5,9 +5,13 @@ import platform
 import pty
 import termios
 
+import portage
 from portage import os
-from portage.output import get_term_size, set_term_size
-from portage.util import writemsg
+
+portage.proxy.lazyimport.lazyimport(
+    "portage.output:get_term_size,set_term_size",
+    "portage.util:writemsg",
+)
 
 # Disable the use of openpty on Solaris as it seems Python's openpty
 # implementation doesn't play nice on Solaris with Portage's

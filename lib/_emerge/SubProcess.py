@@ -7,9 +7,13 @@ import signal
 
 from _emerge.AbstractPollTask import AbstractPollTask
 
+import portage
 from portage import os
-from portage.util import writemsg_level
 from portage.util.futures import asyncio
+
+portage.proxy.lazyimport.lazyimport(
+    "portage.util:writemsg_level"
+)
 
 
 class SubProcess(AbstractPollTask):

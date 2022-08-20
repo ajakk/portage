@@ -7,15 +7,17 @@ from os import stat_result
 from typing import Any, Dict, Iterator, List, Optional
 
 import portage
-from portage.dbapi.vartree import vardbapi, vartree
-from portage.package.ebuild.config import config
-from portage.versions import _pkg_str
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
+    "_emerge.EbuildBuildDir:EbuildBuildDir",
+    "_emerge.EbuildPhase:EbuildPhase",
+    "_emerge.SpawnProcess:SpawnProcess",
+    "_emerge.MiscFunctionsProcess:MiscFunctionsProcess",
     "hashlib:md5",
     "portage.checksum:_perform_md5_merge@perform_md5",
     "portage.data:portage_gid,portage_uid,secpass",
+    "portage.dbapi:dbapi",
     "portage.dbapi.dep_expand:dep_expand",
     "portage.dbapi._MergeProcess:MergeProcess",
     "portage.dbapi._SyncfsProcess:SyncfsProcess",
@@ -26,6 +28,7 @@ portage.proxy.lazyimport.lazyimport(
     + "elog_process,_merge_logentries",
     "portage.locks:lockdir,unlockdir,lockfile,unlockfile",
     "portage.output:bold,colorize",
+    "portage.package.ebuild.config:config",
     "portage.package.ebuild.doebuild:doebuild_environment," + "_merge_unicode_error",
     "portage.package.ebuild.prepare_build_dirs:prepare_build_dirs",
     "portage.package.ebuild._ipc.QueryCommand:QueryCommand",
@@ -75,11 +78,7 @@ import time
 import warnings
 from itertools import chain
 
-from _emerge.EbuildBuildDir import EbuildBuildDir
-from _emerge.EbuildPhase import EbuildPhase
 from _emerge.emergelog import emergelog
-from _emerge.MiscFunctionsProcess import MiscFunctionsProcess
-from _emerge.SpawnProcess import SpawnProcess
 
 # This is a special version of the os module, wrapped for unicode support.
 from portage import (
@@ -103,7 +102,6 @@ from portage.const import (
     SUPPORTED_GENTOO_BINPKG_FORMATS,
     VDB_PATH,
 )
-from portage.dbapi import dbapi
 from portage.exception import (
     CommandNotFound,
     FileNotFound,

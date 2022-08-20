@@ -51,9 +51,7 @@ portage.proxy.lazyimport.lazyimport(
     "portage.util.futures.unix_events:_PortageEventLoopPolicy",
     "portage.util.futures:compat_coroutine@_compat_coroutine",
 )
-from portage.util._eventloop.asyncio_event_loop import (
-    AsyncioEventLoop as _AsyncioEventLoop,
-)
+
 
 _lock = threading.Lock()
 _policy = None

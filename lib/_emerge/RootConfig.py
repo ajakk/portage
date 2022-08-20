@@ -1,12 +1,15 @@
-from typing import Dict, Union
-
-from portage._sets import SetConfig
-from portage.package.ebuild.config import config
-from portage.util import LazyItemsDict
-
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
+from typing import Dict, Union
+
+import portage
+
+portage.proxy.lazyimport.lazyimport(
+    "portage._sets:SetConfig",
+    "portage.package.ebuild.config:config",
+    "portage.util:LazyItemsDict",
+)
 
 class RootConfig:
     """This is used internally by depgraph to track information about a

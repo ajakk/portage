@@ -13,7 +13,6 @@ from typing import Any, Callable, Dict, Iterator, Optional
 from _io import TextIOWrapper
 
 import portage
-from portage.manifest import Manifest2Entry
 
 portage.proxy.lazyimport.lazyimport(
     globals(),

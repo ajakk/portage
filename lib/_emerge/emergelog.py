@@ -8,7 +8,10 @@ from typing import Any, Optional
 import portage
 from portage import _encodings, _unicode_decode, _unicode_encode, os
 from portage.data import secpass
-from portage.output import xtermTitle
+
+portage.proxy.lazyimport.lazyimport(
+    "portage.output:xtermTitle"
+)
 
 # We disable emergelog by default, since it's called from
 # dblink.merge() and we don't want that to trigger log writes

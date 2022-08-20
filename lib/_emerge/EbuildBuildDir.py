@@ -3,12 +3,14 @@
 
 import functools
 
-from _emerge.AsynchronousLock import AsynchronousLock
-
 import portage
 from portage import os
 from portage.exception import PortageException
 from portage.util.SlotObject import SlotObject
+
+portage.proxy.lazyimport.lazyimport(
+    "_emerge.AsynchronousLock:AsynchronousLock"
+)
 
 
 class EbuildBuildDir(SlotObject):

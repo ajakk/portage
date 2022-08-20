@@ -21,24 +21,7 @@ from itertools import chain
 from os import _Environ
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-from _emerge.FakeVartree import FakeVartree
-from _emerge.Package import Package, _PackageMetadataWrapper
-
 import portage
-from portage.dep import Atom
-from portage.eapi import _eapi_attrs
-from portage.package.ebuild.config import config
-from portage.util import LazyItemsDict
-
-portage.proxy.lazyimport.lazyimport(
-    globals(),
-    "portage.data:portage_gid",
-    "portage.dep.soname.SonameAtom:SonameAtom",
-    "portage.dbapi.vartree:vartree",
-    "portage.package.ebuild.doebuild:_phase_func_map",
-    "portage.util.compression_probe:_compressors",
-    "portage.util.locale:check_locale,split_LC_ALL",
-)
 from portage import _unicode_decode, bsd_chflags, load_mod, os, selinux
 from portage.const import (
     CACHE_PATH,
@@ -53,16 +36,9 @@ from portage.const import (
     USER_CONFIG_PATH,
     USER_VIRTUALS_FILE,
 )
-from portage.dbapi import dbapi
-from portage.dep import (
-    Atom,
-    _repo_separator,
-    _slot_separator,
-    isvalidatom,
-    match_from_list,
-    use_reduce,
-)
+from portage.dep.atom import Atom
 from portage.eapi import (
+    _eapi_attrs,
     _get_eapi_attrs,
     eapi_exports_AA,
     eapi_exports_merge_type,
@@ -72,14 +48,8 @@ from portage.eapi import (
 from portage.env.loaders import KeyValuePairFileLoader
 from portage.exception import InvalidDependString, PortageException
 from portage.localization import _
-from portage.output import colorize
 from portage.package.ebuild._config import special_env_vars
 from portage.package.ebuild._config.env_var_validation import validate_cmd_var
-from portage.package.ebuild._config.features_set import features_set
-from portage.package.ebuild._config.helper import (
-    ordered_by_atom_specificity,
-    prune_incremental,
-)
 from portage.package.ebuild._config.KeywordsManager import KeywordsManager
 from portage.package.ebuild._config.LicenseManager import LicenseManager
 from portage.package.ebuild._config.LocationsManager import LocationsManager
@@ -109,6 +79,25 @@ from portage.util._path import exists_raise_eaccess, isdir_raise_eaccess
 from portage.util.install_mask import _raise_exc
 from portage.util.path import first_existing
 from portage.versions import _pkg_str, catpkgsplit, catsplit, cpv_getkey
+
+from portage.package.ebuild._config.features_set import features_set
+portage.proxy.lazyimport.lazyimport(
+    globals(),
+    "_emerge.FakeVartree:FakeVartree",
+    "_emerge.Package:Package,_PackageMetadataWrapper",
+    "portage.data:portage_gid",
+    "portage.dep:_repo_separator,_slot_separator,isvalidatom,"
+    + "match_from_list,use_reduce",
+    "portage.dep.soname.SonameAtom:SonameAtom",
+    "portage.dbapi:dbapi",
+    "portage.dbapi.vartree:vartree",
+    "portage.output:colorize",
+    "portage.package.ebuild._config.features_set:features_set",
+    "portage.package.ebuild._config.helper:ordered_by_atom_specificity,prune_incremental",
+    "portage.package.ebuild.doebuild:_phase_func_map",
+    "portage.util.compression_probe:_compressors",
+    "portage.util.locale:check_locale,split_LC_ALL",
+)
 
 _feature_flags_cache = {}
 

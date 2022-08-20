@@ -54,22 +54,20 @@ from itertools import chain, filterfalse
 from os import stat_result
 from typing import Any, Callable, Dict, Iterator, List, Optional, Tuple, Union
 
-from _emerge.Package import Package
 from _io import TextIOWrapper
 
 import portage
 from portage.data import _GlobalProxy
-from portage.dbapi.porttree import portagetree
-from portage.dbapi.vartree import vartree
-from portage.dep import Atom
+from portage.dep.atom import Atom
 from portage.proxy.lazyimport import _LazyImportFrom
-from portage.util import LazyItemsDict, cmp_sort_key
 from portage.versions import _pkg_str
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
+    "_emerge.Package:Package",
     "pickle",
-    "portage.dep:Atom",
+    "portage.dbapi.porttree:portagetree",
+    "portage.dbapi.vartree:vartree",
     "subprocess",
 )
 

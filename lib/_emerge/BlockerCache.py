@@ -3,9 +3,8 @@
 
 import errno
 import pickle
-from typing import Tuple
+from typing import Tuple, Iterator
 
-from _emerge.BlockerCache import BlockerCache
 from _emerge.PackageVirtualDbapi import PackageVirtualDbapi
 
 import portage
@@ -173,7 +172,7 @@ class BlockerCache(portage.cache.mappings.MutableMapping):
         )
         self._modified.add(cpv)
 
-    def __iter__(self) -> dict_keyiterator:
+    def __iter__(self) -> Iterator:
         if self._cache_data is None:
             # triggered by python-trace
             return iter([])

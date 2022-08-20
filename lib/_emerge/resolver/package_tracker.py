@@ -6,7 +6,6 @@ import collections
 from typing import Any, Iterator, List, Optional
 
 from _emerge.Package import Package
-from _emerge.resolver.package_tracker import PackageTracker
 
 import portage
 from portage.dep import Atom

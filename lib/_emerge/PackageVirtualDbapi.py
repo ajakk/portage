@@ -3,13 +3,15 @@
 
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from _emerge.Package import Package
-
-from portage.dbapi import dbapi
 from portage.dbapi.dep_expand import dep_expand
 from portage.dep import Atom
 from portage.package.ebuild.config import config
 from portage.versions import _pkg_str
+
+portage.proxy.lazyimport.lazyimport(
+    "_emerge.Package:Package",
+    "portage.dbapi:dbapi",
+)
 
 
 class PackageVirtualDbapi(dbapi):

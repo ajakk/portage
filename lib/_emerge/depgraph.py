@@ -13,7 +13,6 @@ from collections import OrderedDict, deque
 from itertools import chain
 from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
 
-from _emerge.depgraph import _frozen_depgraph_config, depgraph
 from _emerge.stdout_spinner import stdout_spinner
 
 import portage

@@ -4,22 +4,25 @@
 import warnings
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from _emerge.Package import Package
-from _emerge.PackageVirtualDbapi import PackageVirtualDbapi
 from _emerge.resolver.DbapiProvidesIndex import PackageDbapiProvidesIndex
-from _emerge.RootConfig import RootConfig
 
 import portage
 from portage import os
 from portage.const import VDB_PATH
-from portage.dbapi.porttree import portdbapi
-from portage.dbapi.vartree import vartree
-from portage.dep import Atom
+from portage.dep.atom import Atom
 from portage.dep._slot_operator import find_built_slot_operator_atoms
 from portage.eapi import _get_eapi_attrs
 from portage.exception import InvalidData, InvalidDependString
 from portage.update import grab_updates, parse_updates, update_dbentries
 from portage.versions import _pkg_str
+
+portage.proxy.lazyimport.lazyimport(
+    "portage.dbapi.porttree:portdbapi",
+    "portage.dbapi.vartree:vartree",
+    "_emerge.RootConfig:RootConfig",
+    "_emerge.Package:Package",
+    "_emerge.PackageVirtualDbapi:PackageVirtualDbapi",
+)
 
 
 class FakeVardbGetPath:

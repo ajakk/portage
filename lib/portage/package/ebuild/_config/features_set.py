@@ -5,11 +5,15 @@ __all__ = ("features_set",)
 
 import logging
 
+import portage
 from portage.const import SUPPORTED_FEATURES
 from portage.localization import _
-from portage.output import colorize
-from portage.package.ebuild.config import config
-from portage.util import writemsg_level
+
+portage.proxy.lazyimport.lazyimport(
+    "portage.output:colorize",
+    "portage.package.ebuild.config:config",
+    "portage.util:writemsg_level",
+)
 
 
 class features_set:

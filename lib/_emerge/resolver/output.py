@@ -13,7 +13,6 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 from _emerge.depgraph import depgraph
 from _emerge.Package import Package
-from _emerge.resolver.output_helpers import PkgInfo
 
 from portage import os
 from portage.dbapi.dep_expand import dep_expand

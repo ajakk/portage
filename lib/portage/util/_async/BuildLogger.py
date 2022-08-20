@@ -6,11 +6,15 @@ import subprocess
 
 from _emerge.AsynchronousTask import AsynchronousTask
 
+import portage
 from portage import os
-from portage.util import shlex_split
 from portage.util._async.PipeLogger import PipeLogger
 from portage.util._async.PopenProcess import PopenProcess
 from portage.util.futures import asyncio
+
+portage.proxy.lazyimport.lazyimport(
+    "portage.util:shlex_split"
+)
 
 
 class BuildLogger(AsynchronousTask):

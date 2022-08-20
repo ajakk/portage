@@ -16,14 +16,13 @@ from typing import Any, Dict, Iterator, Optional, Set
 
 import portage
 from portage import _encodings, _unicode_decode, _unicode_encode, load_mod, os
-from portage._sets import SetConfig
 from portage.const import (
     _ENABLE_SET_CONFIG,
     GLOBAL_CONFIG_PATH,
     USER_CONFIG_PATH,
     VCS_DIRS,
 )
-from portage.dep import Atom
+from portage.dep.atom import Atom
 from portage.exception import PackageSetNotFound
 from portage.localization import _
 from portage.package.ebuild.config import config

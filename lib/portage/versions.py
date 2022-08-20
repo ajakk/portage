@@ -22,18 +22,16 @@ from re import Pattern
 from typing import Any, List, Optional, Tuple, Union
 
 import portage
-from portage.dbapi.vartree import vardbapi
 from portage.eapi import _eapi_attrs
-from portage.versions import _pkg_str
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
+    "portage.exception:InvalidData",
     "portage.repository.config:_gen_valid_repo",
     "portage.util:cmp_sort_key",
 )
 from portage import _unicode_decode
 from portage.eapi import _get_eapi_attrs
-from portage.exception import InvalidData
 from portage.localization import _
 
 _unknown_repo = "__unknown__"
@@ -78,6 +76,164 @@ suffix_value = {"pre": -2, "p": 0, "alpha": -4, "beta": -3, "rc": -1}
 endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
 
 _slot_re_cache = {}
+
+
+class _pkg_str(str):
+    """
+    This class represents a cpv. It inherits from str and has attributes
+    that cache results for use by functions like catpkgsplit and cpv_getkey
+    which are called frequently (especially in match_from_list).  Instances
+    are typically created in dbapi.cp_list() or the Atom contructor, and
+    propagate from there. Generally, code that pickles these objects will
+    manually convert them to a plain unicode object first.
+
+    Instances of this class will have missing attributes for metadata that
+    has not been passed into the constructor. The missing attributes are
+    used to distinguish missing metadata values from undefined metadata values.
+    For example, the repo attribute will be missing if the 'repository' key
+    is missing from the metadata dictionary.
+    """
+
+    def __new__(
+        cls,
+        cpv,
+        metadata=None,
+        settings=None,
+        eapi=None,
+        repo=None,
+        slot=None,
+        build_time=None,
+        build_id=None,
+        file_size=None,
+        mtime=None,
+        db=None,
+    ):
+        return str.__new__(cls, cpv)
+
+    def __init__(
+        self,
+        cpv: str,
+        metadata: Optional[Any] = None,
+        settings: Optional[Any] = None,
+        eapi: Optional[Any] = None,
+        repo: Optional[Any] = None,
+        slot: Optional[Any] = None,
+        build_time: Optional[Any] = None,
+        build_id: Optional[Any] = None,
+        file_size: Optional[Any] = None,
+        mtime: Optional[Any] = None,
+        db=None,
+    ) -> None:
+        if not isinstance(cpv, str):
+            # Avoid TypeError from str.__init__ with PyPy.
+            cpv = _unicode_decode(cpv)
+        str.__init__(cpv)
+        if metadata is not None:
+            self.__dict__["_metadata"] = metadata
+            slot = metadata.get("SLOT", slot)
+            repo = metadata.get("repository", repo)
+            eapi = metadata.get("EAPI", eapi)
+            build_time = metadata.get("BUILD_TIME", build_time)
+            file_size = metadata.get("SIZE", file_size)
+            build_id = metadata.get("BUILD_ID", build_id)
+            mtime = metadata.get("_mtime_", mtime)
+        if settings is not None:
+            self.__dict__["_settings"] = settings
+        if db is not None:
+            self.__dict__["_db"] = db
+        if eapi is not None:
+            self.__dict__["eapi"] = eapi
+
+        self.__dict__["build_time"] = self._long(build_time, 0)
+        self.__dict__["file_size"] = self._long(file_size, None)
+        self.__dict__["build_id"] = self._long(build_id, None)
+        self.__dict__["mtime"] = self._long(mtime, None)
+        self.__dict__["cpv_split"] = catpkgsplit(cpv, eapi=eapi)
+        if self.cpv_split is None:
+            raise InvalidData(cpv)
+        self.__dict__["cp"] = self.cpv_split[0] + "/" + self.cpv_split[1]
+        if self.cpv_split[-1] == "r0" and cpv[-3:] != "-r0":
+            self.__dict__["version"] = "-".join(self.cpv_split[2:-1])
+        else:
+            self.__dict__["version"] = "-".join(self.cpv_split[2:])
+        # for match_from_list introspection
+        self.__dict__["cpv"] = self
+        if slot is not None:
+            eapi_attrs = _get_eapi_attrs(eapi)
+            slot_match = _get_slot_re(eapi_attrs).match(slot)
+            if slot_match is None:
+                # Avoid an InvalidAtom exception when creating SLOT atoms
+                self.__dict__["slot"] = "0"
+                self.__dict__["sub_slot"] = "0"
+                self.__dict__["slot_invalid"] = slot
+            else:
+                if eapi_attrs.slot_operator:
+                    slot_split = slot.split("/")
+                    self.__dict__["slot"] = slot_split[0]
+                    if len(slot_split) > 1:
+                        self.__dict__["sub_slot"] = slot_split[1]
+                    else:
+                        self.__dict__["sub_slot"] = slot_split[0]
+                else:
+                    self.__dict__["slot"] = slot
+                    self.__dict__["sub_slot"] = slot
+
+        if repo is not None:
+            repo = _gen_valid_repo(repo)
+            if not repo:
+                repo = _unknown_repo
+            self.__dict__["repo"] = repo
+
+    def __setattr__(self, name, value):
+        raise AttributeError(
+            "_pkg_str instances are immutable", self.__class__, name, value
+        )
+
+    @staticmethod
+    def _long(var: Optional[Any], default: Optional[int]) -> Optional[Any]:
+        if var is not None:
+            try:
+                var = int(var)
+            except ValueError:
+                if var:
+                    var = -1
+                else:
+                    var = default
+        return var
+
+    @property
+    def stable(self) -> bool:
+        try:
+            return self._stable
+        except AttributeError:
+            try:
+                settings = self._settings
+            except AttributeError:
+                raise AttributeError("stable")
+            if not settings.local_config:
+                # Since repoman uses different config instances for
+                # different profiles, our local instance does not
+                # refer to the correct profile.
+                raise AssertionError("invalid context")
+            stable = settings._isStable(self)
+            self.__dict__["_stable"] = stable
+            return stable
+
+    @property
+    def binpkg_format(self):
+        """
+        Returns the BINPKG_FORMAT metadata. A return value of None means
+        that the format is unset. If there is no metadata available or the
+        BINPKG_FORMAT key is missing from the metadata, then raise
+        AttributeError.
+
+        @rtype: str or None
+        @return: a non-empty BINPKG_FORMAT string, or None
+        """
+        try:
+            return self._metadata["BINPKG_FORMAT"] or None
+        except (AttributeError, KeyError):
+            raise AttributeError("binpkg_format")
 
 
 def _get_slot_re(eapi_attrs: _eapi_attrs) -> Pattern:
@@ -354,164 +510,6 @@ def catpkgsplit(
         return None
     retval = (cat, p_split[0], p_split[1], p_split[2])
     return retval
-
-
-class _pkg_str(str):
-    """
-    This class represents a cpv. It inherits from str and has attributes
-    that cache results for use by functions like catpkgsplit and cpv_getkey
-    which are called frequently (especially in match_from_list).  Instances
-    are typically created in dbapi.cp_list() or the Atom contructor, and
-    propagate from there. Generally, code that pickles these objects will
-    manually convert them to a plain unicode object first.
-
-    Instances of this class will have missing attributes for metadata that
-    has not been passed into the constructor. The missing attributes are
-    used to distinguish missing metadata values from undefined metadata values.
-    For example, the repo attribute will be missing if the 'repository' key
-    is missing from the metadata dictionary.
-    """
-
-    def __new__(
-        cls,
-        cpv,
-        metadata=None,
-        settings=None,
-        eapi=None,
-        repo=None,
-        slot=None,
-        build_time=None,
-        build_id=None,
-        file_size=None,
-        mtime=None,
-        db=None,
-    ):
-        return str.__new__(cls, cpv)
-
-    def __init__(
-        self,
-        cpv: str,
-        metadata: Optional[Any] = None,
-        settings: Optional[Any] = None,
-        eapi: Optional[Any] = None,
-        repo: Optional[Any] = None,
-        slot: Optional[Any] = None,
-        build_time: Optional[Any] = None,
-        build_id: Optional[Any] = None,
-        file_size: Optional[Any] = None,
-        mtime: Optional[Any] = None,
-        db: Optional[vardbapi] = None,
-    ) -> None:
-        if not isinstance(cpv, str):
-            # Avoid TypeError from str.__init__ with PyPy.
-            cpv = _unicode_decode(cpv)
-        str.__init__(cpv)
-        if metadata is not None:
-            self.__dict__["_metadata"] = metadata
-            slot = metadata.get("SLOT", slot)
-            repo = metadata.get("repository", repo)
-            eapi = metadata.get("EAPI", eapi)
-            build_time = metadata.get("BUILD_TIME", build_time)
-            file_size = metadata.get("SIZE", file_size)
-            build_id = metadata.get("BUILD_ID", build_id)
-            mtime = metadata.get("_mtime_", mtime)
-        if settings is not None:
-            self.__dict__["_settings"] = settings
-        if db is not None:
-            self.__dict__["_db"] = db
-        if eapi is not None:
-            self.__dict__["eapi"] = eapi
-
-        self.__dict__["build_time"] = self._long(build_time, 0)
-        self.__dict__["file_size"] = self._long(file_size, None)
-        self.__dict__["build_id"] = self._long(build_id, None)
-        self.__dict__["mtime"] = self._long(mtime, None)
-        self.__dict__["cpv_split"] = catpkgsplit(cpv, eapi=eapi)
-        if self.cpv_split is None:
-            raise InvalidData(cpv)
-        self.__dict__["cp"] = self.cpv_split[0] + "/" + self.cpv_split[1]
-        if self.cpv_split[-1] == "r0" and cpv[-3:] != "-r0":
-            self.__dict__["version"] = "-".join(self.cpv_split[2:-1])
-        else:
-            self.__dict__["version"] = "-".join(self.cpv_split[2:])
-        # for match_from_list introspection
-        self.__dict__["cpv"] = self
-        if slot is not None:
-            eapi_attrs = _get_eapi_attrs(eapi)
-            slot_match = _get_slot_re(eapi_attrs).match(slot)
-            if slot_match is None:
-                # Avoid an InvalidAtom exception when creating SLOT atoms
-                self.__dict__["slot"] = "0"
-                self.__dict__["sub_slot"] = "0"
-                self.__dict__["slot_invalid"] = slot
-            else:
-                if eapi_attrs.slot_operator:
-                    slot_split = slot.split("/")
-                    self.__dict__["slot"] = slot_split[0]
-                    if len(slot_split) > 1:
-                        self.__dict__["sub_slot"] = slot_split[1]
-                    else:
-                        self.__dict__["sub_slot"] = slot_split[0]
-                else:
-                    self.__dict__["slot"] = slot
-                    self.__dict__["sub_slot"] = slot
-
-        if repo is not None:
-            repo = _gen_valid_repo(repo)
-            if not repo:
-                repo = _unknown_repo
-            self.__dict__["repo"] = repo
-
-    def __setattr__(self, name, value):
-        raise AttributeError(
-            "_pkg_str instances are immutable", self.__class__, name, value
-        )
-
-    @staticmethod
-    def _long(var: Optional[Any], default: Optional[int]) -> Optional[Any]:
-        if var is not None:
-            try:
-                var = int(var)
-            except ValueError:
-                if var:
-                    var = -1
-                else:
-                    var = default
-        return var
-
-    @property
-    def stable(self) -> bool:
-        try:
-            return self._stable
-        except AttributeError:
-            try:
-                settings = self._settings
-            except AttributeError:
-                raise AttributeError("stable")
-            if not settings.local_config:
-                # Since repoman uses different config instances for
-                # different profiles, our local instance does not
-                # refer to the correct profile.
-                raise AssertionError("invalid context")
-            stable = settings._isStable(self)
-            self.__dict__["_stable"] = stable
-            return stable
-
-    @property
-    def binpkg_format(self):
-        """
-        Returns the BINPKG_FORMAT metadata. A return value of None means
-        that the format is unset. If there is no metadata available or the
-        BINPKG_FORMAT key is missing from the metadata, then raise
-        AttributeError.
-
-        @rtype: str or None
-        @return: a non-empty BINPKG_FORMAT string, or None
-        """
-        try:
-            return self._metadata["BINPKG_FORMAT"] or None
-        except (AttributeError, KeyError):
-            raise AttributeError("binpkg_format")
 
 
 def pkgsplit(mypkg, silent=1, eapi=None):

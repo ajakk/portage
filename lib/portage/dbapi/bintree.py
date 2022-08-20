@@ -6,7 +6,6 @@ __all__ = ["bindbapi", "binarytree"]
 from typing import Any
 
 import portage
-from portage.dbapi.bintree import binarytree
 from portage.package.ebuild.config import config
 
 portage.proxy.lazyimport.lazyimport(

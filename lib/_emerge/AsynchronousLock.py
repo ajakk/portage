@@ -17,14 +17,17 @@ except ImportError:
 
 from _emerge.AbstractPollTask import AbstractPollTask
 from _emerge.AsynchronousTask import AsynchronousTask
-from _emerge.SpawnProcess import SpawnProcess
 
 import portage
 from portage import os
 from portage.exception import TryAgain
 from portage.localization import _
 from portage.locks import lockfile, unlockfile
-from portage.util import writemsg_level
+
+portage.proxy.lazyimport.lazyimport(
+    "_emerge.SpawnProcess:SpawnProcess",
+    "portage.util:writemsg_level",
+)
 
 
 class AsynchronousLock(AsynchronousTask):

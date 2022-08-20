@@ -6,11 +6,15 @@ import operator
 import warnings
 from typing import Dict, Union
 
+import portage
 from portage.cache import cache_errors
 from portage.cache.cache_errors import InvalidRestriction
-from portage.cache.mappings import ProtectedDict
 from portage.eclass_cache import cache, hashed_path
-from portage.versions import _pkg_str
+
+portage.proxy.lazyimport.lazyimport(
+    "portage.cache.mappings:ProtectedDict",
+    "portage.versions:_pkg_str",
+)
 
 
 class database:

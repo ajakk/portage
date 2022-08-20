@@ -2,18 +2,23 @@
 # Distributed under the terms of the GNU General Public License v2
 # Author(s): Nicholas Carpaski (carpaski@gentoo.org), Brian Harring (ferringb@gentoo.org)
 
-__all__ = ["cache"]
-
+from __future__ import annotations
 import errno
 import operator
 import stat
 import warnings
 from typing import Any, Dict, Optional, Union
 
+import portage
 from portage import _shell_quote, checksum, os
-from portage.eclass_cache import cache, hashed_path
 from portage.exception import FileNotFound, PermissionDenied
-from portage.util import normalize_path
+
+portage.proxy.lazyimport.lazyimport(
+    "portage.util:normalize_path",
+)
+
+
+__all__ = ["cache"]
 
 
 class hashed_path:

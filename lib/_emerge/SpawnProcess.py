@@ -13,11 +13,14 @@ import portage
 from portage import os
 from portage.const import BASH_BINARY
 from portage.localization import _
-from portage.output import EOutput
-from portage.util import writemsg_level
 from portage.util._async.BuildLogger import BuildLogger
 from portage.util._async.PipeLogger import PipeLogger
 from portage.util.futures import asyncio
+
+portage.proxy.lazyimport.lazyimport(
+    "portage.output:EOutput",
+    "portage.util:writemsg_level",
+)
 
 
 class SpawnProcess(SubProcess):

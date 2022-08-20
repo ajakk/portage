@@ -11,8 +11,6 @@ import subprocess
 import sys
 from typing import Any, Callable, Optional, Tuple
 
-from mypy_extensions import NoReturn
-
 import portage
 
 portage.proxy.lazyimport.lazyimport(
@@ -166,7 +164,7 @@ _styles["PROMPT_CHOICE_DEFAULT"] = ("green",)
 _styles["PROMPT_CHOICE_OTHER"] = ("red",)
 
 
-def _parse_color_map(config_root: str = "/", onerror: Callable = None) -> NoReturn:
+def _parse_color_map(config_root: str = "/", onerror: Callable = None):
     """
     Parse /etc/portage/color.map and return a dict of error codes.
 

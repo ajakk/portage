@@ -3,9 +3,13 @@
 
 from typing import List, Tuple
 
+import portage
 from portage import os
 from portage.process import find_binary
-from portage.util import shlex_split
+
+portage.proxy.lazyimport.lazyimport(
+    "portage.util:shlex_split",
+)
 
 
 def validate_cmd_var(v: str) -> Tuple[bool, List[str]]:

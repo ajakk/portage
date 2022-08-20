@@ -7,22 +7,18 @@ import functools
 import re
 from typing import Any, Callable, Dict, Iterator, List, Optional, Union
 
-from _emerge.Package import _PackageMetadataWrapper
-
 import portage
 from portage.dep import Atom
-from portage.versions import _pkg_str
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
+    "_emerge.Package:_PackageMetadataWrapper,Package",
     "portage.dbapi.dep_expand:dep_expand@_dep_expand",
     "portage.dep:Atom,match_from_list,_match_slot",
     "portage.output:colorize",
     "portage.util:cmp_sort_key,writemsg",
     "portage.versions:catsplit,catpkgsplit,vercmp,_pkg_str",
 )
-
-from _emerge.Package import Package
 
 from portage import auxdbkeys, os
 from portage.const import MERGING_IDENTIFIER

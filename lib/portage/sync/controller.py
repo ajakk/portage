@@ -8,7 +8,7 @@ import sys
 import warnings
 
 import portage
-from portage import os
+from portage import os, _unicode_decode
 from portage.output import create_color_func
 from portage.progress import ProgressBar
 
@@ -20,7 +20,6 @@ bad = create_color_func("BAD")
 warn = create_color_func("WARN")
 from _emerge.CompositeTask import CompositeTask
 
-from portage import _unicode_decode
 from portage.metadata import action_metadata
 from portage.package.ebuild.doebuild import _check_temp_dir
 from portage.util._async.AsyncFunction import AsyncFunction

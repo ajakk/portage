@@ -24,6 +24,8 @@ try:
     import platform
     import re
     import types
+    from types import BuiltinFunctionType
+    from typing import Any, Callable, Dict, List, Tuple, Union
 
     del os
     import shutil
@@ -263,7 +265,7 @@ class _unicode_func_wrapper:
 
     def __init__(
         self,
-        func: Union[Callable, builtin_function_or_method],
+        func: Union[Callable, BuiltinFunctionType],
         encoding: str = _encodings["fs"],
     ) -> None:
         self._func = func
@@ -387,7 +389,6 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from _io import TextIOWrapper
 
-from portage import _trees_dict
 
 _os_overrides = {
     id(_os.fdopen): _os.fdopen,

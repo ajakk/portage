@@ -5,13 +5,16 @@ import errno
 import logging
 import pickle
 
-from _emerge.FifoIpcDaemon import FifoIpcDaemon
-
+import portage
 from portage import os
 from portage.exception import TryAgain
 from portage.localization import _
 from portage.locks import lockfile, unlockfile
 from portage.util import writemsg_level
+
+portage.proxy.lazyimport.lazyimport(
+    "_emerge.FifoIpcDaemon:FifoIpcDaemon"
+)
 
 
 class EbuildIpcDaemon(FifoIpcDaemon):

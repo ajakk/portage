@@ -1,6 +1,7 @@
 # Copyright 2018-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+from __future__ import annotations
 import asyncio as _real_asyncio
 import os
 import signal
@@ -12,10 +13,6 @@ from typing import List
 from _asyncio import Future
 
 import portage
-from portage.util._eventloop.asyncio_event_loop import (
-    AsyncioEventLoop,
-    _ChildWatcherThreadSafetyWrapper,
-)
 
 
 class AsyncioEventLoop(_AbstractEventLoop):

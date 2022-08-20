@@ -4,8 +4,9 @@
 import signal
 from typing import Any, Optional, Union
 
+import portage
 from portage import _encodings, _unicode_decode
-from portage.dep import Atom
+from portage.dep.atom import Atom
 from portage.localization import _
 
 

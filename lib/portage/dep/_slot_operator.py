@@ -3,11 +3,15 @@
 
 from typing import Dict, Iterator, List, Union
 
-from _emerge.Package import Package
-
-from portage.dep import Atom, paren_enclose, use_reduce
+import portage
+from portage.dep.atom import Atom
 from portage.eapi import _get_eapi_attrs
 from portage.exception import InvalidData
+
+portage.proxy.lazyimport.lazyimport(
+    "_emerge.Package:Package",
+    "portage.dep:paren_enclose,use_reduce",
+)
 
 
 def strip_slots(dep_struct):

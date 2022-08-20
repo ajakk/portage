@@ -7,11 +7,13 @@ import multiprocessing
 import signal
 import sys
 
-from _emerge.SpawnProcess import SpawnProcess
-
 import portage
 from portage import os
 from portage.util.futures import asyncio
+
+portage.proxy.lazyimport.lazyimport(
+    "_emerge.SpawnProcess:SpawnProcess"
+)
 
 
 class ForkProcess(SpawnProcess):

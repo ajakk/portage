@@ -16,7 +16,6 @@ import warnings
 from itertools import chain
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
-from _emerge.actions import _emerge_config
 from _emerge.stdout_spinner import stdout_spinner
 
 import portage

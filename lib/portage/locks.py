@@ -23,9 +23,7 @@ import tempfile
 import time
 import typing
 import warnings
-from typing import Any, Optional
-
-from mypy_extensions import NoReturn
+from typing import Any, NoReturn, Optional
 
 import portage
 from portage import _encodings, _unicode_decode, os
@@ -39,8 +37,11 @@ from portage.exception import (
     TryAgain,
 )
 from portage.localization import _
-from portage.util import writemsg
 from portage.util.install_mask import _raise_exc
+
+portage.proxy.lazyimport.lazyimport(
+    "portage.util:writemsg"
+)
 
 HARDLINK_FD = -2
 _HARDLINK_POLL_LATENCY = 3  # seconds

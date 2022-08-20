@@ -3,6 +3,7 @@
 
 from _emerge.AbstractPollTask import AbstractPollTask
 
+import portage
 from portage import os
 from portage.cache.mappings import slot_dict_class
 

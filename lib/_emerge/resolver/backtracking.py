@@ -4,8 +4,6 @@
 import copy
 from typing import Dict
 
-from _emerge.resolver.backtracking import BacktrackParameter, _BacktrackNode
-
 
 class BacktrackParameter:
 

@@ -3,17 +3,19 @@
 
 __all__ = ["cpv_expand"]
 
-from _emerge.PackageVirtualDbapi import PackageVirtualDbapi
-
 import portage
 from portage.exception import AmbiguousPackageName
-from portage.package.ebuild.config import config
-from portage.versions import _pkgsplit
+
+portage.proxy.lazyimport.lazyimport(
+    "_emerge.PackageVirtualDbapi:PackageVirtualDbapi",
+    "portage.package.ebuild.config:config",
+    "portage.versions:_pkgsplit",
+)
 
 
 def cpv_expand(
     mycpv: str,
-    mydb: PackageVirtualDbapi = None,
+    mydb: "PackageVirtualDbapi" = None,
     use_cache: int = 1,
     settings: config = None,
 ) -> str:

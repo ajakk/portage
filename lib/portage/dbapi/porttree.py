@@ -226,8 +226,6 @@ class portdbapi(dbapi):
         @type mysettings: portage.config
         """
 
-        from portage import config
-
         if mysettings:
             self.settings = mysettings
         else:

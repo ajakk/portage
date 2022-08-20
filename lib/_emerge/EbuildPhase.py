@@ -7,10 +7,7 @@ import io
 import sys
 import tempfile
 
-from _emerge.AsynchronousLock import AsynchronousLock
-from _emerge.BinpkgEnvExtractor import BinpkgEnvExtractor
 from _emerge.CompositeTask import CompositeTask
-from _emerge.EbuildProcess import EbuildProcess
 from _emerge.MiscFunctionsProcess import MiscFunctionsProcess
 from _emerge.PackagePhase import PackagePhase
 from _emerge.TaskSequence import TaskSequence
@@ -46,6 +43,9 @@ import portage
 
 portage.proxy.lazyimport.lazyimport(
     globals(),
+    "_emerge.AsynchronousLock:AsyncronousLock",
+    "_emerge.BinpkgEnvExtractor:BinpkgEnvExtractor",
+    "_emerge.EbuildProcess:EbuildProcess",
     "portage.elog:messages@elog_messages",
     "portage.package.ebuild.doebuild:_check_build_log,"
     + "_post_phase_cmds,_post_phase_userpriv_perms,"

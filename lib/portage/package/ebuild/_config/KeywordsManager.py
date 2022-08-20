@@ -8,7 +8,7 @@ from typing import List, Optional, Set, Tuple, Union
 
 import portage
 from portage import os
-from portage.dep import ExtendedAtomDict
+from portage.dep.atom import ExtendedAtomDict
 from portage.localization import _
 from portage.package.ebuild._config.helper import ordered_by_atom_specificity
 from portage.repository.config import _profile_node, allow_profile_repo_deps

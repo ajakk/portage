@@ -8,9 +8,12 @@ __all__ = (
 
 from typing import Any, List, Optional
 
-from _emerge.Package import Package
+import portage
 
-from portage.dep import _repo_separator, best_match_to_list
+portage.proxy.lazyimport.lazyimport(
+    "_emerge.Package:Package",
+    "portage.dep:_repo_separator,best_match_to_list",
+)
 
 
 def ordered_by_atom_specificity(

@@ -5,27 +5,22 @@ import warnings
 from itertools import chain
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-from _emerge.Package import Package
-from _emerge.RootConfig import RootConfig
-from _emerge.Task import Task
-
 import portage
-from portage.cache.mappings import slot_dict_class
 from portage.const import EBUILD_PHASES
-from portage.dep import (
-    Atom,
-    _repo_separator,
-    _slot_separator,
-    check_required_use,
-    paren_enclose,
-    use_reduce,
-)
+from portage.dep.atom import Atom
 from portage.dep.soname.parse import parse_soname_deps
 from portage.eapi import _get_eapi_attrs
 from portage.exception import InvalidData, InvalidDependString
 from portage.localization import _
-from portage.package.ebuild.config import config
 from portage.versions import _pkg_str, _unknown_repo
+
+portage.proxy.lazyimport.lazyimport(
+    "_emerge.RootConfig:RootConfig",
+    "_emerge.Task:Task",
+    "portage.cache.mappings:slot_dict_class",
+    "portage.dep:_repo_separator,_slot_separator,check_required_use,paren_enclose,use_reduce",
+    "portage.package.ebuild.config:config",
+)
 
 
 class Package(Task):

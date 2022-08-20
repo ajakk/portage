@@ -6,14 +6,16 @@ __all__ = ["dep_expand"]
 import re
 from typing import Union
 
-from _emerge.PackageVirtualDbapi import PackageVirtualDbapi
-
 from portage.dbapi.cpv_expand import cpv_expand
 from portage.dbapi.porttree import portdbapi
 from portage.dep import Atom, isvalidatom
 from portage.exception import InvalidAtom
 from portage.package.ebuild.config import config
 from portage.versions import catsplit
+
+portage.proxy.lazyimport.lazyimport(
+    "_emerge.PackageVirtualDbapi:PackageVirtualDbapi",
+)
 
 
 def dep_expand(
