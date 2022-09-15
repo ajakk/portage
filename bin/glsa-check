@@ -24,6 +24,12 @@ from portage import os
 from portage.glsa import match
 from portage.output import green, red, nocolor, white
 
+# delay this for speed increase
+portage.proxy.lazyimport.lazyimport(
+    "portage.glsa:Glsa,GlsaTypeException,GlsaFormatException,"
+    "get_applied_glsas,get_glsa_list"
+)
+
 # option parsing
 epilog = (
     "glsa-list can contain an arbitrary number of GLSA ids,"
@@ -159,15 +165,6 @@ elif mode in ["fix", "inject"] and os.geteuid() != 0:
     sys.exit(2)
 elif mode == "list" and not params:
     params.append("affected")
-
-# delay this for speed increase
-from portage.glsa import (
-    Glsa,
-    GlsaTypeException,
-    GlsaFormatException,
-    get_applied_glsas,
-    get_glsa_list,
-)
 
 eroot = portage.settings["EROOT"]
 vardb = portage.db[eroot]["vartree"].dbapi
