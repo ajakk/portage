@@ -24,10 +24,6 @@ from portage import os
 from portage.glsa import match
 from portage.output import green, red, nocolor, white
 
-__program__ = "glsa-check"
-__author__ = "Marius Mauch <genone@gentoo.org>"
-__version__ = "1.0.1"
-
 # option parsing
 epilog = (
     "glsa-list can contain an arbitrary number of GLSA ids,"
@@ -99,9 +95,6 @@ modes.add_argument(
     help="Send a mail with the given GLSAs to the administrator",
 )
 parser.add_argument(
-    "-V", "--version", action="store_true", help="Show information about glsa-check"
-)
-parser.add_argument(
     "-q",
     "--quiet",
     action="store_true",
@@ -140,12 +133,6 @@ options, params = parser.parse_known_args()
 
 if options.nocolor:
     nocolor()
-
-if options.version:
-    sys.stderr.write("\n" + __program__ + ", version " + __version__ + "\n")
-    sys.stderr.write("Author: " + __author__ + "\n")
-    sys.stderr.write("This program is licensed under the GPL, version 2\n\n")
-    sys.exit(0)
 
 mode = options.mode
 least_change = options.least_change
