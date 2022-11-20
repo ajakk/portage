@@ -422,6 +422,7 @@ class ResolverPlayground:
             unknown_keys.discard("USE")
             unknown_keys.discard("PROVIDES")
             unknown_keys.discard("REQUIRES")
+            unknown_keys.discard("MISC_CONTENT")
             if unknown_keys:
                 raise ValueError(
                     "metadata of installed '%s' contains unknown keys: %s"
